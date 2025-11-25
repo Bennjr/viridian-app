@@ -14,14 +14,25 @@
       {
         "label": "mainWin",
         "title": "Viridian",
+        "url": "index.html",
         "width": 800,
         "height": 600,
         "resizable": true,
-        "decorations": false,
         "focus": true,
         "closable": true,
+        "shadow": false
+      },
+      {
+        "label": "overlayWin",
+        "title": "Viridian",
+        "url": "overlay.html",
+        "width": 250,
+        "height": 75,
+        "decorations": false,
+        "closable": false,
         "shadow": false,
-        "transparent": true
+        "transparent": true,
+        "alwaysOnTop": true
       }
     ],
     "security": {

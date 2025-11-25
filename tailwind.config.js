@@ -6,7 +6,25 @@ export default {
     "./src-tauri/src/**/*.html"  
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          bg: "var(--primary-bg)",
+          text: "var(--primary-text)",
+          btn: {
+            bg: "var(--primary-btn-bg)",
+            text: "var(--primary-btn-text)",
+            hover: {
+              bg: "var(--primary-btn-hover-bg)",
+              text: "var(--primary-btn-hover-text)",
+            },
+          },
+        },
+        secondary: {
+          bg: "var(--secondary-bg)",
+        }
+      },
+    },
   },
   plugins: [],
 }

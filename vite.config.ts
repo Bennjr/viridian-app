@@ -29,4 +29,15 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: new URL("./index.html", import.meta.url).pathname,
+        overlay: new URL("./overlay.html", import.meta.url).pathname,
+      },
+      output: {
+        entryFileNames: "[name].js",
+      },
+    },
+  },
 }));

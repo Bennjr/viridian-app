@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-transparent;
+  }
+}
+
+:root {
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-primary: #4f46e5; 
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}
+
+.non-draggable {
+  -webkit-app-region: no-drag;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-bg: #000000;
+        --secondary-bg: #636363;
+        --primary-text: #ffffff;
+
+        --primary-btn-bg: #4f46e5;
+        --primary-btn-text: #ffffff;
+        --primary-btn-hover-bg: #4f46e5;
+        --primary-btn-hover-text: #ffffff;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --primary-bg: #ffffff;
+        --secondary-bg: #e9e9e9;
+        --primary-text: #000000;
+
+        --primary-btn-bg: #f1f1f1;
+        --primary-btn-text: #000000;
+        --primary-btn-hover-bg: #d4d4d4;
+        --primary-btn-hover-text: #000000;
+    }
+}
