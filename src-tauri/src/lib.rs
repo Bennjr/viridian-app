@@ -6,32 +6,10 @@ use tts::Tts;
 mod appbar;
 mod w_ops;
 
-use appbar::{dock_window_top, undock_window};
 use w_ops::{
-    w_focus, w_hide, w_overlay_ops, w_resize, w_resize_minus, w_resize_plus, w_show, w_unfocus,
+    w_focus, w_hide, w_is_visb, w_overlay_ops, w_resize, w_resize_minus, w_resize_plus, w_show,
+    w_unfocus,
 };
-
-#[tauri::command]
-fn dock(window: tauri::Window) {
-    #[cfg(target_os = "windows")]
-    unsafe {
-        use windows::Win32::Foundation::HWND;
-
-        let hwnd = HWND(window.hwnd().unwrap().0 as *mut _);
-        dock_window_top(hwnd, 60);
-    }
-}
-
-#[tauri::command]
-fn undock(window: tauri::Window) {
-    #[cfg(target_os = "windows")]
-    unsafe {
-        use windows::Win32::Foundation::HWND;
-
-        let hwnd = HWND(window.hwnd().unwrap().0 as *mut _);
-        undock_window(hwnd);
-    }
-}
 
 // ------------ OVERLAY FUNCTIONS ------------- //
 #[tauri::command]
@@ -64,10 +42,8 @@ pub fn run() {
             w_focus,
             w_unfocus,
             w_resize,
-            dock,
-            undock,
             w_hide,
-            w_show
+            w_show,
         ])
         .setup(|app| {
             let _handle = app.handle().clone();
@@ -76,6 +52,7 @@ pub fn run() {
             let overlay = app.get_window("overlayWin").unwrap();
             w_overlay_ops(overlay);
 
+            // Register global shortcuts
             #[cfg(desktop)]
             {
                 use tauri_plugin_global_shortcut::{
@@ -84,6 +61,8 @@ pub fn run() {
 
                 let ctrl_alt_c =
                     Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyC);
+                let ctrl_alt_h =
+                    Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyH);
 
                 app.handle().plugin(
                     tauri_plugin_global_shortcut::Builder::new()
@@ -102,10 +81,27 @@ pub fn run() {
                                     }
                                 }
                             }
+                            if shortcut == &ctrl_alt_h {
+                                match event.state() {
+                                    ShortcutState::Pressed => {
+                                        println!("Ctrl-Alt-H Pressed!");
+                                        if w_is_visb(_app.get_window("overlayWin").unwrap()) {
+                                            w_hide(_app.get_window("overlayWin").unwrap());
+                                        } else {
+                                            w_show(_app.get_window("overlayWin").unwrap());
+                                        }
+                                    }
+
+                                    ShortcutState::Released => {
+                                        println!("Ctrl-Alt-H Released!");
+                                    }
+                                }
+                            }
                         })
                         .build(),
                 )?;
                 app.global_shortcut().register(ctrl_alt_c)?;
+                app.global_shortcut().register(ctrl_alt_h)?;
             }
             Ok(())
         })

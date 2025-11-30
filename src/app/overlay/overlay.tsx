@@ -11,6 +11,8 @@ export default function Overlay() {
   const [chatInput, setChatInput] = useState("");
   const [isEyeOpen, setIsEyeOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
 
   // --- 🆕 Add window handle + docking state --- //
   const win = getCurrentWindow();
@@ -93,8 +95,41 @@ export default function Overlay() {
     }
   };
 
+  const handleDragStart = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStartY(e.clientY);
+  };
+
+  const handleDragMove = async (e: React.MouseEvent) => {
+    if (!isDragging) return;
+
+    const dragDistance = e.clientY - dragStartY;
+
+    // If dragged down more than 50px, unsnap
+    if (dragDistance > 50) {
+      await invoke("w_detect_drag_unsnap", { yOffset: dragDistance });
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const snapToggle = async () => {
+    await invoke("w_handle_snap", { window });
+  };
+
   return (
-    <section className="bg-transparent" ref={contentRef}>
+    <section
+      className="bg-transparent"
+      ref={contentRef}
+      onMouseDown={handleDragStart}
+      onMouseMove={handleDragMove}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+      onDoubleClick={snapToggle}
+    >
       {/* Draggable titlebar for moving/docking */}
       <div
         className="draggable bg-primary-text"

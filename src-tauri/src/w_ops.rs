@@ -97,38 +97,6 @@ pub fn w_unfocus(window: tauri::Window) {
 }
 
 #[tauri::command]
-pub fn w_dock(window: tauri::Window) {
-    #[cfg(target_os = "windows")]
-    unsafe {
-        use windows::Win32::Foundation::HWND;
-
-        use crate::appbar;
-
-        let hwnd_wrapper = window.hwnd().expect("no hwnd");
-        let raw_hwnd = hwnd_wrapper.0 as *mut std::ffi::c_void;
-        let hwnd = HWND(raw_hwnd);
-
-        appbar::dock_window_top(hwnd, 60); // height of reserved space
-    }
-}
-
-#[tauri::command]
-pub fn w_undock(window: tauri::Window) {
-    #[cfg(target_os = "windows")]
-    unsafe {
-        use windows::Win32::Foundation::HWND;
-
-        use crate::appbar;
-
-        let hwnd_wrapper = window.hwnd().expect("no hwnd");
-        let raw_hwnd = hwnd_wrapper.0 as *mut std::ffi::c_void;
-        let hwnd = HWND(raw_hwnd);
-
-        appbar::undock_window(hwnd);
-    }
-}
-
-#[tauri::command]
 pub fn w_hide(window: tauri::Window) {
     #[cfg(target_os = "windows")]
     unsafe {
@@ -156,4 +124,21 @@ pub fn w_show(window: tauri::Window) {
 
         ShowWindow(hwnd, SW_SHOW);
     }
+}
+
+#[tauri::command]
+pub fn w_is_visb(window: tauri::Window) -> bool {
+    #[cfg(target_os = "windows")]
+    unsafe {
+        use windows::Win32::Foundation::HWND;
+        use windows::Win32::UI::WindowsAndMessaging::*;
+
+        let hwnd_wrapper = window.hwnd().expect("no hwnd");
+        let raw_hwnd: *mut std::ffi::c_void = hwnd_wrapper.0;
+        let hwnd = HWND(raw_hwnd);
+
+        IsWindowVisible(hwnd).as_bool()
+    }
+    #[cfg(not(target_os = "windows"))]
+    false
 }
