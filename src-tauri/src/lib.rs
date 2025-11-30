@@ -3,13 +3,13 @@ use selection::get_text;
 use tauri::Manager;
 use tts::Tts;
 
-mod appbar;
-mod w_ops;
+mod window;
 
-use w_ops::{
+use window::w_ops::{
     w_focus, w_hide, w_is_visb, w_overlay_ops, w_resize, w_resize_minus, w_resize_plus, w_show,
     w_unfocus,
 };
+use window::appbar;
 
 // ------------ OVERLAY FUNCTIONS ------------- //
 #[tauri::command]
