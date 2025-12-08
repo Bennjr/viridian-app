@@ -8,15 +8,9 @@ import api_gemni from "../../hooks/gemni";
 export default function Overlay() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatResponse, setChatResponse] = useState("");
-  const [chatInput, setChatInput] = useState("");
   const [isEyeOpen, setIsEyeOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStartY, setDragStartY] = useState(0);
 
-  // --- 🆕 Add window handle + docking state --- //
-  const win = getCurrentWindow();
-  const DOCKED = useRef(false);
 
   useEffect(() => {
     if (!contentRef.current) return;
@@ -30,30 +24,7 @@ export default function Overlay() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const unlisten = win.onMoved(async ({ payload }) => {
-      const { x, y } = payload;
-
-      if (!DOCKED.current && y <= 0) {
-        DOCKED.current = true;
-        await invoke("dock");
-        return;
-      }
-
-      // Undock if moved downward
-      if (DOCKED.current && y > 20) {
-        DOCKED.current = false;
-        await invoke("undock");
-        return;
-      }
-    });
-
-    return () => {
-      unlisten.then((f) => f());
-    };
-  }, []);
-
-  const speak = () => invoke("overlay_speak");
+  const speak = () => invoke("tts_speak");
 
   const toggleChat = () => {
     if (isChatOpen) {
@@ -95,40 +66,10 @@ export default function Overlay() {
     }
   };
 
-  const handleDragStart = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStartY(e.clientY);
-  };
-
-  const handleDragMove = async (e: React.MouseEvent) => {
-    if (!isDragging) return;
-
-    const dragDistance = e.clientY - dragStartY;
-
-    // If dragged down more than 50px, unsnap
-    if (dragDistance > 50) {
-      await invoke("w_detect_drag_unsnap", { yOffset: dragDistance });
-      setIsDragging(false);
-    }
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-  };
-
-  const snapToggle = async () => {
-    await invoke("w_handle_snap", { window });
-  };
-
   return (
     <section
       className="bg-transparent"
       ref={contentRef}
-      onMouseDown={handleDragStart}
-      onMouseMove={handleDragMove}
-      onMouseUp={handleDragEnd}
-      onMouseLeave={handleDragEnd}
-      onDoubleClick={snapToggle}
     >
       {/* Draggable titlebar for moving/docking */}
       <div
@@ -137,7 +78,7 @@ export default function Overlay() {
       />
       <div
         className="draggable bg-primary-bg grid grid-cols-4 gap-0 items-center p-1"
-        style={{ width: "100vw", height: "50px" }}
+        style={{ width: "100vw", height: "75px" }}
       >
         <button
           onClick={speak}

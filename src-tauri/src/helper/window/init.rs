@@ -1,6 +1,12 @@
-// Win32 properties for the overlay window
+// QUICK SUM OF ALL WIN32 API CALLS MADE FOR FUTRE DOCS
+// WS_EX_TOOLWINDOW -- Hide from toolwind (self explanitory)
+// WS_NO_NOACTIVE -- Hides the window from being selected via alt tab
+// WS_EX_TOPMOST -- Makes the window always appear on top
+
+
+// 
 #[tauri::command]
-pub fn w_overlay_ops(window: tauri::Window) {
+pub fn w_init(window: tauri::Window) {
     #[cfg(target_os = "windows")]
     unsafe {
         use windows::Win32::Foundation::HWND;
@@ -18,33 +24,12 @@ pub fn w_overlay_ops(window: tauri::Window) {
 
         SetWindowLongW(hwnd, GWL_EXSTYLE, final_style);
 
-        // Force window to hide from Alt+Tab by removing WS_EX_APPWINDOW
         let ex_style_after = GetWindowLongW(hwnd, GWL_EXSTYLE);
         let final_style =
             (ex_style_after & !(WS_EX_APPWINDOW.0 as i32)) | WS_EX_TOOLWINDOW.0 as i32;
 
         SetWindowLongW(hwnd, GWL_EXSTYLE, final_style);
     }
-}
-
-#[tauri::command]
-pub fn w_resize_plus(window: tauri::Window) {
-    let _ = window.set_size(tauri::Size::Physical({
-        tauri::PhysicalSize {
-            width: window.inner_size().unwrap().width,
-            height: 300,
-        }
-    }));
-}
-
-#[tauri::command]
-pub fn w_resize_minus(window: tauri::Window) {
-    let _ = window.set_size(tauri::Size::Physical({
-        tauri::PhysicalSize {
-            width: window.inner_size().unwrap().width,
-            height: 75,
-        }
-    }));
 }
 
 #[tauri::command]
@@ -59,6 +44,8 @@ pub fn w_resize(window: tauri::Window, height: u32) {
         height,
     }));
 }
+
+// W FOCUS CMDS
 
 #[tauri::command]
 pub fn w_focus(window: tauri::Window) {
@@ -95,6 +82,8 @@ pub fn w_unfocus(window: tauri::Window) {
         SetWindowLongW(hwnd, GWL_EXSTYLE, final_style);
     }
 }
+
+// VISB CMDS
 
 #[tauri::command]
 pub fn w_hide(window: tauri::Window) {

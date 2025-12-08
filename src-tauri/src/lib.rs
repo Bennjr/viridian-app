@@ -1,34 +1,8 @@
-use regex::Regex;
 use selection::get_text;
 use tauri::Manager;
-use tts::Tts;
 
-mod window;
-
-use window::w_ops::{
-    w_focus, w_hide, w_is_visb, w_overlay_ops, w_resize, w_resize_minus, w_resize_plus, w_show,
-    w_unfocus,
-};
-use window::appbar;
-
-// ------------ OVERLAY FUNCTIONS ------------- //
-#[tauri::command]
-async fn tts_speak() -> Result<(), String> {
-    let sel_text = get_text();
-    println!("{}", sel_text);
-
-    let re = Regex::new(r"[^a-zA-Z0-9 ]").unwrap();
-    let sel_text = re.replace_all(&sel_text, "");
-
-    if sel_text.len() > 0 {
-        let mut tts = Tts::default().map_err(|e| format!("{:?}", e))?;
-        tts.speak(&*sel_text, true)
-            .map_err(|e| format!("{:?}", e))?;
-
-        std::thread::sleep(std::time::Duration::from_secs(5));
-    }
-    Ok(())
-}
+mod helper;
+use helper::{tts_speak, w_focus, w_hide, w_is_visb, w_init, w_resize, w_show, w_unfocus};
 
 // ------------ MAIN RUN FUNCTION ------------ //
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -37,8 +11,6 @@ pub fn run() {
         // Put all commands which should be called from the front end here -->
         .invoke_handler(tauri::generate_handler![
             tts_speak,
-            w_resize_plus,
-            w_resize_minus,
             w_focus,
             w_unfocus,
             w_resize,
@@ -50,7 +22,7 @@ pub fn run() {
 
             // Call function to customize overlay window properties
             let overlay = app.get_window("overlayWin").unwrap();
-            w_overlay_ops(overlay);
+            w_init(overlay);
 
             // Register global shortcuts
             #[cfg(desktop)]
