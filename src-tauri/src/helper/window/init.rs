@@ -96,7 +96,7 @@ pub fn w_hide(window: tauri::Window) {
         let raw_hwnd: *mut std::ffi::c_void = hwnd_wrapper.0;
         let hwnd = HWND(raw_hwnd);
 
-        ShowWindow(hwnd, SW_HIDE);
+        let _ = ShowWindow(hwnd, SW_HIDE);
     }
 }
 
@@ -111,7 +111,7 @@ pub fn w_show(window: tauri::Window) {
         let raw_hwnd: *mut std::ffi::c_void = hwnd_wrapper.0;
         let hwnd = HWND(raw_hwnd);
 
-        ShowWindow(hwnd, SW_SHOW);
+        let _ = ShowWindow(hwnd, SW_SHOW);
     }
 }
 
