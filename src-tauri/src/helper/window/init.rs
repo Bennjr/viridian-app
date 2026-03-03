@@ -3,8 +3,6 @@
 // WS_NO_NOACTIVE -- Hides the window from being selected via alt tab
 // WS_EX_TOPMOST -- Makes the window always appear on top
 
-
-// 
 #[tauri::command]
 pub fn w_init(window: tauri::Window) {
     #[cfg(target_os = "windows")]
