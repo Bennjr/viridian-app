@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-transparent;
-  }
+    body {
+        @apply bg-transparent;
+    }
 }
 
 .draggable {
-  -webkit-app-region: drag;
+    -webkit-app-region: drag;
 }
