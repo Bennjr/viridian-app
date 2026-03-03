@@ -72,6 +72,12 @@ pub fn run() {
                         })
                         .build(),
                 )?;
+                
+                // Unregister shortcuts if they already exist (from previous run)
+                let _ = app.global_shortcut().unregister(ctrl_alt_c);
+                let _ = app.global_shortcut().unregister(ctrl_alt_h);
+                
+                // Now register them
                 app.global_shortcut().register(ctrl_alt_c)?;
                 app.global_shortcut().register(ctrl_alt_h)?;
             }

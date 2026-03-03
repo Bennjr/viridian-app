@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-transparent;
+  }
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}

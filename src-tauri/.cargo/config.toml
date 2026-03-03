@@ -1,0 +1,4 @@
+[http]
+# disable SSL revocation checks during crate downloads to avoid network issues
+# especially on Windows environments with strict certificate settings
+check-revoke = false

@@ -1,7 +1,7 @@
 import "./app.css";
 
 import Header from "./components/header";
-import Sidebar from "./components/sidebar";
+import Sidebar from "../../../components/sidebar";
 
 export default function App() {
   return (
@@ -9,6 +9,7 @@ export default function App() {
       <Sidebar />
       <section>
         <Header />
+        <p className="text-white">adlkjdsaølkfsadølkfj</p>
       </section>
     </main>
   );
