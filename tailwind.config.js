@@ -3,27 +3,30 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{html,js,ts,jsx,tsx,svelte,vue}",
-    "./src-tauri/src/**/*.html"  
+    "./src-tauri/src/**/*.html"
   ],
   theme: {
     extend: {
       colors: {
-        primary: {
-          bg: "var(--primary-bg)",
-          text: "var(--primary-text)",
-          btn: {
-            bg: "var(--primary-btn-bg)",
-            text: "var(--primary-btn-text)",
-            hover: {
-              bg: "var(--primary-btn-hover-bg)",
-              text: "var(--primary-btn-hover-text)",
-            },
-          },
-        },
-        secondary: {
-          bg: "var(--secondary-bg)",
+        c: {
+          brand: "var(--c_brand)",
+
+          bg: "var(--c_bg)",
+          text: "var(--c_text)",
+
+          light_btn: "var(--c_light_btn)",
+          light_btn_hover: "var(--c_light_btn_hover)",
+
+          dark_btn: "var(--c_dark_btn)",
+          dark_btn_hover: "var(--c_dark_btn_hover)",
+
+          nav: {
+            bg: "var(--c-nav-bg)",
+            btn_bg: "var(--c-nav-btn-bg)",
+            btn_hover: "var(--c-nav-btn-hover)",
+          }
         }
-      },
+      }
     },
   },
   plugins: [],

@@ -1,10 +1,14 @@
-import "./index.css";
+import "../../global.css";
 
 export default function App() {
   return (
-    <div className="p-8 text-white">
-      <h2 className="text-2xl font-bold">Index</h2>
-        <p className="text-white">index page</p>
+    <div className="text-c-text">
+      asdfasdfasdf
+      <div className="p-2 grid auto-cols gap-10">
+        <div className="bg-c-brand w-full h-[550px] rounded-lg">sadf</div>
+        <div className="bg-c-brand w-full h-[550px] rounded-lg">sadf</div>
+        <div className="bg-c-brand w-full h-[550px] rounded-lg">sadf</div>
+      </div>
     </div>
   );
 }

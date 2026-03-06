@@ -6,12 +6,27 @@
   body {
     @apply bg-transparent;
   }
-}
 
-:root {
-  --color-bg: #ffffff;
-  --color-text: #000000;
-  --color-primary: #4f46e5;
+  html,
+  body {
+    @apply overscroll-none overflow-hidden h-screen;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--c-scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--c-scrollbar-thumb);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--c-scrollbar-hover);
+  }
 }
 
 .draggable {
@@ -22,28 +37,42 @@
   -webkit-app-region: no-drag;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --primary-bg: #ebebeb;
-    --secondary-bg: #aaaaaa;
-    --primary-text: #ffffff;
+    --c_brand: #3A7561;
 
-    --primary-btn-bg: #d4d4d4;
-    --primary-btn-text: #ffffff;
-    --primary-btn-hover-bg: #888888;
-    --primary-btn-hover-text: #ffffff;
+    --c_bg: #ffffff;
+    --c-text: #1d1d1d;
+    --c-nav-bg: #181818;
+
+    --c-scrollbar-track: #f0f0f0;
+    --c-scrollbar-thumb: #888888;
+    --c-scrollbar-hover: #707070;
+
+    --c_light_btn: #f0f0f0;
+    --c_light_btn_hover: #e0e0e0;
+
+    --c_dark_btn: #333333;
+    --c_dark_btn_hover: #444444;
   }
-}
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --primary-bg: #ffffff;
-    --secondary-bg: #e9e9e9;
-    --primary-text: #000000;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --c_brand: #3A7561;
 
-    --primary-btn-bg: #f1f1f1;
-    --primary-btn-text: #000000;
-    --primary-btn-hover-bg: #d4d4d4;
-    --primary-btn-hover-text: #000000;
+      --c_bg: #000000;
+      --c-text: #f0f0f0;
+      --c-nav-bg: #181818;
+
+      --c-scrollbar-track: #181818;
+      --c-scrollbar-thumb: #444444;
+      --c-scrollbar-hover: #7c7c7c;
+
+      --c_light_btn: #f0f0f0;
+      --c_light_btn_hover: #e0e0e0;
+
+      --c_dark_btn: #333333;
+      --c_dark_btn_hover: #444444;
+    }
   }
 }

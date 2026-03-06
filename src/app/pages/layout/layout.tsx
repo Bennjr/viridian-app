@@ -2,14 +2,19 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../../../components";
 import Header from "../../../components/nav/nav";
 
-export default function Library() {
+import "../../global.css";
+
+export default function Layout() {
     return (
-        <main className="bg-black w-screen h-screen grid grid-cols-[auto_1fr]">
+        <main className="w-screen h-screen flex overflow-hidden">
+            
             <Sidebar />
-            <section>
-                <Header />
-                <Outlet /> 
+
+            <section className="flex-1 bg-c-bg overflow-y-auto h-full">
+                <div className="p-8">
+                    <Outlet /> 
+                </div>
             </section>
         </main>
     );
-  }
+}
