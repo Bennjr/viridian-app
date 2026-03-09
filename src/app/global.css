@@ -54,6 +54,9 @@
 
     --c_dark_btn: #333333;
     --c_dark_btn_hover: #444444;
+
+    --o_bg: #ffffff;
+    --o_icon_bg: #000000;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -73,6 +76,9 @@
 
       --c_dark_btn: #333333;
       --c_dark_btn_hover: #444444;
+
+      --o_bg: #000000;
+      --o_icon_bg: #ffffff;
     }
   }
 }

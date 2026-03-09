@@ -66,19 +66,9 @@ export default function Overlay() {
   };
 
   return (
-    <section
-      className="bg-transparent"
-      ref={contentRef}
-    >
-      {/* Draggable titlebar for moving/docking */}
-      <div
-        className="draggable bg-primary-text"
-        style={{ width: "100vw", height: "25px" }}
-      />
-      <div
-        className="draggable bg-primary-bg grid grid-cols-4 gap-0 items-center p-1"
-        style={{ width: "100vw", height: "75px" }}
-      >
+    <section className="bg-o-bg" ref={contentRef}>
+      <div className="draggable bg-white" style={{ width: "100vw", height: "25px" }} />
+      <div className="draggable bg-primary-bg grid grid-cols-4 gap-0 items-center p-1" style={{ width: "100vw", height: "75px" }}>
         <button
           onClick={speak}
           className="non-draggable p-2.5 w-10 cursor-pointer bg-primary-btn-bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
@@ -104,28 +94,6 @@ export default function Overlay() {
           <img src="/eye.svg" alt="Eye" />
         </button>
       </div>
-
-      {isChatOpen && (
-        <div className="bg-primary-bg grid grid-rows-2-auto gap-2 p-1">
-          <div className="bg-secondary-bg p-3">{chatResponse}</div>
-
-          <form onSubmit={handleChatSubmit} className="display-inline">
-            <input
-              type="text"
-              name="message"
-              className="bg-secondary-bg p-2.5 rounded-full"
-              placeholder="Type your message..."
-            />
-            <button type="submit" className="rounded-full">
-              <img
-                src="/upload.svg"
-                alt="Send"
-                className="w-8 h-8 cursor-pointer hover:opacity-80"
-              />
-            </button>
-          </form>
-        </div>
-      )}
     </section>
   );
 }

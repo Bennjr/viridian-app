@@ -1,8 +1,20 @@
 use selection::get_text;
-use tauri::Manager;
+use tauri::{
+    Manager
+};
 
 mod helper;
-use helper::{tts_speak, w_focus, w_hide, w_is_visb, w_init, w_resize, w_show, w_unfocus};
+use helper::{
+    tts_speak, 
+    init_systray,
+    w_focus, 
+    w_hide, 
+    w_is_visb, 
+    w_init, 
+    w_resize, 
+    w_show, 
+    w_unfocus
+};
 
 // ------------ MAIN RUN FUNCTION ------------ //
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -23,6 +35,8 @@ pub fn run() {
             // Call function to customize overlay window properties
             let overlay = app.get_window("overlayWin").unwrap();
             w_init(overlay);
+
+            let _ = init_systray(app.handle());
 
             // Register global shortcuts
             #[cfg(desktop)]
@@ -83,7 +97,16 @@ pub fn run() {
             }
             Ok(())
         })
+        .on_window_event(|window, event| {
+            match event {
+                tauri::WindowEvent::CloseRequested { api, .. } => {
+                    api.prevent_close();
+                    let _ = window.hide(); 
+                }
+                _ => {} 
+            }
+        })
         .plugin(tauri_plugin_opener::init())
-        .run(tauri::generate_context!())
+        .run(tauri::generate_context!() )
         .expect("Viridian application failed to launch");
 }

@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "../../../components";
-import Header from "../../../components/nav/nav";
 
 import "../../global.css";
 

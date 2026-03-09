@@ -25,6 +25,11 @@ export default {
             btn_bg: "var(--c-nav-btn-bg)",
             btn_hover: "var(--c-nav-btn-hover)",
           }
+        },
+        o: {
+          brand: "var(--c_brand)",
+          bg: "var(--o_bg)",
+          icon_bg: "var(--o_icon_bg)"
         }
       }
     },
