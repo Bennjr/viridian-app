@@ -17,8 +17,7 @@ export default function Sidebar() {
                                 to={link.to}
                                 end={link.to === "/"}
                                 className={({ isActive }) =>
-                                    `block px-3 py-2 rounded border border-c-nav-btn-bg mb-1 hover:bg-c-nav-btn_hover ${
-                                        isActive ? "bg-c-nav-btn_bg" : ""
+                                    `block px-3 py-2 rounded border border-c-nav-btn-bg mb-1 hover:bg-c-nav-btn_hover ${isActive ? "bg-c-nav-btn_bg" : ""
                                     }`
                                 }
                             >
