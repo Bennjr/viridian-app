@@ -1,41 +1,15 @@
 import "../global.css";
 import { invoke } from "@tauri-apps/api/core";
-import { useState, useRef, useEffect } from "react";
-
-import api_gemni from "../../hooks/gemni";
+import { useState, useRef } from "react";
 
 export default function Overlay() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatResponse, setChatResponse] = useState("");
   const [isEyeOpen, setIsEyeOpen] = useState(true);
+  const [isWindowOpen, setWindowOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-
-
-  useEffect(() => {
-    if (!contentRef.current) return;
-
-    const observer = new ResizeObserver(() => {
-      const height = contentRef.current?.scrollHeight || 0;
-      invoke("w_resize", { height });
-    });
-
-    observer.observe(contentRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   const speak = () => invoke("tts_speak");
 
-  const toggleChat = () => {
-    if (isChatOpen) {
-      invoke("w_ignore_cursor", { ignore: true });
-      invoke("w_unfocus");
-      setIsChatOpen(false);
-    } else {
-      invoke("w_ignore_cursor", { ignore: false });
-      invoke("w_focus");
-      setIsChatOpen(true);
-    }
-  };
+  const toggleChat = () => { };
 
   const toggleEye = () => {
     setIsEyeOpen(!isEyeOpen);
@@ -48,50 +22,48 @@ export default function Overlay() {
 
   const translate = () => invoke("translate");
 
-  const handleChatSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const message = formData.get("message") as string;
-
-    if (!message) return;
-
-    try {
-      const chat_resp = await api_gemni(message);
-      setChatResponse(chat_resp);
-      (e.target as HTMLFormElement).reset();
-    } catch (error) {
-      console.error(error);
-      setChatResponse("Error getting response");
+  const windowSizeToggle = () => {
+    if (isWindowOpen) {
+      invoke("w_resize", { height: 75 });
+      setWindowOpen(false);
+    } else {
+      invoke("w_resize", { height: 450 });
+      setWindowOpen(true);
     }
   };
 
   return (
-    <section className="bg-o-bg" ref={contentRef}>
-      <div className="draggable bg-white" style={{ width: "100vw", height: "25px" }} />
-      <div className="draggable bg-primary-bg grid grid-cols-4 gap-0 items-center p-1" style={{ width: "100vw", height: "75px" }}>
+    <section className="draggable bg-o-bg h-screen items-center" ref={contentRef}>
+      <div className="draggable bg-o-bg grid grid-cols-5" style={{ width: "100vw", height: "75px" }}>
         <button
           onClick={speak}
-          className="non-draggable p-2.5 w-10 cursor-pointer bg-primary-btn-bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
-          <img src="/audio.svg" alt="Audio" />
+          <img src="/audio.svg" alt="Audio" title="Play selected text" />
         </button>
         <button
           onClick={toggleChat}
-          className="non-draggable p-2.5 w-10 cursor-pointer bg-primary-btn-bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
-          <img src="/star.svg" alt="AI" />
+          <img src="/star.svg" alt="AI" title="AI" />
         </button>
         <button
           onClick={translate}
-          className="non-draggable p-2.5 w-10 cursor-pointer bg-primary-btn-bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
-          <img src="/translate.svg" alt="Translate" />
+          <img src="/translate.svg" alt="Translate" title="Translate selected text" />
         </button>
         <button
           onClick={toggleEye}
-          className="non-draggable p-2.5 w-10 cursor-pointer bg-primary-btn-bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable overlay-button p-5 cursor-pointer bg-o-btn_bg"
         >
-          <img src="/eye.svg" alt="Eye" />
+          <img src="/eye.svg" alt="Eye" title="Hide window" />
+        </button>
+        <button
+          onClick={windowSizeToggle}
+          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+        >
+          <img src="/chevron-down.svg" id="chevron-toggle" className={!isWindowOpen ? "rotate-180" : ""} alt="Eye" title="Toggle Window Size" />
         </button>
       </div>
     </section>

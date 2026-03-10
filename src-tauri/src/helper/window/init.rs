@@ -57,11 +57,6 @@ pub fn w_init(window: tauri::Window) {
 
 #[tauri::command]
 pub fn w_resize(window: tauri::Window, height: u32) {
-    let max_height = 600;
-    if height > max_height {
-        return;
-    }
-
     let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
         width: window.inner_size().unwrap().width,
         height,

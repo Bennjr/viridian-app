@@ -12,6 +12,17 @@
     @apply overscroll-none overflow-hidden h-screen;
   }
 
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: "var(--c-text)";
+  }
+
+
   ::-webkit-scrollbar {
     width: 10px;
   }
@@ -29,12 +40,25 @@
   }
 }
 
+
 .draggable {
   -webkit-app-region: drag;
 }
 
 .non-draggable {
   -webkit-app-region: no-drag;
+}
+
+/* */
+
+#chevron-toggle {
+  transition: transform 0.2s ease-in-out;
+  transform: rotate(0deg);
+  display: inline-block;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
 }
 
 @layer base {
@@ -56,6 +80,7 @@
     --c_dark_btn_hover: #444444;
 
     --o_bg: #ffffff;
+    --o_btn_bg: #333333;
     --o_icon_bg: #000000;
   }
 
@@ -78,6 +103,7 @@
       --c_dark_btn_hover: #444444;
 
       --o_bg: #000000;
+      --o_btn_bg: #333333;
       --o_icon_bg: #ffffff;
     }
   }

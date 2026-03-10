@@ -29,6 +29,7 @@ export default {
         o: {
           brand: "var(--c_brand)",
           bg: "var(--o_bg)",
+          btn_bg: "var(--o_btn_bg)",
           icon_bg: "var(--o_icon_bg)"
         }
       }

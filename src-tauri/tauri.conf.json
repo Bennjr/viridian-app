@@ -27,12 +27,12 @@
         "title": "Viridian",
         "url": "overlay.html",
         "width": 300,
-        "height": 500,
+        "height": 75,
         "decorations": false,
         "closable": false,
         "shadow": false,
         "resizable": false,
-        "transparent": true,
+        "transparent": false,
         "alwaysOnTop": true,
         "focus": false
       }
