@@ -78,7 +78,8 @@
     --c_dark_btn_hover: #444444;
 
     --o_bg: #ffffff;
-    --o_btn_bg: #333333;
+    --o_btn_bg: #e7e7e7;
+    --o_btn_bg_hover: #d7d7d7;
     --o_icon_bg: #000000;
   }
 
@@ -87,7 +88,7 @@
       --c_brand: #3A7561;
 
       --c_bg: #000000;
-      --c-text: #f0f0f0;
+      --c_text: #f0f0f0;
       --c-nav-bg: #181818;
 
       --c-scrollbar-track: #181818;
@@ -102,6 +103,7 @@
 
       --o_bg: #000000;
       --o_btn_bg: #333333;
+      --o_btn_bg_hover: #424242;
       --o_icon_bg: #ffffff;
     }
   }

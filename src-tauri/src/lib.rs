@@ -7,13 +7,14 @@ mod helper;
 use helper::{
     tts_speak, 
     init_systray,
+
     w_focus, 
     w_hide, 
     w_is_visb, 
     w_init, 
     w_resize, 
     w_show, 
-    w_unfocus
+    w_unfocus,
 };
 
 // ------------ MAIN RUN FUNCTION ------------ //
@@ -28,6 +29,8 @@ pub fn run() {
             w_resize,
             w_hide,
             w_show,
+            helper::search_files,
+            helper::save_file,
         ])
         .setup(|app| {
             let _handle = app.handle().clone();

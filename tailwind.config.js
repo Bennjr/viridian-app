@@ -30,7 +30,8 @@ export default {
           brand: "var(--c_brand)",
           bg: "var(--o_bg)",
           btn_bg: "var(--o_btn_bg)",
-          icon_bg: "var(--o_icon_bg)"
+          icon_bg: "var(--o_icon_bg)",
+          icon_bg_hover: "var(--o_icon_bg_hover)",
         }
       }
     },

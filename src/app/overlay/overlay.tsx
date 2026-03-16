@@ -37,31 +37,31 @@ export default function Overlay() {
       <div className="draggable bg-o-bg grid grid-cols-5" style={{ width: "100vw", height: "75px" }}>
         <button
           onClick={speak}
-          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable size-12 p-3 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
           <img src="/audio.svg" alt="Audio" title="Play selected text" />
         </button>
         <button
           onClick={toggleChat}
-          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable size-12 p-3 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
           <img src="/star.svg" alt="AI" title="AI" />
         </button>
         <button
           onClick={translate}
-          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="non-draggable size-12 p-3 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
           <img src="/translate.svg" alt="Translate" title="Translate selected text" />
         </button>
         <button
           onClick={toggleEye}
-          className="non-draggable overlay-button p-5 cursor-pointer bg-o-btn_bg"
+          className="non-draggable size-12 p-3 overlay-button cursor-pointer bg-o-btn_bg"
         >
           <img src="/eye.svg" alt="Eye" title="Hide window" />
         </button>
         <button
           onClick={windowSizeToggle}
-          className="non-draggable p-5 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
+          className="flexnon-draggable size-12 p-3 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
         >
           <img src="/chevron-down.svg" id="chevron-toggle" className={!isWindowOpen ? "rotate-180" : ""} alt="Eye" title="Toggle Window Size" />
         </button>
