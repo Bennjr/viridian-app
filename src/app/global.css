@@ -29,13 +29,14 @@
     :root {
       --c_primary: #2a2b2a;
       --c_secondary_bg: #242524;
+      --c_tertiery: #1b1b1b;
       --c_dividers: #343534;
       --c_hover: #3d3e3d;
 
       --c_text: #d8d8d8;
       --c_text_muted: #8e8e8e;
 
-      --c_btn: #242b29;
+      --c_btn: #222524;
       --c_btn_hover: #444444;
 
       --o_bg: #000000;
@@ -43,11 +44,12 @@
     }
   }
 
-  /* potential colers
-  dark:
-    0D1317
-
-  */
+  .hero {
+    background-color: var(--c_primary);
+    background-image:
+      radial-gradient(at 100% 100%, rgba(58, 117, 97, 0.1) 0px, transparent 80%),
+      radial-gradient(at 0% 0%, rgba(58, 117, 97, 0.05) 0px, transparent 50%);
+  }
 
   html,
   body {

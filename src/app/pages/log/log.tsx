@@ -6,7 +6,7 @@ interface logProps {
 }
 
 const LogInstance = ({ label, desc }: logProps) => (
-    <div className="grid grid-row-[auto_auto] bg-c-secondary border min-h-16 hover:bg-c-hover">
+    <div className="p-4 grid grid-row-[auto_auto] bg-c-secondary border border-c-divider min-h-16 hover:bg-c-hover">
         <div>{label}</div>
         <div>{desc}</div>
     </div>

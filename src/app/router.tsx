@@ -10,6 +10,7 @@ import Index from "./pages/index/index";
 import Library from "./pages/library/library";
 import Settings from "./pages/settings/settings";
 import Log from "./pages/log/log";
+import Chat from "./pages/chat/chat";
 
 //other
 import Onboarding from "./pages/overlays/overlays";
@@ -27,6 +28,7 @@ export default function Router() {
           <Route index element={<Index />} />
           <Route path="library" element={<Library />} />
           <Route path="log" element={<Log />} />
+          <Route path="chat" element={<Chat />} />
         </Route>
       </Routes>
     );

@@ -1,4 +1,4 @@
-## Skeleton overview
+# Skeleton overview
 This is the skeleton of the whole project, for important folders you will find instructions on what they do
 
 ```

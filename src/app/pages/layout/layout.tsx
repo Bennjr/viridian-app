@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Sidebar, Topbar } from "../../../components";
+import { Sidebar, Bottombar } from "../../../components";
 import "../../global.css";
 
 export default function Layout() {
@@ -9,12 +9,13 @@ export default function Layout() {
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
 
-                <section className="flex-1 bg-c-primary overflow-y-auto h-full">
+                <section className="hero flex-1 overflow-y-auto h-full">
                     <div className="p-8">
                         <Outlet />
                     </div>
                 </section>
             </div>
+            <Bottombar />
         </main>
     );
 }

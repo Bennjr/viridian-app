@@ -11,18 +11,22 @@ export default {
           brand: "var(--c_brand)",
           primary: "var(--c_primary)",
           secondary: "var(--c_secondary_bg)",
+          tertiery: "var(--c_tertiery)",
+
           divider: "var(--c_dividers)",
           text: "var(--c_text)",
           muted_text: "var(--c_text)",
           hover: "var(--c_hover)",
+
           btn: "var(--c_btn)",
           btn_hover: "var(--c_btn_hover)",
+          icon: "var(--o_icon_bg)",
         },
         o: {
           bg: "var(--o_bg)",
           btn_bg: "var(--o_btn_bg)",
-          icon_bg: "var(--o_icon_bg)",
-          icon_bg_hover: "var(--o_icon_bg_hover)",
+          icon: "var(--o_icon_bg)",
+          icon_hover: "var(--o_icon_bg_hover)",
         }
       }
     },
