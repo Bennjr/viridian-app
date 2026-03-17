@@ -13,7 +13,8 @@ use helper::{
     w_is_visb, 
     w_init, 
     w_resize, 
-    w_show, 
+    w_show_by_label,
+    w_show_logic,
     w_unfocus,
 };
 
@@ -28,7 +29,7 @@ pub fn run() {
             w_unfocus,
             w_resize,
             w_hide,
-            w_show,
+            w_show_by_label,
             helper::search_files,
             helper::save_file,
         ])
@@ -77,7 +78,9 @@ pub fn run() {
                                         if w_is_visb(_app.get_window("overlayWin").unwrap()) {
                                             w_hide(_app.get_window("overlayWin").unwrap());
                                         } else {
-                                            w_show(_app.get_window("overlayWin").unwrap());
+                                            if let Some(overlay) = _app.get_webview_window("overlayWin") {
+                                                w_show_logic(overlay);
+                                            }
                                         }
                                     }
 

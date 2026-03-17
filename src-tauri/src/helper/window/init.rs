@@ -10,7 +10,7 @@ use windows::{
     Win32::UI::Shell::*,
     Win32::UI::WindowsAndMessaging::*,
 };
-
+use tauri::Manager;
 
 #[tauri::command]
 pub fn w_init(window: tauri::Window) {
@@ -118,18 +118,27 @@ pub fn w_hide(window: tauri::Window) {
     }
 }
 
-#[tauri::command]
-pub fn w_show(window: tauri::Window) {
+pub fn w_show_logic(window: tauri::WebviewWindow) {
     #[cfg(target_os = "windows")]
     unsafe {
         use windows::Win32::Foundation::HWND;
         use windows::Win32::UI::WindowsAndMessaging::*;
 
-        let hwnd_wrapper = window.hwnd().expect("no hwnd");
-        let raw_hwnd: *mut std::ffi::c_void = hwnd_wrapper.0;
-        let hwnd = HWND(raw_hwnd);
+        if let Ok(hwnd_wrapper) = window.hwnd() {
+            let hwnd = HWND(hwnd_wrapper.0);
+            let _ = ShowWindow(hwnd, SW_SHOW);
+            let _ = SetForegroundWindow(hwnd); // Make sure it pops to front
+        }
+    }
+}
 
-        let _ = ShowWindow(hwnd, SW_SHOW);
+
+#[tauri::command]
+pub fn w_show_by_label(app: tauri::AppHandle, label: String) {
+    if let Some(win) = app.get_webview_window(&label) {
+        w_show_logic(win);
+    } else {
+        println!("Window {} not found", label);
     }
 }
 
