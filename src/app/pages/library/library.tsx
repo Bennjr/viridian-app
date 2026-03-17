@@ -43,9 +43,9 @@ export default function Library() {
   return (
     <div className="grid">
       <div className="flex justify-between items-center pb-4">
-        <h2 className="text-2xl font-bold text-c-text">Bibliotek</h2>
+        <h2 className="text-2xl font-bold">Bibliotek</h2>
         <button
-          className="p-2 px-5 border border-c-secondary border-solid rounded-full text-c-text hover:border-c-text"
+          className="p-2 px-5 border border-c-secondary border-solid rounded-full hover:border-c-text"
         >
           Last opp
         </button>

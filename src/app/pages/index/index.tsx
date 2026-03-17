@@ -38,7 +38,7 @@ export default function App() {
       </nav>
 
       <main className="grid auto-cols gap-10">
-        <div className="bg-c-brand h-56 text-center">
+        <div className="bg-c-brand h-[450px] text-center rounded-xl">
           <h1 className="text-xl font-bold">VELKOMMEN</h1>
         </div>
         <div className="bg-blue-500 rounded-lg">

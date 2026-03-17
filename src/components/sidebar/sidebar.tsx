@@ -9,7 +9,7 @@ const links = [
 
 export default function Sidebar() {
     return (
-        <div className="bg-c-secondary text-c-text w-48 h-full flex flex-col justify-between sticky top-0">
+        <div className="bg-c-secondary border-r border-c-divider text-c-text w-48 h-full flex flex-col justify-between sticky top-0">
             <nav className="flex-1 overflow-y-auto py-4">
                 <ul className="space-y-2 px-2">
                     {links.map((link) => (

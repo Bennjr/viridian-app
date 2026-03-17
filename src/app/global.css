@@ -2,27 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --c_brand: #3A7561;
-  --c_bg: #242423;
-  --c_secondary_bg: #ececec;
-  --c_text: #1d1d1d;
-  --c_hover: #dbdbdb;
-  --c_btn: #f0f0f0;
-  --c_btn_hover: #e0e0e0;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --c_bg: #1a1a1a;
-    --c_secondary_bg: #181818;
-    --c_text: #f0f0f0;
-    --c_btn: #333333;
-    --c_btn_hover: #444444;
-  }
-}
-
 @layer base {
+  :root {
+    --c_brand: #3A7561;
+    --c_primary: #fff6e3;
+    --c_secondary_bg: #ececec;
+    --c_dividers: #ffffff;
+
+    --c_text: #1d1d1d;
+    --c_hover: #dbdbdb;
+    --c_btn: #f0f0f0;
+    --c_btn_hover: #e0e0e0;
+
+    /* ADD THESE MISSING ONES SO THE CONFIG DOESN'T BREAK */
+    --o_bg: #ffffff;
+    --o_btn_bg: #333333;
+    --o_icon_bg: #000000;
+    --o_icon_bg_hover: #444444;
+
+    --c_scrollbar_track: #242423;
+    --c_scrollbar_thumb: #444444;
+    --c_scrollbar_hover: #555555;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --c_primary: #2a2b2a;
+      --c_secondary_bg: #242524;
+      --c_dividers: #343534;
+      --c_hover: #3d3e3d;
+
+      --c_text: #d8d8d8;
+      --c_text_muted: #8e8e8e;
+
+      --c_btn: #242b29;
+      --c_btn_hover: #444444;
+
+      --o_bg: #000000;
+      --o_icon_bg: #ffffff;
+    }
+  }
+
+  /* potential colers
+  dark:
+    0D1317
+
+  */
 
   html,
   body {
@@ -39,7 +64,6 @@
   p {
     color: var(--c_text);
   }
-
 
   /* Scrollbars */
   ::-webkit-scrollbar {
@@ -59,7 +83,6 @@
   }
 }
 
-/* 4. Custom Utility Classes */
 @layer utilities {
   .draggable {
     -webkit-app-region: drag;

@@ -29,7 +29,7 @@ export default function Settings() {
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
-        <div>
+        <div className="bg-c-primary text-c-text min-h-screen min-w-screen">
             <NavLink to="/" className="p-2 fixed"> <img src="/chevron-down.svg" alt="back" className="h-auto w-8 rotate-90" /> </NavLink >
             <div className="px-32 py-10">
                 <nav className="grid grid-rows-[auto_auto] gap-6">

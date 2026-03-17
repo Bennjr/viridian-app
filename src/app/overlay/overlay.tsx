@@ -34,7 +34,7 @@ export default function Overlay() {
 
   return (
     <section className="draggable bg-o-bg h-screen items-center" ref={contentRef}>
-      <div className="draggable bg-o-bg grid grid-cols-5" style={{ width: "100vw", height: "75px" }}>
+      <div className="draggable bg-o-bg grid grid-cols-5 border-b border-black" style={{ width: "100vw", height: "75px" }}>
         <button
           onClick={speak}
           className="non-draggable size-12 p-3 cursor-pointer bg-o-btn_bg hover:bg-primary-btn-hover-bg hover:text-primary-btn-hover-text"
