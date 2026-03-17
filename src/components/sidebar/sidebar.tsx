@@ -2,8 +2,8 @@ import "../component.css";
 import { NavLink } from "react-router-dom";
 
 const links = [
-    { label: "Hovedside", to: "/" },
-    { label: "Biblotek", to: "/library" },
+    { label: "Hovedside", svg: "", to: "/" },
+    { label: "Biblotek", svg: "/folder", to: "/library" },
 ];
 
 export default function Sidebar() {
@@ -21,6 +21,7 @@ export default function Sidebar() {
                                     }`
                                 }
                             >
+                                <img src={link.svg} alt="icon" />
                                 {link.label}
                             </NavLink>
                         </li>

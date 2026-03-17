@@ -1,6 +1,14 @@
 import "../../global.css";
+import { NavLink } from "react-router-dom";
 
-export default function Onboarding() {
+interface Props {
+    setFirstStart: any;
+}
+
+// EXAMPLE NAVLINK
+// <NavLink to="bar" onClick={() => setFirstStart(false)}>foo</NavLink>
+
+export default function Onboarding({ setFirstStart }: Props) {
     return (
         <div className="flex h-screen">
             <div className="m-auto grid grid-cols-2 grid-row-2 gap-x-4 gap-y-2">

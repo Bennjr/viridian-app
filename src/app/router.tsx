@@ -10,7 +10,7 @@ import { useState } from "react";
 
 
 export default function Router() {
-  const [isFirstStart, setIsFirstStart] = useState(false);
+  const [isFirstStart, setIsFirstStart] = useState(true);
 
   if (!isFirstStart) {
     return (
@@ -24,7 +24,7 @@ export default function Router() {
   } else {
     return (
       <Routes>
-        <Route path="/" element={< Onboarding />} />
+        <Route path="/" element={< Onboarding setFirstStart={setIsFirstStart} />} />
       </Routes>
     )
   }
