@@ -14,9 +14,9 @@ To run the app, which will build it and run it you will need
 - Cargo
 
 You can check if you have this by running `rustc --version` and `cargo --version` in the terminal.
-If you do not have this, find instructions on the official rust website https://rust-lang.org/tools/install/
+If you do not have rust or cargo installed you can find instructions on the official rust website https://rust-lang.org/tools/install/
 
-Commands to build and run the app is `pnpm tauri dev` if you use another package manager switch "pnpm" with your selected package manager. 
+Commands to build and run the app in dev mode are `pnpm tauri dev` if you use another package manager switch "pnpm" with your preffered package manager. 
 Beware that compatability issues may occur if you use another package manager
 
 ## more to come

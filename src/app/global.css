@@ -2,109 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-transparent;
+:root {
+  --c_brand: #3A7561;
+  --c_bg: #242423;
+  --c_secondary_bg: #ececec;
+  --c_text: #1d1d1d;
+  --c_hover: #dbdbdb;
+  --c_btn: #f0f0f0;
+  --c_btn_hover: #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c_bg: #1a1a1a;
+    --c_secondary_bg: #181818;
+    --c_text: #f0f0f0;
+    --c_btn: #333333;
+    --c_btn_hover: #444444;
   }
+}
+
+@layer base {
 
   html,
   body {
-    @apply overscroll-none overflow-hidden h-screen;
+    @apply overscroll-none overflow-hidden h-screen bg-transparent;
+    color: var(--c_text);
   }
 
-  p,
   h1,
   h2,
   h3,
   h4,
   h5,
-  h6 {
-    color: "var(--c-text)";
+  h6,
+  p {
+    color: var(--c_text);
   }
 
 
+  /* Scrollbars */
   ::-webkit-scrollbar {
     width: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--c-scrollbar-track);
+    background: var(--c_scrollbar_track);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--c-scrollbar-thumb);
+    background: var(--c_scrollbar_thumb);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--c-scrollbar-hover);
+    background: var(--c_scrollbar_hover);
   }
 }
 
-
-.draggable {
-  -webkit-app-region: drag;
-}
-
-.non-draggable {
-  -webkit-app-region: no-drag;
-}
-
-#chevron-toggle {
-  transition: transform 0.2s ease-in-out;
-  transform: rotate(0deg);
-  display: inline-block;
-}
-
-.rotate-180 {
-  transform: rotate(180deg);
-}
-
-@layer base {
-  :root {
-    --c_brand: #3A7561;
-
-    --c_bg: #ffffff;
-    --c-text: #1d1d1d;
-    --c-nav-bg: #181818;
-
-    --c-scrollbar-track: #f0f0f0;
-    --c-scrollbar-thumb: #888888;
-    --c-scrollbar-hover: #707070;
-
-    --c_light_btn: #f0f0f0;
-    --c_light_btn_hover: #e0e0e0;
-
-    --c_dark_btn: #333333;
-    --c_dark_btn_hover: #444444;
-
-    --o_bg: #ffffff;
-    --o_btn_bg: #e7e7e7;
-    --o_btn_bg_hover: #d7d7d7;
-    --o_icon_bg: #000000;
+/* 4. Custom Utility Classes */
+@layer utilities {
+  .draggable {
+    -webkit-app-region: drag;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --c_brand: #3A7561;
+  .non-draggable {
+    -webkit-app-region: no-drag;
+  }
 
-      --c_bg: #000000;
-      --c_text: #f0f0f0;
-      --c-nav-bg: #181818;
+  #chevron-toggle {
+    transition: transform 0.2s ease-in-out;
+    transform: rotate(0deg);
+    display: inline-block;
+  }
 
-      --c-scrollbar-track: #181818;
-      --c-scrollbar-thumb: #444444;
-      --c-scrollbar-hover: #7c7c7c;
-
-      --c_light_btn: #f0f0f0;
-      --c_light_btn_hover: #e0e0e0;
-
-      --c_dark_btn: #333333;
-      --c_dark_btn_hover: #444444;
-
-      --o_bg: #000000;
-      --o_btn_bg: #333333;
-      --o_btn_bg_hover: #424242;
-      --o_icon_bg: #ffffff;
-    }
+  .rotate-180 {
+    transform: rotate(180deg);
   }
 }

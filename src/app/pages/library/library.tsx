@@ -2,13 +2,17 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "../../global.css";
 
+// EXPECTED FILES OUTPUT:
+//
+// "name": file_name_str,
+// "desc": "some desc"
+//
+
 export default function Library() {
   const [files, setFiles] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState([]);
-
-  let file_array = []
 
   useEffect(() => {
     let isCurrent = true;
@@ -16,6 +20,9 @@ export default function Library() {
     invoke("search_files", { query: searchQuery })
       .then((foo: any) => {
         if (isCurrent) {
+          if (foo.lenght > 50) {
+            foo.slice(0, 50)
+          }
           setFiles(foo);
         }
       })
@@ -34,11 +41,11 @@ export default function Library() {
   };
 
   return (
-    <div className="p-6 grid">
+    <div className="grid">
       <div className="flex justify-between items-center pb-4">
         <h2 className="text-2xl font-bold text-c-text">Bibliotek</h2>
         <button
-          className="p-2 px-5 border border-c-text border-solid rounded-full text-c-text"
+          className="p-2 px-5 border border-c-secondary border-solid rounded-full text-c-text hover:border-c-text"
         >
           Last opp
         </button>
@@ -47,14 +54,14 @@ export default function Library() {
       <div className="mb-6 grid grid-cols-2 gap-4">
         <input type="text" placeholder="Søk i biblioteket..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full p-1 border rounded" />
         <div className="grid grid-cols-3 gap-5 select-none">
-          <label className="text-center bg-c-light_btn rounded cursor-pointer" >
-            ⭐ Favoritter
+          <label className="text-center bg-c-btn rounded-full cursor-pointer grid grid-cols-[auto_auto] w-full gap-2 hover:bg-c-btn_hover" >
+            <img src="/favorite.svg" alt="" className="w-6 h-auto" /> Favoritter
           </label>
-          <label className="text-center bg-c-light_btn rounded cursor-pointer" >
-            ⌛ Tid
+          <label className="text-center bg-c-btn rounded-full cursor-pointer grid grid-cols-[auto_auto] w-full gap-2 hover:bg-c-btn_hover" >
+            <img src="/clock.svg" alt="" className="w-6 h-auto" /> Tid
           </label>
-          <label className="text-center bg-c-light_btn rounded cursor-pointer" >
-            📂 Filtype
+          <label className="text-center bg-c-btn rounded-full cursor-pointer grid grid-cols-[auto_auto] w-full gap-2 hover:bg-c-btn_hover" >
+            <img src="folder.svg" alt="" className="w-6 h-auto" /> Filtype
           </label>
         </div>
       </div>

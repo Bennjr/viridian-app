@@ -18,9 +18,11 @@
         "width": 1200,
         "height": 750,
         "resizable": true,
+        "decorations": true,
         "focus": true,
         "closable": true,
-        "shadow": false
+        "transparent": false,
+        "shadow": true
       },
       {
         "label": "overlayWin",
