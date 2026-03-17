@@ -1,6 +1,6 @@
 import "../../global.css";
 
-export default function On_first_start() {
+export default function Onboarding() {
     return (
         <div className="flex h-screen">
             <div className="m-auto grid grid-cols-2 grid-row-2 gap-x-4 gap-y-2">
