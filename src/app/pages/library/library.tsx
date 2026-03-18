@@ -107,8 +107,8 @@ export default function Library() {
 
       <main className="grid grid-cols-5 gap-5">
         {files.map((item: any) => (
-          <div className="bg-c-secondary_bg rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-t border-white/5 p-6 hover:scale-[0.97] active:scale-[0.98] hover:shadow-[0_0_20px_rgba(58,117,97,0.2)] duration-150 ">
-            <div id="preview">PREVIEW</div>
+          <div className="bg-c-secondary_bg rounded-2xl shadow-[0_5px_10px_rgba(0,0,0,0.05)] border-t border-white/5 p-6 hover:scale-[0.97] active:scale-[0.98] hover:shadow-[0_0_20px_rgba(58,117,97,0.2)] duration-150 ">
+            loadPreview
             <div className="">
               <h1 className="select-all">{item.name}</h1>
               <p className="select-all">{item.desc}</p>

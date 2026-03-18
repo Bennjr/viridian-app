@@ -32,7 +32,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="bg-c-bg">
+    <div>
       <nav className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Hjem</h2>
       </nav>

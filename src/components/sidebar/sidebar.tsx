@@ -6,14 +6,13 @@ const links = [
     { label: "Bibliotek", svg: "/folder.svg", to: "/library" },
     { label: "Chat", svg: "/chat.svg", to: "/chat" },
     { label: "Logg", svg: "/log.svg", to: "/log" },
+    { label: "Notater", svg: "/notes.svg", to: "/notes" }
 ];
 
 export default function Sidebar() {
     return (
-        // Added a slightly darker bg and removed the right border for a "cleaner" edge
         <aside className="bg-c-secondary backdrop-blur-md text-c-text w-56 h-full flex flex-col justify-between sticky top-0 z-50 shadow-2xl">
 
-            {/* Logo or App Name Area (Optional but fills space nicely) */}
             <div className="p-6 pb-2">
                 <h1 className="text-xs font-bold uppercase tracking-[0.2em] text-c-text/40">Viridian</h1>
             </div>
@@ -32,7 +31,6 @@ export default function Sidebar() {
                                         : "text-c-text/70 hover:bg-c-btn_hover hover:text-c-text"}
                                 `}
                             >
-                                {/* Active Indicator (The vertical line) */}
                                 {({ isActive }) => (
                                     <>
                                         <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />
@@ -52,7 +50,6 @@ export default function Sidebar() {
                 </ul>
             </nav>
 
-            {/* Bottom Section */}
             <div className="p-3 border-t border-white/5">
                 <NavLink
                     to="/settings"

@@ -5,8 +5,9 @@
 @layer base {
   :root {
     --c_brand: #3A7561;
-    --c_primary: #fff6e3;
+    --c_primary: #f5f5f5;
     --c_secondary_bg: #ececec;
+    --c_tertiery: #e2e2e2;
     --c_dividers: #ffffff;
 
     --c_text: #1d1d1d;
@@ -14,7 +15,6 @@
     --c_btn: #f0f0f0;
     --c_btn_hover: #e0e0e0;
 
-    /* ADD THESE MISSING ONES SO THE CONFIG DOESN'T BREAK */
     --o_bg: #ffffff;
     --o_btn_bg: #333333;
     --o_icon_bg: #000000;

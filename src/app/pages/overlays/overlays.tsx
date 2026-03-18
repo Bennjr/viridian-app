@@ -26,24 +26,21 @@ export default function Onboarding({ setFirstStart }: Props) {
 
     const themeClass =
         theme === "dark"
-            ? "bg-black text-white"
+            ? "bg-[#2a2b2a] text-[#d8d8d8]"
             : theme === "high-contrast"
-            ? "bg-yellow-200 text-black"
-            : theme === "green"
-            ? "bg-green-700 text-white"
-            : "bg-white text-black";
+                ? "bg-yellow-200 text-black"
+                : "bg-[#fff6e3] text-[#1d1d1d]";
 
     const fontClass =
         fontSize === "small"
             ? "text-sm"
             : fontSize === "large"
-            ? "text-xl"
-            : "text-base";
+                ? "text-xl"
+                : "text-base";
 
     return (
         <div className={`h-screen flex ${themeClass} ${fontClass} transition-all duration-500`}>
 
-            {/* 🔥 FULLSCREEN START */}
             {step === 0 && (
                 <div className="fixed inset-0 bg-gradient-to-br from-green-600 to-green-800 text-white flex items-center justify-center">
 
@@ -120,11 +117,10 @@ export default function Onboarding({ setFirstStart }: Props) {
 
                                 <div
                                     onClick={() => setTextMode("floating")}
-                                    className={`cursor-pointer border-2 p-4 w-1/2 rounded-xl transition duration-300 hover:scale-105 active:scale-95 ${
-                                        textMode === "floating"
-                                            ? "border-blue-500 shadow-md"
-                                            : "border-gray-300"
-                                    }`}
+                                    className={`cursor-pointer border-2 p-4 w-1/2 rounded-xl transition duration-300 hover:scale-105 active:scale-95 ${textMode === "floating"
+                                        ? "border-blue-500 shadow-md"
+                                        : "border-gray-300"
+                                        }`}
                                 >
                                     <div className="h-24 bg-white border rounded relative">
                                         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-20 h-4 bg-gray-300 rounded-full"></div>
@@ -134,11 +130,10 @@ export default function Onboarding({ setFirstStart }: Props) {
 
                                 <div
                                     onClick={() => setTextMode("fixed")}
-                                    className={`cursor-pointer border-2 p-4 w-1/2 rounded-xl transition duration-300 hover:scale-105 active:scale-95 ${
-                                        textMode === "fixed"
-                                            ? "border-blue-500 shadow-md"
-                                            : "border-gray-300"
-                                    }`}
+                                    className={`cursor-pointer border-2 p-4 w-1/2 rounded-xl transition duration-300 hover:scale-105 active:scale-95 ${textMode === "fixed"
+                                        ? "border-blue-500 shadow-md"
+                                        : "border-gray-300"
+                                        }`}
                                 >
                                     <div className="h-24 bg-white border rounded relative">
                                         <div className="absolute top-0 left-0 w-full h-4 bg-gray-300"></div>
@@ -176,11 +171,10 @@ export default function Onboarding({ setFirstStart }: Props) {
                                 <div
                                     key={t.name}
                                     onClick={() => setTheme(t.name)}
-                                    className={`cursor-pointer p-3 rounded-xl transition duration-300 hover:scale-110 active:scale-95 ${
-                                        theme === t.name
-                                            ? "border-2 border-blue-500 shadow-md"
-                                            : ""
-                                    }`}
+                                    className={`cursor-pointer p-3 rounded-xl transition duration-300 hover:scale-110 active:scale-95 ${theme === t.name
+                                        ? "border-2 border-blue-500 shadow-md"
+                                        : ""
+                                        }`}
                                 >
                                     <div className={`w-32 h-20 ${t.color} border rounded-lg`}></div>
                                     <p className="mt-2">{t.label}</p>
