@@ -7,6 +7,7 @@ mod helper;
 use helper::{
     tts_speak, 
     init_systray,
+    translate,
 
     w_focus, 
     w_hide, 
@@ -30,6 +31,8 @@ pub fn run() {
             w_resize,
             w_hide,
             w_show_by_label,
+            helper::get_content,
+            helper::translate,
             helper::search_files,
             helper::save_file,
         ])

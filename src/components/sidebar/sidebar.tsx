@@ -6,7 +6,9 @@ const links = [
     { label: "Bibliotek", svg: "/folder.svg", to: "/library" },
     { label: "Chat", svg: "/chat.svg", to: "/chat" },
     { label: "Logg", svg: "/log.svg", to: "/log" },
-    { label: "Notater", svg: "/notes.svg", to: "/notes" }
+    { label: "Notater", svg: "/notes.svg", to: "/notes" },
+    { label: "Ordbok", svg: "/dict.svg", to: "/dict" },
+    { label: "Skriving", svg: "/type.svg", to: "/typing" }
 ];
 
 export default function Sidebar() {

@@ -27,3 +27,10 @@ pub fn search_files(query: String) -> Vec<serde_json::Value> {
     }
     return vec
 }
+
+#[tauri::command]
+pub fn get_content(path: String) -> String {
+    let contents = fs::read_to_string(path)
+        .expect("Should have been able to read the file");
+    return contents
+}

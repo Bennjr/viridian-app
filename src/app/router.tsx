@@ -12,6 +12,8 @@ import Settings from "./pages/settings/settings";
 import Log from "./pages/log/log";
 import Chat from "./pages/chat/chat";
 import Notes from "./pages/notes/notes";
+import Dict from "./pages/dictionary/dict";
+import Typing from "./pages/typing/typing";
 
 //other
 import Onboarding from "./pages/overlays/overlays";
@@ -27,10 +29,12 @@ export default function Router() {
 
         <Route path="/" element={<Layout />}>
           <Route index element={<Index />} />
-          <Route path="library" element={<Library />} />
-          <Route path="log" element={<Log />} />
-          <Route path="chat" element={<Chat />} />
-          <Route path="notes" element={<Notes />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/log" element={<Log />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/dict" element={<Dict />} />
+          <Route path="/typing" element={<Typing />} />
         </Route>
       </Routes>
     );

@@ -1,6 +1,8 @@
 import "../../global.css";
 import { useState, useEffect } from "react";
 
+import { ThemeSelector } from "../../../components"
+
 interface Props {
     setFirstStart: any;
 }
@@ -160,28 +162,7 @@ export default function Onboarding({ setFirstStart }: Props) {
 
                         <h2 className="text-2xl font-bold">Velg tema</h2>
 
-                        <div className="flex gap-6 justify-center flex-wrap">
-
-                            {[
-                                { name: "light", label: "Lys", color: "bg-white" },
-                                { name: "dark", label: "Mørk", color: "bg-black" },
-                                { name: "green", label: "Grønn", color: "bg-green-600" },
-                                { name: "high-contrast", label: "Kontrast", color: "bg-yellow-200" },
-                            ].map((t) => (
-                                <div
-                                    key={t.name}
-                                    onClick={() => setTheme(t.name)}
-                                    className={`cursor-pointer p-3 rounded-xl transition duration-300 hover:scale-110 active:scale-95 ${theme === t.name
-                                        ? "border-2 border-blue-500 shadow-md"
-                                        : ""
-                                        }`}
-                                >
-                                    <div className={`w-32 h-20 ${t.color} border rounded-lg`}></div>
-                                    <p className="mt-2">{t.label}</p>
-                                </div>
-                            ))}
-
-                        </div>
+                        <ThemeSelector></ThemeSelector>
 
                         <div className="flex justify-center gap-4">
                             <button onClick={() => setStep(1)}>Tilbake</button>
