@@ -15,7 +15,7 @@ interface SettingItemProps {
     children: React.ReactNode;
 }
 
-const SettingItem = ({ label, children }: SettingItemProps) => (
+const DoubleSelect = ({ label, children }: SettingItemProps) => (
     <div className="grid grid-cols-[1fr_auto] justify-between items-center py-2 mt-2 border-b border-white/5">
         <div className="">{label}</div>
         <div className="grid grid-cols-2">
@@ -24,6 +24,35 @@ const SettingItem = ({ label, children }: SettingItemProps) => (
     </div>
 );
 
+interface SliderProps {
+    label: string;
+    range: number;
+}
+
+const Slider = ({ label, range }: SliderProps) => {
+    const [sliderState, setSliderState] = useState("")
+
+    return (
+        <div className="grid grid-cols-[1fr_auto] justify-between items-center py-2 mt-2 border-b border-white/5">
+            <div className="">{label}</div>
+            <div className="grid grid-cols-[1fr_auto] gap-2">
+                <div className="">{sliderState}</div>
+                <input type="range" step="5" onChange={(e) => setSliderState(e.target.value)} />
+            </div>
+        </div>
+    )
+}
+
+interface MultichoiceProps {
+    label: string;
+    choices: object;
+}
+
+const Multichoice = ({ }: MultichoiceProps) => {
+    return (
+        <div></div>
+    )
+}
 
 export default function Settings() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -44,22 +73,40 @@ export default function Settings() {
                     </div>
                 </nav>
 
-                <main className="flex flex-col gap-2">
-                    <SettingItem label="App Tema">
+                <section className="flex flex-col gap-2">
+                    <DoubleSelect label="App Tema">
                         <button className="bg-c-brand px-6 py-1 hover:opacity-80 transition">Mørk</button>
                         <button className="bg-neutral-700 px-6 py-1 hover:opacity-80 transition">Lys</button>
-                    </SettingItem>
+                    </DoubleSelect>
 
-                    <SettingItem label="Oppstart">
+                    <DoubleSelect label="Oppstart">
                         <button className="bg-c-brand px-6 py-1">Auto-start</button>
                         <button className="bg-neutral-700 px-6 py-1">Manuell</button>
-                    </SettingItem>
+                    </DoubleSelect>
 
-                    <SettingItem label="Varslinger">
+                    <DoubleSelect label="Varslinger">
                         <button className="bg-c-brand px-6 py-1">På</button>
                         <button className="bg-neutral-700 px-6 py-1">Av</button>
-                    </SettingItem>
-                </main>
+                    </DoubleSelect>
+                </section>
+                <section className="flex flex-col gap-2 pt-5">
+                    <h1 className="text-xl font-bold">Farger og tema</h1>
+                    <Slider label={"some label"} range={100} />
+                    <div className="bg-c-secondary p-2">
+                        <h1 className="text-xl font-bold">Velg tema</h1>
+                        <li className="grid grid-cols-[1fr_1fr_1fr] pt-2 pb-2 gap-2 select-none">
+                            <ul className="bg-c-tertiery">
+                                Mørk
+                            </ul>
+                            <ul className="bg-c-tertiery">
+                                Lys
+                            </ul>
+                            <ul className="bg-c-tertiery">
+                                Kontrast
+                            </ul>
+                        </li>
+                    </div>
+                </section>
             </div>
         </div>
     );
