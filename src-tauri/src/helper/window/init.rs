@@ -56,10 +56,10 @@ pub fn w_init(window: tauri::Window) {
 }
 
 pub fn w_set_style(style: String, window: tauri::Window) {
-    if style === "overlay" {
-        if 
-    } else if style === "appbar" {
-
+    if style == "overlay" {
+        println!("Overlay")
+    } else if style == "appbar" {
+        println!("Appbar")
     }
 }
 
