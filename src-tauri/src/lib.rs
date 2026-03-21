@@ -39,13 +39,7 @@ pub fn run() {
         .setup(|app| {
             let _handle = app.handle().clone();
 
-            // Call function to customize overlay window properties
-            let overlay = app.get_window("overlayWin").unwrap();
-            w_init(overlay);
-
-            let _ = init_systray(app.handle());
-
-            // Register global shortcuts
+            // Call function to customize overla
             #[cfg(desktop)]
             {
                 use tauri_plugin_global_shortcut::{

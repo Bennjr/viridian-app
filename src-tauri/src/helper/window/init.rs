@@ -8,7 +8,7 @@ use windows::{
     core::Result,
     Win32::Foundation::*,
     Win32::UI::Shell::*,
-    Win32::UI::WindowsAndMessaging::*,
+    Win32::UI::WindowsAndMessaging::*
 };
 use tauri::Manager;
 
@@ -55,6 +55,14 @@ pub fn w_init(window: tauri::Window) {
     }
 }
 
+pub fn w_set_style(style: String, window: tauri::Window) {
+    if style === "overlay" {
+        if 
+    } else if style === "appbar" {
+
+    }
+}
+
 #[tauri::command]
 pub fn w_resize(window: tauri::Window, height: u32) {
     let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
@@ -71,15 +79,18 @@ pub fn w_focus(window: tauri::Window) {
     unsafe {
         use windows::Win32::Foundation::HWND;
         use windows::Win32::UI::WindowsAndMessaging::*;
+        use windows::Win32::UI::Input::KeyboardAndMouse::SetFocus;
 
-        let hwnd_wrapper = window.hwnd().expect("no hwnd");
-        let raw_hwnd: *mut std::ffi::c_void = hwnd_wrapper.0;
-        let hwnd = HWND(raw_hwnd);
+        let hwnd = HWND(window.hwnd().expect("no hwnd").0 as _);
 
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE);
         let final_style = ex_style & !(WS_EX_NOACTIVATE.0 as i32);
-
         SetWindowLongW(hwnd, GWL_EXSTYLE, final_style);
+
+        ShowWindow(hwnd, SW_SHOW);
+        SetForegroundWindow(hwnd);
+        
+        let _ = SetFocus(Some(hwnd)); 
     }
 }
 

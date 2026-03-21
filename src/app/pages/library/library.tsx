@@ -130,7 +130,7 @@ export default function Library() {
   return (
     <div className="grid">
       <div className="flex justify-between items-center pb-4">
-        <h2 className="text-2xl font-bold">Bibliotek</h2>
+        <h2 className="font-bold">Bibliotek</h2>
         <button
           className="p-2 px-5 border border-c-secondary border-solid text-c-muted_text rounded-full hover:border-c-brand"
         >
@@ -152,7 +152,7 @@ export default function Library() {
           <div className="bg-c-secondary_bg select-none border-t border-white/5 hover:scale-[0.97] active:scale-[0.98] hover:shadow-[0_0_20px_rgba(58,117,97,0.2)] duration-150 " onClick={() => setSelectedFile(item)}>
             <div className="bg-c-tertiery h-40">preview</div>
             <div className="bg-c-secondary p-2">
-              <h1 className="">{item.name}</h1>
+              <h2 className="">{item.name}</h2>
             </div>
           </div>
         ))}

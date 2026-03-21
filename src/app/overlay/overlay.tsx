@@ -81,6 +81,15 @@ export default function Overlay() {
     }
   };
 
+  // Helpers
+  const handleTextareaFocus = async () => {
+    await invoke("w_focus");
+  };
+
+  const handleTextareaBlur = async () => {
+    await invoke("w_unfocus");
+  };
+
   const actions: Record<string, () => void> = {
     speak,
     toggleChat,
@@ -119,8 +128,15 @@ export default function Overlay() {
           );
         })}
       </div>
-      <div className="select non-draggable w-full h-full">
-        <textarea name="" id="" value={text} onChange={(e) => e.target.value} className="resize-none w-full h-full bg-c-secondary p-3 rounded-xl border border-white/5 outline-none focus:border-c-brand transition-colors"></textarea>
+      <div className="select non-draggable w-full h-full p-2">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onMouseDown={handleTextareaFocus}
+          onBlur={handleTextareaBlur}
+          placeholder="Edit translation..."
+          className="resize-none w-full h-full bg-c-secondary p-3 rounded-xl border border-white/5 outline-none focus:border-c-brand transition-colors text-c-text"
+        />
       </div>
     </section >
   );

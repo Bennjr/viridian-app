@@ -16,7 +16,7 @@ export default function Sidebar() {
         <aside className="bg-c-secondary backdrop-blur-md text-c-text w-56 h-full flex flex-col justify-between sticky top-0 z-50 shadow-2xl">
 
             <div className="p-6 pb-2">
-                <h1 className="text-2xl font-bold uppercase tracking-[0.2em] text-c-text/40">Viridian</h1>
+                <h2 className="text-1xl font-bold uppercase tracking-[0.2em] text-c-text/40">Viridian</h2>
             </div>
 
             <nav className="flex-1 overflow-y-auto py-4">
