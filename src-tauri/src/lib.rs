@@ -5,14 +5,11 @@ use tauri::{
 
 mod helper;
 use helper::{
-    tts_speak, 
-    init_systray,
-    translate,
+    tts_speak,
 
     w_focus, 
     w_hide, 
     w_is_visb, 
-    w_init, 
     w_resize, 
     w_show,
     w_unfocus,

@@ -1,6 +1,5 @@
 use std::{fs, string::String};
 use serde_json::json;
-use tauri::command;
 
 #[tauri::command]
 pub fn save_file(path: String) -> Result<(), String> {
