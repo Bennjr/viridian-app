@@ -14,8 +14,7 @@ use helper::{
     w_is_visb, 
     w_init, 
     w_resize, 
-    w_show_by_label,
-    w_show_logic,
+    w_show,
     w_unfocus,
 };
 
@@ -30,7 +29,6 @@ pub fn run() {
             w_unfocus,
             w_resize,
             w_hide,
-            w_show_by_label,
             helper::get_content,
             helper::translate,
             helper::search_files,
@@ -39,7 +37,6 @@ pub fn run() {
         .setup(|app| {
             let _handle = app.handle().clone();
 
-            // Call function to customize overla
             #[cfg(desktop)]
             {
                 use tauri_plugin_global_shortcut::{
@@ -75,9 +72,7 @@ pub fn run() {
                                         if w_is_visb(_app.get_window("overlayWin").unwrap()) {
                                             w_hide(_app.get_window("overlayWin").unwrap());
                                         } else {
-                                            if let Some(overlay) = _app.get_webview_window("overlayWin") {
-                                                w_show_logic(overlay);
-                                            }
+                                            w_show(_app.get_window("overlayWin").unwrap());
                                         }
                                     }
 
@@ -90,11 +85,9 @@ pub fn run() {
                         .build(),
                 )?;
                 
-                // Unregister shortcuts if they already exist (from previous run)
                 let _ = app.global_shortcut().unregister(ctrl_alt_c);
                 let _ = app.global_shortcut().unregister(ctrl_alt_h);
                 
-                // Now register them
                 app.global_shortcut().register(ctrl_alt_c)?;
                 app.global_shortcut().register(ctrl_alt_h)?;
             }

@@ -3,10 +3,6 @@ import { useState, useEffect } from "react";
 
 import { ThemeSelector } from "../../../components"
 
-interface StepViewerProps {
-    step: number;
-}
-
 const ProgressBar = ({ step, total }: { step: number; total: number }) => {
     return (
         <div className="flex flex-col gap-2 w-full max-w-xs mx-auto mb-8">

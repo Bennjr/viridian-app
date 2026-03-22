@@ -1,15 +1,36 @@
 import { NavLink } from "react-router-dom";
-import { Icon } from "../../components";
+import { FolderAnimation, Icon } from "../../components";
+import { useState } from "react";
 
 const links = [
     { label: "Hovedside", svg: "/home.svg", to: "/" },
-    { label: "Bibliotek", svg: "/folder.svg", to: "/library" },
+    { label: "Bibliotek", svg: "/folder.svg", to: "/library", isFolder: true },
     { label: "Chat", svg: "/chat.svg", to: "/chat" },
     { label: "Logg", svg: "/log.svg", to: "/log" },
     { label: "Notater", svg: "/notes.svg", to: "/notes" },
     { label: "Ordbok", svg: "/dict.svg", to: "/dict" },
     { label: "Skriving", svg: "/type.svg", to: "/typing" }
 ];
+
+const NavItemContent = ({ link, isActive }: { link: any, isActive: boolean }) => {
+    const [isPressed, setIsPressed] = useState(false);
+
+    return (
+        <div
+            className="flex items-center gap-3 w-full h-full"
+            onMouseEnter={() => setIsPressed(true)}
+            onMouseLeave={() => setIsPressed(false)} // Reset if they slide mouse off
+        >
+            {/* The Indicator Line */}
+            <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />
+
+            {/* The Smart Icon */}
+            <FolderAnimation isPressed={isPressed} />
+
+            <span className="text-[14px]">{link.label}</span>
+        </div>
+    );
+};
 
 export default function Sidebar() {
     return (
@@ -27,12 +48,14 @@ export default function Sidebar() {
                                 to={link.to}
                                 end={link.to === "/"}
                                 className={({ isActive }) => `
-                                    group relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98]
+                                    group relative flex items-center px-4 py-2.5 rounded-xl transition-all duration-200 
+                                    active:scale-[0.96] select-none
                                     ${isActive
                                         ? "bg-c-brand/10 text-c-brand font-semibold shadow-[inset_0_0_0_1px_rgba(58,117,97,0.2)]"
                                         : "text-c-text/70 hover:bg-c-btn_hover hover:text-c-text"}
-                                `}
+                             `}
                             >
+                                {/* Pass the isActive state from NavLink into our smart content wrapper */}
                                 {({ isActive }) => (
                                     <>
                                         <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />

@@ -22,46 +22,97 @@
   -webkit-app-region: no-drag;
 }
 
+.lottie-theme path {
+  fill: var(--c_text) !important;
+}
+
 @layer base {
-  :root {
-    --c_brand: #3A7561;
 
-    --c_bg: #ffffff;
-    --c-text: #1d1d1d;
+  /* --- 1. LIGHT THEME VARIABLES --- */
+  :root,
+  [data-theme="light"] {
+    --c_brand: #3a7561;
+    --c_primary: #f5f5f5;
+    --c_secondary_bg: #ececec;
+    --c_tertiery: #e2e2e2;
+    --c_dividers: #ffffff;
+    --c_text: #1d1d1d;
+    --c_text_muted: #666666;
+    --c_hover: #dbdbdb;
+    --c_btn: #f0f0f0;
+    --c_btn_hover: #e0e0e0;
 
-    --c-nav-bg: #e6e6e6;
-    --c-nav-btn-bg: #cacaca;
-    --c-nav-btn-hover: #c2c2c2;
+    --o_bg: #ffffff;
+    --o_btn_bg: #333333;
+    --o_icon_bg: #000000;
+    --o_icon_bg_hover: #444444;
 
-    --c-scrollbar-track: #f0f0f0;
-    --c-scrollbar-thumb: #888888;
-    --c-scrollbar-hover: #707070;
-
-    --c_light_btn: #f0f0f0;
-    --c_light_btn_hover: #e0e0e0;
-    --c_dark_btn: #333333;
-    --c_dark_btn_hover: #444444;
+    --c_scrollbar_track: #f0f0f0;
+    --c_scrollbar_thumb: #cccccc;
+    --c_scrollbar_hover: #aaaaaa;
   }
 
+  /* --- 2. DARK THEME VARIABLES --- */
+  /* This block triggers if the system is dark OR the user forces 'dark' */
   @media (prefers-color-scheme: dark) {
-    :root {
-      --c_brand: #3A7561;
+    :root:not([data-theme="light"]) {
+      --c_primary: #2a2b2a;
+      --c_secondary_bg: #242524;
+      --c_tertiery: #1b1b1b;
+      --c_dividers: #343534;
+      --c_hover: #3d3e3d;
+      --c_text: #d8d8d8;
+      --c_text_muted: #8e8e8e;
+      --c_btn: #222524;
+      --c_btn_hover: #444444;
 
-      --c_bg: #000000;
-      --c-text: #f0f0f0;
+      --o_bg: #000000;
+      --o_icon_bg: #ffffff;
 
-      --c-nav-bg: #181818;
-      --c-nav-btn-bg: #1d1d1d;
-      --c-nav-btn-hover: #252525;
-
-      --c-scrollbar-track: #181818;
-      --c-scrollbar-thumb: #444444;
-      --c-scrollbar-hover: #7c7c7c;
-
-      --c_light_btn: #f0f0f0;
-      --c_light_btn_hover: #e0e0e0;
-      --c_dark_btn: #333333;
-      --c_dark_btn_hover: #444444;
+      --c_scrollbar_track: #1a1a1a;
+      --c_scrollbar_thumb: #333333;
+      --c_scrollbar_hover: #444444;
     }
+  }
+
+  [data-theme="dark"] {
+    --c_primary: #2a2b2a;
+    --c_secondary_bg: #242524;
+    --c_tertiery: #1b1b1b;
+    --c_dividers: #343534;
+    --c_hover: #3d3e3d;
+    --c_text: #d8d8d8;
+    --c_text_muted: #8e8e8e;
+    --c_btn: #222524;
+    --c_btn_hover: #444444;
+
+    --o_bg: #000000;
+    --o_icon_bg: #ffffff;
+
+    --c_scrollbar_track: #1a1a1a;
+    --c_scrollbar_thumb: #333333;
+    --c_scrollbar_hover: #444444;
+  }
+
+  [data-theme="contrast"] {
+    --c_brand: #00ff41;
+    --c_primary: #000000;
+    --c_secondary_bg: #000000;
+    --c_tertiery: #000000;
+    --c_dividers: #ffffff;
+    --c_text: #ffffff;
+    --c_text_muted: #ffffff;
+    --c_hover: #1a1a1a;
+    --c_btn: #000000;
+    --c_btn_hover: #333333;
+
+    --o_bg: #000000;
+    --o_btn_bg: #ffffff;
+    --o_icon_bg: #ffffff;
+    --o_icon_bg_hover: #00ff41;
+
+    --c_scrollbar_track: #000000;
+    --c_scrollbar_thumb: #ffffff;
+    --c_scrollbar_hover: #00ff41;
   }
 }

@@ -1,0 +1,16 @@
+{
+    "$schema": "../gen/schemas/desktop-schema.json",
+    "identifier": "overlay",
+    "description": "Capability for the overlay window",
+    "windows": [
+        "overlayWin"
+    ],
+    "permissions": [
+        "core:default",
+        "opener:default",
+        "global-shortcut:allow-is-registered",
+        "global-shortcut:allow-register",
+        "global-shortcut:allow-unregister",
+        "core:window:default"
+    ]
+}

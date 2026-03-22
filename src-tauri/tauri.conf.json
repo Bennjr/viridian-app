@@ -32,11 +32,11 @@
         "height": 75,
         "decorations": false,
         "closable": false,
+        "maximizable": false,
+        "fullscreen": false,
         "shadow": false,
         "resizable": false,
-        "transparent": false,
-        "alwaysOnTop": true,
-        "focus": false
+        "alwaysOnTop": true
       }
     ],
     "security": {

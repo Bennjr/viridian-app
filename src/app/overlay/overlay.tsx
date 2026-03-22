@@ -1,47 +1,15 @@
 import "../global.css";
 import { invoke } from "@tauri-apps/api/core";
 import { useState, useRef } from "react";
-
-import { Icon } from "../../components"
+import { motion, AnimatePresence } from "framer-motion";
+import { Icon } from "../../components";
 
 const TOOLBAR_ACTIONS = [
-  {
-    id: 'speak',
-    icon: '/audio.svg',
-    alt: 'Audio',
-    title: 'Play selected text',
-    action: 'speak'
-  },
-  {
-    id: 'chat',
-    icon: '/star.svg',
-    alt: 'AI',
-    title: 'AI',
-    action: 'toggleChat'
-  },
-  {
-    id: 'translate',
-    icon: '/translate.svg',
-    alt: 'Translate',
-    title: 'Translate selected text',
-    action: 'translate'
-  },
-  {
-    id: 'hide',
-    icon: '/eye.svg',
-    alt: 'Eye',
-    title: 'Hide window',
-    action: 'toggleEye',
-    className: 'overlay-button' // Special class for this specific button
-  },
-  {
-    id: 'resize',
-    icon: '/chevron-down.svg',
-    alt: 'Resize',
-    title: 'Toggle Window Size',
-    action: 'windowSizeToggle',
-    isChevron: true // Flag to handle the rotation logic
-  },
+  { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
+  { id: 'chat', icon: '/star.svg', title: 'AI Assistent', action: 'toggleChat' },
+  { id: 'translate', icon: '/translate.svg', title: 'Oversett', action: 'translate' },
+  { id: 'hide', icon: '/eye.svg', title: 'Skjul vindu', action: 'toggleEye' },
+  { id: 'resize', icon: '/chevron-down.svg', title: 'Vis/Skjul felt', action: 'windowSizeToggle', isChevron: true },
 ];
 
 export default function Overlay() {
@@ -49,95 +17,102 @@ export default function Overlay() {
   const [isWindowOpen, setWindowOpen] = useState(false);
   const [text, setText] = useState("");
 
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const speak = () => invoke("tts_speak");
-
-  const toggleChat = () => { };
-
-  const toggleEye = () => {
-    setIsEyeOpen(!isEyeOpen);
-    if (isEyeOpen) {
-      invoke("w_hide");
-    } else {
-      invoke("w_show");
-    }
-  };
-
-  const translate = async () => {
-    await invoke("w_resize", { height: 450 });
-
-    const textContent = await invoke<string>("translate");
-    setText(textContent);
-  };
-
-  const windowSizeToggle = () => {
-    if (isWindowOpen) {
-      invoke("w_resize", { height: 75 });
-      setWindowOpen(false);
-    } else {
-      invoke("w_resize", { height: 450 });
-      setWindowOpen(true);
-    }
-  };
-
-  // Helpers
-  const handleTextareaFocus = async () => {
-    await invoke("w_focus");
-  };
-
-  const handleTextareaBlur = async () => {
-    await invoke("w_unfocus");
-  };
-
   const actions: Record<string, () => void> = {
-    speak,
-    toggleChat,
-    translate,
-    toggleEye,
-    windowSizeToggle
+    speak: () => invoke("tts_speak"),
+    toggleChat: () => { /* AI Logic */ },
+    toggleEye: () => {
+      setIsEyeOpen(!isEyeOpen);
+      invoke(isEyeOpen ? "w_hide" : "w_show");
+    },
+    translate: async () => {
+      if (!isWindowOpen) windowSizeToggle();
+      const res = await invoke<string>("translate");
+      setText(res);
+    },
+    windowSizeToggle: () => {
+      const nextState = !isWindowOpen;
+      invoke("w_resize", { height: nextState ? 450 : 75 });
+      setWindowOpen(nextState);
+    }
   };
+
+  const windowSizeToggle = actions.windowSizeToggle;
 
   return (
-    <section className="draggable h-screen grid grid-cols-[auto] bg-c-primary" ref={contentRef}>
-      <div className="draggable grid grid-cols-5 border-b border-c-divider w-screen h-[75px] place-items-center">
-        {TOOLBAR_ACTIONS.map((item) => {
-          const hasHover = item.id !== 'hide';
+    <section className="draggable h-screen flex flex-col bg-c-primary border border-white/10 shadow-2xl overflow-hidden select-none">
 
+      {/* 1. TOOLBAR AREA */}
+      <div className="z-10 flex items-center justify-around h-[75px] px-2 bg-c-secondary/80 backdrop-blur-lg border-b border-white/5">
+        {TOOLBAR_ACTIONS.map((item) => {
+          const isResize = item.id === 'resize';
           return (
             <button
               key={item.id}
               onClick={actions[item.action]}
               title={item.title}
               className={`
-                non-draggable size-12 p-3 cursor-pointer bg-c-secondary transition-all
-                ${hasHover ? "hover:bg-c-hover" : ""}
-                ${item.className || ""}
+                group relative flex items-center justify-center size-12 rounded-2xl non-draggable
+                transition-all duration-200 active:scale-90
+                ${isResize && isWindowOpen ? "bg-c-brand/20" : "hover:bg-white/5"}
               `}
             >
               <Icon
                 src={item.icon}
-                color="bg-c-icon"
+                color={isResize && isWindowOpen ? "bg-c-brand" : "bg-c-icon"}
                 className={`
-                   ${item.isChevron && !isWindowOpen ? "rotate-180" : ""}
-                   transition-transform duration-200
+                  ${item.isChevron && !isWindowOpen ? "rotate-180" : ""}
+                  transition-transform duration-300 group-hover:scale-110
                 `}
-                id={item.isChevron ? "chevron-toggle" : undefined}
               />
+
+              {/* Tooltip-like glow for active state */}
+              {isResize && isWindowOpen && (
+                <div className="absolute -bottom-1 size-1 bg-c-brand rounded-full shadow-[0_0_8px_var(--c_brand)]" />
+              )}
             </button>
           );
         })}
       </div>
-      <div className="select non-draggable w-full h-full p-2">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onMouseDown={handleTextareaFocus}
-          onBlur={handleTextareaBlur}
-          placeholder="Edit translation..."
-          className="resize-none w-full h-full bg-c-secondary p-3 rounded-xl border border-white/5 outline-none focus:border-c-brand transition-colors text-c-text"
-        />
-      </div>
-    </section >
+
+      {/* 2. EXPANDABLE CONTENT AREA */}
+      <AnimatePresence>
+        {isWindowOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex-1 flex flex-col p-3 draggable overflow-hidden"
+          >
+            <div className="relative flex-1 bg-c-secondary/30 rounded-2xl border border-white/5 p-1">
+              <textarea
+                value={text}
+                spellCheck={false}
+                onFocus={() => invoke("w_focus")}
+                onBlur={() => invoke("w_unfocus")}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Oversettelse eller AI-svar..."
+                className="
+                  resize-none w-full h-full bg-transparent p-4 
+                  text-c-text text-[15px] leading-relaxed outline-none
+                  placeholder:opacity-20 scrollbar-none non-draggable
+                "
+              />
+
+              {/* Subtle utility buttons inside the textarea */}
+              {text && (
+                <div className="absolute bottom-3 right-3 flex gap-2">
+                  <button
+                    onClick={() => setText("")}
+                    className="px-3 py-1 text-[10px] font-bold uppercase tracking-tighter bg-c-primary/50 hover:bg-c-primary rounded-lg opacity-40 hover:opacity-100 transition-all"
+                  >
+                    Tøm
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 }
