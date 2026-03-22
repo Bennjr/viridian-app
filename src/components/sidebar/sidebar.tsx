@@ -49,7 +49,7 @@ export default function Sidebar() {
                                 end={link.to === "/"}
                                 className={({ isActive }) => `
                                     group relative flex items-center px-4 py-2.5 rounded-xl transition-all duration-200 
-                                    active:scale-[0.96] select-none
+                                    active:scale-[0.96] select-none gap-2
                                     ${isActive
                                         ? "bg-c-brand/10 text-c-brand font-semibold shadow-[inset_0_0_0_1px_rgba(58,117,97,0.2)]"
                                         : "text-c-text/70 hover:bg-c-btn_hover hover:text-c-text"}

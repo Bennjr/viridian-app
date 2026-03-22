@@ -43,7 +43,7 @@ export default function Layout() {
     return (
         <main className={`
             w-screen h-screen flex flex-col overflow-hidden 
-            bg-c-primary text-c-text transition-all duration-500
+            bg-c-primary text-c-text transition-all duration-0
             ${fontConfig[fontSize] || fontConfig.medium}
         `}>
             <div className="flex flex-1 overflow-hidden">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 
 interface SettingItemProps {
@@ -6,34 +6,38 @@ interface SettingItemProps {
     children: React.ReactNode;
 }
 
+// Inside settingitems.tsx
 export function DoubleSelect({ label, children }: SettingItemProps) {
     return (
-        <div className="grid grid-cols-[1fr_auto] justify-between items-center select-none ">
-            <div className="text-sm font-medium opacity-80 hover:opacity-100">{label}</div>
-            <div className="flex rounded-lg overflow-hidden divide-x divide-c-divider cursor-pointer">
+        <div className="flex items-center justify-between group">
+            <div className="text-sm font-medium opacity-70 group-hover:opacity-100 transition-opacity">
+                {label}
+            </div>
+            <div className="flex border border-white/10 rounded-xl overflow-hidden divide-x divide-white/10 shadow-lg">
                 {children}
             </div>
         </div>
     );
 }
 
-interface SliderProps {
-    label: string;
-    range: number;
-}
-
-export function Slider({ label, range }: SliderProps) {
-    const [sliderState, setSliderState] = useState("")
-
+export function Slider({ label }: { label: string, range?: number }) {
+    const [val, setVal] = useState("50");
     return (
-        <div className="grid grid-cols-[1fr_auto] justify-between items-center py-2 mt-2 border-b border-white/5">
-            <div className="">{label}</div>
-            <div className="grid grid-cols-[1fr_auto] gap-2">
-                <div className="">{sliderState}</div>
-                <input type="range" step="5" onChange={(e) => setSliderState(e.target.value)} />
+        <div className="flex items-center justify-between group py-2">
+            <div className="text-sm font-medium opacity-70 group-hover:opacity-100 transition-opacity">
+                {label}
+            </div>
+            <div className="flex items-center gap-4 w-1/2">
+                <span className="text-[10px] font-mono opacity-40 w-8">{val}%</span>
+                <input
+                    type="range"
+                    value={val}
+                    onChange={(e) => setVal(e.target.value)}
+                    className="flex-1 accent-c-brand cursor-pointer h-1.5 bg-white/10 rounded-full appearance-none"
+                />
             </div>
         </div>
-    )
+    );
 }
 
 interface ToggleProps {
@@ -132,4 +136,42 @@ export function ThemeSelector() {
             })}
         </ul>
     );
+}
+
+export function FontSize() {
+    const [fontSize, setFontSize] = useState(() => {
+        return localStorage.getItem("fontSize") || "medium";
+    });
+
+    useEffect(() => {
+        localStorage.setItem("fontSize", fontSize);
+    }, [fontSize]);
+
+    return (
+        <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+            <div className="text-center">
+                <h2 className="text-3xl font-bold mb-2">Velg tekststørrelse</h2>
+                <p className="opacity-50">Velg den størrelsen som er mest behagelig å lese.</p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+                {[
+                    { id: 'small', label: 'Liten', size: 'text-sm' },
+                    { id: 'medium', label: 'Medium', size: 'text-base' },
+                    { id: 'large', label: 'Stor', size: 'text-xl' }
+                ].map((opt) => (
+                    <button
+                        key={opt.id}
+                        onClick={() => setFontSize(opt.id)}
+                        className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center gap-4
+                                                            ${fontSize === opt.id ? 'border-c-brand bg-c-brand/5' : 'border-white/5 bg-c-secondary hover:border-white/10'}
+                                                        `}
+                    >
+                        <span className={`${opt.size} font-bold text-c-text`}>Aa</span>
+                        <span className="text-xs font-medium opacity-50">{opt.label}</span>
+                    </button>
+                ))}
+            </div>
+        </div>
+    )
 }
