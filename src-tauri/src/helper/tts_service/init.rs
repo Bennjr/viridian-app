@@ -5,7 +5,7 @@ use serde_json::Value::Null;
 
 #[tauri::command]
 pub async fn tts_speak(usr: String) -> Result<(), String> {
-    if usr != Null {
+    if usr.len() >= 1 {
         let mut tts = Tts::default().map_err(|e| format!("{:?}", e))?;
             tts.speak(&*usr, true)
                 .map_err(|e| format!("{:?}", e))?;

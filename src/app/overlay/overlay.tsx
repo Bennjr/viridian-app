@@ -47,7 +47,7 @@ export default function Overlay() {
   const [text, setText] = useState("");
 
   const actions: Record<string, () => void> = {
-    speak: () => invoke("tts_speak"),
+    speak: () => invoke("tts_speak", { usr: "" }),
     toggleChat: () => { /* AI Logic */ },
     toggleEye: () => {
       setIsEyeOpen(!isEyeOpen);
