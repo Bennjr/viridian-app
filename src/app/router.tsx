@@ -1,7 +1,8 @@
 import "./global.css";
 
-import { Route, Routes } from "react-router-dom";
-import { useState } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { listen } from "@tauri-apps/api/event";
 
 import Layout from "./pages/layout/layout";
 
@@ -21,6 +22,21 @@ import Onboarding from "./pages/overlays/overlays";
 
 export default function Router() {
   const [isFirstStart, setIsFirstStart] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Listen for the "navigate" event from Rust
+    const unlisten = listen<string>("navigate", (event) => {
+      const targetPath = event.payload;
+      console.log("Navigating to:", targetPath);
+      navigate(targetPath);
+    });
+
+    // Cleanup listener on unmount
+    return () => {
+      unlisten.then((f) => f());
+    };
+  }, [navigate]);
 
   if (!isFirstStart) {
     return (

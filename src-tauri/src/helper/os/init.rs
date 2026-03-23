@@ -17,10 +17,13 @@ pub fn search_files(query: String) -> Vec<serde_json::Value> {
         let file_name = file.file_name();
         let file_name_str = file_name.to_string_lossy();
 
+        let file_path = file.path().to_string_lossy().to_string();
+
         if query.is_empty() || file_name_str.contains(&query) {
             vec.push(json!({
                 "name": file_name_str,
-                "desc": "some desc"
+                "desc": "some desc",
+                "path": file_path
             }));
         }
     }

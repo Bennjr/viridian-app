@@ -1,10 +1,11 @@
 import "../global.css";
 import { invoke } from "@tauri-apps/api/core";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../components";
 
 const TOOLBAR_ACTIONS = [
+  { id: 'settings', icon: "settings.svg", title: "Instillinger", ation: "settings" },
   { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
   { id: 'chat', icon: '/star.svg', title: 'AI Assistent', action: 'toggleChat' },
   { id: 'translate', icon: '/translate.svg', title: 'Oversett', action: 'translate' },
@@ -33,7 +34,8 @@ export default function Overlay() {
       const nextState = !isWindowOpen;
       invoke("w_resize", { height: nextState ? 450 : 75 });
       setWindowOpen(nextState);
-    }
+    },
+    settings: () => { invoke("trigger_settings") }
   };
 
   const windowSizeToggle = actions.windowSizeToggle;
@@ -42,7 +44,8 @@ export default function Overlay() {
     <section className="draggable h-screen flex flex-col bg-c-primary border border-white/10 shadow-2xl overflow-hidden select-none">
 
       {/* 1. TOOLBAR AREA */}
-      <div className="z-10 flex items-center justify-around h-[75px] px-2 bg-c-secondary/80 backdrop-blur-lg border-b border-white/5">
+      <div className="z-10 flex items-center justify-around h-[75px] pr-2 bg-c-secondary/80 backdrop-blur-lg border-b border-white/5">
+        <div className="bg-c-brand w-3 h-[75%] rounded-r-full"></div>
         {TOOLBAR_ACTIONS.map((item) => {
           const isResize = item.id === 'resize';
           return (

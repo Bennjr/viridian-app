@@ -7,6 +7,7 @@ import { Icon } from "../../../components";
 //
 // "name": file_name_str,
 // "desc": "some desc"
+// "path": "some_path"
 //
 
 const filetypeOpen = () => {
@@ -19,11 +20,12 @@ const filetypeOpen = () => {
 
 const FileViewer = ({ label, path, onClose }: any) => {
   const [content, setContent] = useState("")
+  console.log(path)
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const textContent = await invoke<string>("get_content", { path: { path } });
+        const textContent = await invoke<string>("get_content", { path: path });
         setContent(textContent);
       } catch (error) {
         console.error("Failed to fetch content:", error);
@@ -35,7 +37,7 @@ const FileViewer = ({ label, path, onClose }: any) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-10">
-      <div className="bg-c-bg w-full rounded-xl max-w-2xl border border-white/10 overflow-hidden">
+      <div className="bg-c-bg w-full rounded-md max-w-2xl border border-white/10 overflow-hidden">
 
         <div className="bg-c-secondary p-6 border-b border-white/5 flex justify-between items-center">
           <h2 className="text-xl font-bold">{label}</h2>
@@ -48,7 +50,7 @@ const FileViewer = ({ label, path, onClose }: any) => {
         </div>
 
         <div className="bg-c-tertiery p-8 max-h-[70vh] overflow-y-auto">
-          <p className="text-c-text whitespace-pre-wrap">{content}</p>
+          <textarea className="text-c-text whitespace-pre-wrap w-full h-full bg-tertiery resize-none" onChange={(e) => setContent(e.target.value)} value={content}></textarea>
         </div>
 
       </div>
@@ -160,6 +162,7 @@ export default function Library() {
           <FileViewer
             label={selectedFile.name}
             content={selectedFile.desc}
+            path={selectedFile.path}
             onClose={() => setSelectedFile(null)}
           />
         )}
