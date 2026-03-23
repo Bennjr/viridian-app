@@ -26,6 +26,7 @@ pub fn run() {
             w_unfocus,
             w_resize,
             w_hide,
+            helper::suggest_word,
             helper::get_content,
             helper::translate,
             helper::search_files,
