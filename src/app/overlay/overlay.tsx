@@ -3,6 +3,34 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../components";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+
+function DragHandle() {
+  const [isPressed, setIsPressed] = useState(false);
+
+  const handleMouseDown = async () => {
+    setIsPressed(true);
+
+    try {
+      // Tells the OS to start moving the window
+      await getCurrentWindow().startDragging();
+    } finally {
+      // Once the drag is released or started, we reset the visual state
+      setIsPressed(false);
+    }
+  };
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      className={`
+        non-draggable transition-all duration-200
+        bg-c-brand w-3 rounded-r-full hover:brightness-110
+        ${isPressed ? 'h-[65%] cursor-grabbing' : 'h-[75%] cursor-grab'}
+      `}
+    />
+  );
+}
 
 const TOOLBAR_ACTIONS = [
   { id: 'settings', icon: "settings.svg", title: "Instillinger", ation: "settings" },
@@ -45,7 +73,7 @@ export default function Overlay() {
 
       {/* 1. TOOLBAR AREA */}
       <div className="z-10 flex items-center justify-around h-[75px] pr-2 bg-c-secondary/80 backdrop-blur-lg border-b border-white/5">
-        <div className="bg-c-brand w-3 h-[75%] rounded-r-full"></div>
+        <DragHandle></DragHandle>
         {TOOLBAR_ACTIONS.map((item) => {
           const isResize = item.id === 'resize';
           return (
