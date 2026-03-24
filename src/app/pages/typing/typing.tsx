@@ -14,6 +14,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import "../../global.css";
+import { Icon } from "../../../components";
 
 /* ═══════════════════════════════════════════════════════════
    § 1  TYPER & KONSTANTER
@@ -44,10 +45,10 @@ interface AutocorrectResult {
 }
 
 /** Metadataene for hvert språk som vises i UI */
-const ALL_LANGUAGES: { code: LangCode; label: string; flag: string; placeholder: string }[] = [
-  { code: "no", label: "Norsk",   flag: "🇳🇴", placeholder: "Skriv et norsk ord..."    },
-  { code: "en", label: "English", flag: "🇬🇧", placeholder: "Type an English word..."  },
-  { code: "es", label: "Español", flag: "🇪🇸", placeholder: "Escribe una palabra..."   },
+const ALL_LANGUAGES: { code: LangCode; label: string; flag: string; icon: string; placeholder: string }[] = [
+  { code: "no", label: "Norsk",   flag: "🇳🇴", icon: "/translate.svg", placeholder: "Skriv et norsk ord..."    },
+  { code: "en", label: "English", flag: "🇬🇧", icon: "/translate.svg", placeholder: "Type an English word..."  },
+  { code: "es", label: "Español", flag: "🇪🇸", icon: "/translate.svg", placeholder: "Escribe una palabra..."   },
 ];
 
 /** MyMemory bruker IETF-tags — "nb" for norsk bokmål, ikke "no" */
@@ -352,21 +353,27 @@ interface LangPickerProps {
 
 function LangPicker({ value, onChange }: LangPickerProps) {
   return (
-    <div className="flex bg-white/5 p-2 rounded-2xl border border-white/10 self-start gap-2 shadow-lg backdrop-blur-sm">
-      {ALL_LANGUAGES.map(({ code, label, flag }) => (
+    <div className="flex gap-3 bg-gradient-to-r from-c-secondary/30 to-c-secondary/10 p-3 rounded-2xl border border-c-brand/20 shadow-lg backdrop-blur-md">
+      {ALL_LANGUAGES.map(({ code, label, icon }) => (
         <button
           key={code}
           onClick={() => onChange(code)}
           className={`
-            px-5 py-3 rounded-xl font-semibold text-sm uppercase tracking-wide
-            transition-all duration-200 hover:scale-105 active:scale-95
+            px-5 py-3 rounded-xl font-bold text-sm uppercase tracking-wider
+            transition-all duration-300 flex items-center gap-2
+            hover:scale-105 active:scale-95
             ${value === code
-              ? "bg-c-brand text-white shadow-md shadow-c-brand/40"
-              : "text-c-text/70 hover:text-c-text hover:bg-white/10"
+              ? "bg-gradient-to-r from-c-brand to-c-brand/80 text-white shadow-lg shadow-c-brand/40"
+              : "text-c-text/60 hover:text-c-text/80 hover:bg-white/10"
             }
           `}
         >
-          {flag} {label}
+          <Icon
+            src={icon}
+            color={value === code ? "text-white" : "text-c-brand"}
+            size="w-4 h-4"
+          />
+          {code.toUpperCase()} {label}
         </button>
       ))}
     </div>
@@ -393,7 +400,7 @@ function LangRow({ translation, isSource }: LangRowProps) {
 
   return (
     <div className={`
-      flex items-center gap-4 rounded-2xl px-5 py-3.5 group/row
+      flex items-center gap-4 rounded-2xl px-5 py-4 group/row
       transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
       ${isSource
         ? "bg-c-brand/15 border border-c-brand/30 shadow-sm"
@@ -437,9 +444,10 @@ interface WordCardProps {
 
 function WordCard({ entry, onDelete, displayLang }: WordCardProps) {
   const [flipped, setFlipped] = useState(false);
+  const [viewLang, setViewLang] = useState<LangCode>(entry.sourceLang);
   const sourceMeta = ALL_LANGUAGES.find((l) => l.code === entry.sourceLang)!;
 
-  const displayedTranslation = entry.translations.find((t) => t.lang === displayLang) || entry.translations[0];
+  const displayedTranslation = entry.translations.find((t) => t.lang === viewLang) || entry.translations[0];
 
   return (
     <div
@@ -514,11 +522,11 @@ function WordCard({ entry, onDelete, displayLang }: WordCardProps) {
             absolute inset-0 flex flex-col
             bg-gradient-to-br from-c-secondary to-c-secondary/95 border-2 border-c-brand
             rounded-3xl shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)]
-            p-6 gap-4
+            p-6 gap-3.5
           "
           style={{ minHeight: "260px", height: "auto" }}
         >
-          <div className="text-center pb-3 border-b border-c-brand/20">
+          <div className="text-center pb-4 border-b border-c-brand/20">
             <span className="text-sm font-bold tracking-widest text-c-brand/60 uppercase">
               Riktig ord
             </span>
@@ -532,6 +540,26 @@ function WordCard({ entry, onDelete, displayLang }: WordCardProps) {
               >🔊
               </button>
             </div>
+          </div>
+
+          {/* Språk-tab-knapper */}
+          <div className="flex justify-center gap-2 flex-wrap">
+            {entry.translations.map((t) => {
+              const langMeta = ALL_LANGUAGES.find((l) => l.code === t.lang);
+              return (
+                <button
+                  key={t.lang}
+                  onClick={(e) => { e.stopPropagation(); setViewLang(t.lang); }}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all duration-200 ${
+                    viewLang === t.lang
+                      ? "bg-gradient-to-r from-c-brand to-c-brand/80 text-white shadow-md shadow-c-brand/30"
+                      : "bg-c-secondary/40 text-c-text/50 hover:bg-c-secondary/60 hover:text-c-text/70"
+                  }`}
+                >
+                  {t.lang.toUpperCase()}
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -705,7 +733,7 @@ export default function Writing() {
           rounded-3xl p-8
           focus-within:border-c-brand/30 focus-within:shadow-c-brand/10
           transition-all duration-300
-          flex flex-col gap-6
+          flex flex-col gap-5
         ">
           {/* Velger øverst i boksen */}
           <div className="flex justify-center">
@@ -751,23 +779,25 @@ export default function Writing() {
             onClick={handleAdd}
             disabled={isLoading || !input.trim()}
             className="
-              w-full bg-gradient-to-r from-c-brand to-c-brand/90 text-white
-              py-4 rounded-2xl font-bold text-lg tracking-wide
-              hover:brightness-110 hover:shadow-2xl hover:shadow-c-brand/30
-              active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
-              transition-all duration-200 flex items-center justify-center gap-3
-              shadow-xl shadow-c-brand/20
+              w-full bg-gradient-to-br from-c-brand via-c-brand to-c-brand/90 text-white
+              py-5 rounded-2xl font-extrabold text-lg tracking-wider
+              hover:brightness-125 hover:shadow-2xl hover:shadow-c-brand/50
+              active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed
+              transition-all duration-300 flex items-center justify-center gap-3
+              shadow-2xl shadow-c-brand/30 border border-c-brand/50
             "
           >
             {isLoading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                Behandler ord...
+                <span>Behandler...</span>
               </>
             ) : (
               <>
-                <span className="text-lg">➕</span>
-                Legg til ord
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Legg til ord</span>
               </>
             )}
           </button>
@@ -776,13 +806,13 @@ export default function Writing() {
         {/* ── STATISTIKK ── */}
         {wordLog.length > 0 && (
           <div className="flex items-center gap-6 max-w-3xl mx-auto w-full">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <div className="bg-c-secondary/50 px-6 py-3 rounded-full border border-white/5 shadow-sm">
-              <span className="text-sm font-semibold text-c-text/60">
-                {filteredWordLog.length} av {wordLog.length} ord vist
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-c-brand/20 to-transparent" />
+            <div className="bg-gradient-to-r from-c-secondary/40 to-c-secondary/20 px-6 py-3 rounded-full border border-c-brand/20 shadow-lg">
+              <span className="text-xs font-bold text-c-brand uppercase tracking-wider">
+                {filteredWordLog.length} ord i ordbok
               </span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-white/10 to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-c-brand/20 to-transparent" />
           </div>
         )}
 
