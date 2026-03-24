@@ -5,6 +5,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../components";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
+type Message = {
+  role: 'user' | 'ai';
+  content: string;
+};
+
+function ChatBubble({ msg }: { msg: Message }) {
+  const isAi = msg.role === 'ai';
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: isAi ? -10 : 10, scale: 0.95 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      className={`flex ${isAi ? 'justify-start' : 'justify-end'} mb-4`}
+    >
+      <div className={`
+        max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm
+        ${isAi
+          ? 'bg-c-secondary text-c-text border border-white/5 rounded-tl-none'
+          : 'bg-c-brand text-white rounded-tr-none'}
+      `}>
+        {isAi && <div className="text-[10px] font-black uppercase opacity-30 mb-1 tracking-widest">Viridian AI</div>}
+        <div className="whitespace-pre-wrap">{msg.content}</div>
+      </div>
+    </motion.div>
+  );
+}
+
 function DragHandle() {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -12,10 +38,8 @@ function DragHandle() {
     setIsPressed(true);
 
     try {
-      // Tells the OS to start moving the window
       await getCurrentWindow().startDragging();
     } finally {
-      // Once the drag is released or started, we reset the visual state
       setIsPressed(false);
     }
   };
@@ -46,7 +70,7 @@ function ActionBar({ mode, settings, setSettings }: ActionBarProps) {
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: 'auto', opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
-      className=" bg-c-secondary border-white/5 flex items-center overflow-hidden"
+      className=" bg-c-secondary border-white/5 flex overflow-hidden"
     >
       {mode === "translate" && (
         <div className="flex items-center w-full">
@@ -72,8 +96,8 @@ function ActionBar({ mode, settings, setSettings }: ActionBarProps) {
       )}
 
       {mode === "chat" && (
-        <div className="flex items-center gap-2 w-full">
-          <span className="text-[10px] font-black uppercase tracking-widest opacity-30 mr-2">AI Modus:</span>
+        <div className="flex items-center gap-2 w-full p-2">
+          <span className="text-[10px] font-black uppercase tracking-widest opacity-30 mr-2">AI</span>
 
           {['Forklar', 'Oppsummer', 'Rett feil'].map((task) => (
             <button
@@ -94,7 +118,7 @@ function ActionBar({ mode, settings, setSettings }: ActionBarProps) {
   );
 }
 const TOOLBAR_ACTIONS = [
-  { id: 'settings', icon: "settings.svg", title: "Instillinger", ation: "settings" },
+  { id: 'settings', icon: "/settings.svg", title: "Instillinger", action: "settings" },
   { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
   { id: 'chat', icon: '/star.svg', title: 'AI Assistent', action: 'toggleChat' },
   { id: 'translate', icon: '/translate.svg', title: 'Oversett', action: 'translate' },
@@ -109,11 +133,14 @@ export default function Overlay() {
   const [activeMode, setActiveMode] = useState<string | null>(null);
   const [settings, setSettings] = useState({ aiTask: 'Forklar' });
   const [text, setText] = useState("");
+  const [isAi, setIsAi] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const actions: Record<string, () => void> = {
-    speak: () => invoke("tts_speak", { usr: "" }),
-    toggleChat: () => {
+    speak: () => { invoke("tts_speak", { usr: "" }) },
+    toggleChat: async () => {
       setActiveMode(activeMode === 'chat' ? null : 'chat');
+      setIsAi(true)
     },
     toggleEye: () => {
       setIsEyeOpen(!isEyeOpen);
@@ -130,7 +157,23 @@ export default function Overlay() {
       invoke("w_resize", { height: nextState ? 450 : 75 });
       setWindowOpen(nextState);
     },
-    settings: () => { invoke("trigger_settings") }
+    settings: () => {
+      invoke("trigger_settings")
+    }
+  };
+
+  const handleGemini = async () => {
+    if (!text) { console.log("what"); return };
+    if (loading) { console.log("loading"); return }
+    setLoading(true);
+    try {
+      const response = await invoke<string>("gemini", { prompt: text });
+      setText(response);
+    } catch (err) {
+      console.error("Gemini failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const windowSizeToggle = actions.windowSizeToggle;
@@ -179,7 +222,7 @@ export default function Overlay() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="flex-1 flex flex-col p-3 draggable overflow-hidden"
+            className="flex-1 flex flex-col p-2 draggable overflow-hidden"
           >
             <AnimatePresence>
               {isWindowOpen && (
@@ -209,7 +252,7 @@ export default function Overlay() {
               {/* Subtle utility buttons inside the textarea */}
               {text && (
 
-                <div className="absolute bottom-3 right-3 flex gap-2">
+                <div className="absolute bottom-3 left-3 flex gap-2">
                   <button
                     onClick={() => setText("")}
                     className="px-3 py-1 text-[10px] font-bold uppercase tracking-tighter bg-c-primary/50 hover:bg-c-primary rounded-lg opacity-40 hover:opacity-100 transition-all"
@@ -217,6 +260,21 @@ export default function Overlay() {
                     Tøm
                   </button>
                 </div>
+              )}
+              {isAi && (
+                <button
+                  onClick={() => handleGemini()}
+                  disabled={loading}
+                  className={`non-draggable bottom-3 right-3 absolute p-2 rounded-full bg-c-brand text-white shadow-lg transition-all 
+                  ${loading ? 'animate-pulse opacity-50' : 'hover:scale-105 active:scale-95'}
+                `}
+                >
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Icon src="/arrow-right.svg" size="w-4 h-4" color="bg-white" />
+                  )}
+                </button>
               )}
             </div>
           </motion.div>

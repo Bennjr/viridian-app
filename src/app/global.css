@@ -92,13 +92,6 @@
     --c_scrollbar_hover: #00ff41;
   }
 
-  .hero {
-    background-color: var(--c_primary);
-    background-image:
-      radial-gradient(at 100% 100%, rgba(58, 117, 97, 0.1) 0px, transparent 80%),
-      radial-gradient(at 0% 0%, rgba(58, 117, 97, 0.05) 0px, transparent 50%);
-  }
-
   html,
   body {
     @apply overscroll-none overflow-hidden h-screen transition-colors duration-300;

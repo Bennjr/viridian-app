@@ -3,24 +3,8 @@ import { invoke } from "@tauri-apps/api/core";
 import "../../global.css";
 import { Icon } from "../../../components";
 
-// EXPECTED FILES OUTPUT:
-//
-// "name": file_name_str,
-// "desc": "some desc"
-// "path": "some_path"
-//
-
-const filetypeOpen = () => {
-  return (
-    <div>
-
-    </div>
-  )
-}
-
 const FileViewer = ({ label, path, onClose }: any) => {
-  const [content, setContent] = useState("")
-  console.log(path)
+  const [content, setContent] = useState("");
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -31,28 +15,38 @@ const FileViewer = ({ label, path, onClose }: any) => {
         console.error("Failed to fetch content:", error);
       }
     };
-
-    fetchContent();
-  }, []);
+    if (path) fetchContent();
+  }, [path]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-10">
-      <div className="bg-c-bg w-full rounded-md max-w-2xl border border-white/10 overflow-hidden">
-
-        <div className="bg-c-secondary p-6 border-b border-white/5 flex justify-between items-center">
-          <h2 className="text-xl font-bold">{label}</h2>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-10 transition-all duration-200">
+      <div className="bg-c-primary border-white/10 overflow-hidden flex flex-col h-screen w-screen">
+        <div className="bg-c-secondary p-5 border-b border-white/5 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Icon src="/folder.svg" color="bg-c-brand" size="w-5 h-5" />
+            <h2 className="text-xl font-bold tracking-tight">{label}</h2>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-full transition-colors"
+            className="size-8 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors opacity-50 hover:opacity-100"
           >
             ✕
           </button>
         </div>
 
-        <div className="bg-c-tertiery p-8 max-h-[70vh] overflow-y-auto">
-          <textarea className="text-c-text whitespace-pre-wrap w-full h-full bg-tertiery resize-none" onChange={(e) => setContent(e.target.value)} value={content}></textarea>
+        <div className="flex-1 bg-c-primary p-4">
+          <textarea
+            className="w-full h-full bg-c-tertiery p-6 rounded-xl text-c-text leading-relaxed outline-none resize-none scrollbar-none border border-white/5"
+            onChange={(e) => setContent(e.target.value)}
+            value={content}
+            spellCheck={false}
+          />
+          {content ?
+            <div className="absolute bottom-3 right-3 absolute p-2 text-white transition-all ">
+              <button onClick={() => setContent("")}>Tøm</button>
+            </div>
+            : <div></div>}
         </div>
-
       </div>
     </div>
   );
@@ -64,109 +58,94 @@ const FILTERS = [
   { id: 'type', label: 'Filtype', icon: '/folder.svg' },
 ];
 
-const FilterBar = () => {
-  const [activeFilter, setActiveFilter] = useState('fav');
-
-  return (
-    <nav className="inline-grid grid-cols-3 gap-2 select-none w-fit">
-      {FILTERS.map((f) => {
-        const isActive = activeFilter === f.id;
-
-        return (
-          <button
-            key={f.id}
-            onClick={() => setActiveFilter(f.id)}
-            className={`
-              flex items-center justify-center gap-2 px-4 py-2 rounded-xl 
-              transition-all duration-200 whitespace-nowrap
-              ${isActive
-                ? "bg-c-brand text-white shadow-md"
-                : "bg-c-btn text-c-text hover:bg-c-btn_hover"}
-            `}
-          >
-            <Icon
-              src={f.icon}
-              color={isActive ? "bg-c-icon" : "bg-c-text"}
-              size="w-5 h-5"
-            />
-            <span className="text-sm font-medium">{f.label}</span>
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
 export default function Library() {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('fav');
   const [selectedFile, setSelectedFile] = useState<any>(null);
 
   useEffect(() => {
     let isCurrent = true;
-
     invoke("search_files", { query: searchQuery })
-      .then((foo: any) => {
-        if (isCurrent) {
-          if (foo.lenght > 50) {
-            foo.slice(0, 50)
-          }
-          setFiles(foo);
+      .then((data: any) => {
+        if (isCurrent && Array.isArray(data)) {
+          const limited = data.length > 50 ? data.slice(0, 50) : data;
+          setFiles(limited);
         }
       })
       .catch(console.error);
 
-    return () => {
-      isCurrent = false;
-    };
+    return () => { isCurrent = false; };
   }, [searchQuery]);
 
-  const filterBy = (filter: string) => {
-    let target = filter
-    const final: any = target += filter;
-    setFilter(final);
-    console.log(filter, final);
-  };
-
   return (
-    <div className="grid">
-      <div className="flex justify-between items-center pb-4">
-        <h2 className="font-bold">Bibliotek</h2>
-        <button
-          className="p-2 px-5 border border-c-secondary border-solid text-c-muted_text rounded-full hover:border-c-brand"
-        >
+    <div className="flex flex-col gap-6 text-c-text">
+      <header className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold tracking-tight">Bibliotek</h1>
+        <button className="bg-c-brand hover:bg-c-brand/80 text-white px-4 py-1.5 rounded-md text-sm font-semibold transition-colors">
           Last opp
         </button>
+      </header>
+
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <textarea
+            rows={1}
+            placeholder="Søk i biblioteket..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white/[0.03] border border-white/10 rounded-md px-10 py-2 text-sm outline-none focus:border-c-brand/50 transition-all resize-none overflow-hidden"
+          />
+          <Icon src="/search.svg" size="w-4 h-4" className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
+        </div>
+
+        <nav className="flex bg-white/[0.03] border border-white/10 rounded-md p-1 gap-1">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setActiveFilter(f.id)}
+              className={`px-3 py-1 rounded-sm text-xs font-bold transition-all 
+                ${activeFilter === f.id ? 'bg-c-brand/20 text-c-brand' : 'opacity-40 hover:opacity-100'}`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
-      <div className="mb-6 grid grid-cols-2 gap-4 items-center">
-        <input type="text" placeholder="Søk i biblioteket..."
-          value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 backdrop-blur-md rounded-xl px-4 py-3 text-c-text placeholder:text-c-text/30 focus:border-c-brand focus:ring-1 focus:ring-c-brand outline-none transition-all" />
-        <fieldset className="select-none">
-          <FilterBar />
-        </fieldset>
-      </div>
-
-      <main className="grid grid-cols-5 gap-5">
+      <main className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 pb-20">
         {files.map((item: any) => (
-          <div className="bg-c-secondary_bg select-none border-t border-white/5 hover:scale-[0.97] active:scale-[0.98] hover:shadow-[0_0_20px_rgba(58,117,97,0.2)] duration-150 " onClick={() => setSelectedFile(item)}>
-            <div className="bg-c-tertiery h-40">preview</div>
-            <div className="bg-c-secondary p-2">
-              <h2 className="">{item.name}</h2>
+          <div
+            key={item.path}
+            onClick={() => setSelectedFile(item)}
+            className="group cursor-pointer flex flex-col bg-white/[0.02] border border-white/5 rounded-lg overflow-hidden transition-all hover:border-c-brand/40 hover:bg-white/[0.04]"
+          >
+            <div className="bg-black/20 aspect-video flex flex-col items-center justify-center relative">
+              <Icon src="/folder.svg" size="w-10 h-10" className="opacity-[0.03] group-hover:opacity-10 transition-opacity" />
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] opacity-[0.03] mt-2 group-hover:opacity-10 transition-opacity">
+                Preview
+              </span>
+            </div>
+
+            <div className="p-4 bg-white/[0.01]">
+              <h2 className="font-semibold text-sm truncate opacity-80 group-hover:opacity-100 transition-opacity">
+                {item.name}
+              </h2>
+              <p className="text-[10px] font-bold opacity-20 uppercase tracking-widest mt-1">
+                Dokument
+              </p>
             </div>
           </div>
         ))}
-        {selectedFile && (
-          <FileViewer
-            label={selectedFile.name}
-            content={selectedFile.desc}
-            path={selectedFile.path}
-            onClose={() => setSelectedFile(null)}
-          />
-        )}
       </main>
+
+      {selectedFile && (
+        <FileViewer
+          label={selectedFile.name}
+          path={selectedFile.path}
+          onClose={() => setSelectedFile(null)}
+        />
+      )}
     </div>
   );
 }

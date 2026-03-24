@@ -5,7 +5,6 @@ import { useState } from "react";
 const links = [
     { label: "Hovedside", svg: "/home.svg", to: "/" },
     { label: "Bibliotek", svg: "/folder.svg", to: "/library", isFolder: true },
-    { label: "Chat", svg: "/chat.svg", to: "/chat" },
     { label: "Logg", svg: "/log.svg", to: "/log" },
     { label: "Notater", svg: "/notes.svg", to: "/notes" },
     { label: "Ordbok", svg: "/dict.svg", to: "/dict" },

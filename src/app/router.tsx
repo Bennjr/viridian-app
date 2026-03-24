@@ -11,7 +11,6 @@ import Index from "./pages/index/index";
 import Library from "./pages/library/library";
 import Settings from "./pages/settings/settings";
 import Log from "./pages/log/log";
-import Chat from "./pages/chat/chat";
 import Notes from "./pages/notes/notes";
 import Dict from "./pages/dictionary/dict";
 import Typing from "./pages/typing/typing";
@@ -25,40 +24,44 @@ export default function Router() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Listen for the "navigate" event from Rust
+    const saved = localStorage.getItem("has-onboarded");
+    if (saved === "true") setIsFirstStart(false);
+  }, []);
+
+  const handleSetFirstStart = (val: boolean) => {
+    setIsFirstStart(val);
+    if (!val) localStorage.setItem("has-onboarded", "true");
+  };
+
+  useEffect(() => {
     const unlisten = listen<string>("navigate", (event) => {
       const targetPath = event.payload;
-      console.log("Navigating to:", targetPath);
+      setIsFirstStart(false);
       navigate(targetPath);
     });
 
-    // Cleanup listener on unmount
     return () => {
       unlisten.then((f) => f());
     };
   }, [navigate]);
 
-  if (!isFirstStart) {
-    return (
-      <Routes>
-        <Route path="/settings" element={<Settings />} /> {/* Make settings its own page outside outlet */}
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={isFirstStart ? <Onboarding setFirstStart={handleSetFirstStart} /> : <Layout />}
+      >
+        <Route index element={<Index />} />
+        <Route path="library" element={<Library />} />
+        <Route path="log" element={<Log />} />
+        <Route path="notes" element={<Notes />} />
+        <Route path="dict" element={<Dict />} />
+        <Route path="typing" element={<Typing />} />
+      </Route>
 
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Index />} />
-          <Route path="/library" element={<Library />} />
-          <Route path="/log" element={<Log />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/notes" element={<Notes />} />
-          <Route path="/dict" element={<Dict />} />
-          <Route path="/typing" element={<Typing />} />
-        </Route>
-      </Routes>
-    );
-  } else {
-    return (
-      <Routes>
-        <Route path="/" element={< Onboarding setFirstStart={setIsFirstStart} />} />
-      </Routes>
-    )
-  }
+      <Route path="/settings" element={<Settings />} />
+
+      <Route path="*" element={<Index />} />
+    </Routes>
+  );
 }

@@ -4,17 +4,13 @@ import "../../global.css";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
-    // 1. Initialize with 'medium' to avoid a blank string on first render
     const [fontSize, setFontSize] = useState("medium");
 
     useEffect(() => {
-        // Fix: Added the dependency array [] so this only runs once
         const savedSize = localStorage.getItem("fontSize") || "medium";
         setFontSize(savedSize);
     }, []);
 
-    // 2. Define the Scaling Map
-    // These selectors target every h1, h2, and p inside the Layout
     const fontConfig: Record<string, string> = {
         small: `
             [&_h1]:text-xl 
@@ -51,7 +47,7 @@ export default function Layout() {
 
                 <section className="hero flex-1 overflow-y-auto h-full">
                     {/* The p-8 here ensures the scaled text isn't touching the edges */}
-                    <div className="p-8 max-w-5xl">
+                    <div className="p-8">
                         <Outlet />
                     </div>
                 </section>

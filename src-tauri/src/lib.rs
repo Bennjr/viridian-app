@@ -18,6 +18,8 @@ use helper::{
 // ------------ MAIN RUN FUNCTION ------------ //
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    dotenvy::dotenv().ok(); 
+
     tauri::Builder::default()
         // Put all commands which should be called from the front end here -->
         .invoke_handler(tauri::generate_handler![
@@ -26,6 +28,8 @@ pub fn run() {
             w_unfocus,
             w_resize,
             w_hide,
+            helper::gemini,
+            helper::trigger_settings,
             helper::suggest_word,
             helper::get_content,
             helper::translate,

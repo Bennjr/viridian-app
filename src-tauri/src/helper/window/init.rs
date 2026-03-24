@@ -49,7 +49,7 @@ pub fn w_init(window: tauri::Window) {
             SetWindowLongW(hwnd, GWL_EXSTYLE, final_style);
         }
     } else if parsed["window_style"] == "appbar" {
-        w_appbar_init(&window, 50);
+        let _ = w_appbar_init(&window, 50);
     } else {
         println!("Invalid window style");
     }
