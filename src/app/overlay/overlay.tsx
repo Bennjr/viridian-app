@@ -32,6 +32,67 @@ function DragHandle() {
   );
 }
 
+interface ActionBarProps {
+  mode: string;
+  settings: any;
+  setSettings: (s: any) => void;
+}
+
+function ActionBar({ mode, settings, setSettings }: ActionBarProps) {
+  if (!mode) return null;
+
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 'auto', opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      className=" bg-c-secondary border-white/5 flex items-center overflow-hidden"
+    >
+      {mode === "translate" && (
+        <div className="flex items-center w-full">
+          <button className="flex w-fit non-draggable items-center gap-2 px-3 py-1 bg-c-tertiery rounded-l-full border border-white/5 text-[10px] font-bold uppercase tracking-wider hover:bg-c-hover transition-all">
+            <span>Auto</span>
+            <Icon src="/chevron-down.svg" size="w-2 h-2" className="opacity-50" />
+          </button>
+
+          <Icon src="/arrow-right.svg" size="w-6 h-6" className="opacity-20" />
+
+          {/* To Language */}
+          <button className="flex w-fit non-draggable items-center gap-2 px-3 py-1 bg-c-tertiery text-c-brand rounded-r-full text-[10px] font-bold uppercase tracking-wider hover:bg-c-hover transition-all">
+            <span>Norsk (BM)</span>
+            <Icon src="/chevron-down.svg" size="w-2 h-2" className="opacity-20" />
+          </button>
+
+          <div className="ml-auto flex ">
+            <button title="Kopier resultat" className="p-1.5 hover:bg-white/5 rounded-md opacity-40 hover:opacity-100 transition-all">
+              <Icon src="/copy.svg" size="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {mode === "chat" && (
+        <div className="flex items-center gap-2 w-full">
+          <span className="text-[10px] font-black uppercase tracking-widest opacity-30 mr-2">AI Modus:</span>
+
+          {['Forklar', 'Oppsummer', 'Rett feil'].map((task) => (
+            <button
+              key={task}
+              onClick={() => setSettings({ ...settings, aiTask: task })}
+              className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border
+                ${settings.aiTask === task
+                  ? 'bg-c-brand text-white border-c-brand shadow-lg shadow-c-brand/10'
+                  : 'bg-transparent border-white/10 opacity-50 hover:opacity-100'}
+              `}
+            >
+              {task}
+            </button>
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
+}
 const TOOLBAR_ACTIONS = [
   { id: 'settings', icon: "settings.svg", title: "Instillinger", ation: "settings" },
   { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
@@ -44,11 +105,16 @@ const TOOLBAR_ACTIONS = [
 export default function Overlay() {
   const [isEyeOpen, setIsEyeOpen] = useState(true);
   const [isWindowOpen, setWindowOpen] = useState(false);
+
+  const [activeMode, setActiveMode] = useState<string | null>(null);
+  const [settings, setSettings] = useState({ aiTask: 'Forklar' });
   const [text, setText] = useState("");
 
   const actions: Record<string, () => void> = {
     speak: () => invoke("tts_speak", { usr: "" }),
-    toggleChat: () => { /* AI Logic */ },
+    toggleChat: () => {
+      setActiveMode(activeMode === 'chat' ? null : 'chat');
+    },
     toggleEye: () => {
       setIsEyeOpen(!isEyeOpen);
       invoke(isEyeOpen ? "w_hide" : "w_show");
@@ -56,6 +122,7 @@ export default function Overlay() {
     translate: async () => {
       if (!isWindowOpen) windowSizeToggle();
       const res = await invoke<string>("translate");
+      setActiveMode(activeMode === 'translate' ? null : 'translate');
       setText(res);
     },
     windowSizeToggle: () => {
@@ -114,6 +181,16 @@ export default function Overlay() {
             exit={{ opacity: 0, height: 0 }}
             className="flex-1 flex flex-col p-3 draggable overflow-hidden"
           >
+            <AnimatePresence>
+              {isWindowOpen && (
+                <ActionBar
+                  mode={activeMode || ""}
+                  settings={settings}
+                  setSettings={setSettings}
+                />
+              )}
+            </AnimatePresence>
+
             <div className="relative flex-1 bg-c-secondary/30 rounded-2xl border border-white/5 p-1">
               <textarea
                 value={text}
@@ -131,6 +208,7 @@ export default function Overlay() {
 
               {/* Subtle utility buttons inside the textarea */}
               {text && (
+
                 <div className="absolute bottom-3 right-3 flex gap-2">
                   <button
                     onClick={() => setText("")}
@@ -144,6 +222,6 @@ export default function Overlay() {
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </section >
   );
 }
