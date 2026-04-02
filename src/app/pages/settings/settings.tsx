@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Icon } from "../../../components";
 
-import { DoubleSelect, Slider, Toggle, ThemeSelector, FontSize } from "../../../components"
+import { DoubleSelect, Slider, Toggle, ThemeSelector, FontSize, ToolbarDragDrop } from "../../../components"
 
 // EXAMPLE COMPONENT USAGE
 //
@@ -87,6 +87,11 @@ export default function Settings() {
                                 <ThemeSelector />
                             </div>
                         </div>
+                    </section>
+
+
+                    <section className="space-y-4">
+                        <ToolbarDragDrop></ToolbarDragDrop>
                     </section>
 
                     {/* Extra padding so the bottom isn't cut off */}

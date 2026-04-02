@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
+import { Icon } from "../index"
 
 interface SettingItemProps {
     label: string;
@@ -172,6 +173,36 @@ export function FontSize() {
                     </button>
                 ))}
             </div>
+        </div>
+    )
+}
+
+export function ToolbarDragDrop() {
+    const TOOLBAR_ACTIONS = [
+        { id: 'settings', icon: "/settings.svg", title: "Instillinger", action: "settings" },
+        { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
+        { id: 'chat', icon: '/star.svg', title: 'AI Assistent', action: 'toggleChat' },
+        { id: 'translate', icon: '/translate.svg', title: 'Oversett', action: 'translate' },
+        { id: 'hide', icon: '/eye.svg', title: 'Skjul vindu', action: 'toggleEye' },
+        { id: 'resize', icon: '/chevron-down.svg', title: 'Vis/Skjul felt', action: 'windowSizeToggle', isChevron: true },
+    ];
+
+    return (
+        <div className="z-10 flex items-center gap-2     h-[75px] pr-2 bg-c-secondary/80 backdrop-blur-lg">
+            {TOOLBAR_ACTIONS.map((item) => {
+                return (
+                    <button
+                        key={item.id}
+                        title={item.title}
+                        className={`group relative bg-c-secondary flex items-center justify-center size-12 rounded-2xl non-draggable
+                            transition-all duration-200 active:scale-90`}
+                    >
+                        <Icon
+                            src={item.icon}
+                        />
+                    </button>
+                );
+            })}
         </div>
     )
 }
