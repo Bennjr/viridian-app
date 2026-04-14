@@ -35,3 +35,19 @@ fn get_w_by_label(app: &tauri::AppHandle, label: &str) -> Option<tauri::WebviewW
 pub fn trigger_settings(app: tauri::AppHandle) {
     let _ = app.emit("navigate", "/settings");
 }
+
+fn w_resize(window: tauri::WebviewWindow, height: u32) {
+    let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
+        width: window.inner_size().unwrap().width,
+        height,
+    }));
+}
+
+#[tauri::command]
+pub fn trigger_w_len(app: &tauri::AppHandle, len: usize) {
+    const BASE: i32 = 75;
+    if let Some(win) = get_w_by_label(app, "overlayWin") {
+        let new_len = BASE * len as i32;
+        w_resize(win, new_len as u32);
+    }
+}

@@ -28,6 +28,7 @@ pub fn run() {
             w_unfocus,
             w_resize,
             w_hide,
+            helper::trigger_w_len,
             helper::gemini,
             helper::trigger_settings,
             helper::suggest_word,

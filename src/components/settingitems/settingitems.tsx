@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { Icon } from "../index"
+import { invoke } from "@tauri-apps/api/core";
 
 interface SettingItemProps {
     label: string;
@@ -178,6 +179,22 @@ export function FontSize() {
 }
 
 export function ToolbarDragDrop() {
+    const [toolbarActions, setToolbarActions] = useState(localStorage.getItem("toolbarActions") || []);
+
+    useEffect(() => {
+        localStorage.setItem("toolbarActions", JSON.stringify(toolbarActions));
+    }, [toolbarActions]);
+
+    const toggleToolbarAction = (action: string) => {
+        setToolbarActions((prev) => {
+            if (prev.includes(action)) {
+                return prev.filter((a) => a !== action);
+            } else {
+                return [...prev, action];
+            }
+        });
+        invoke("trigger_w_len", { len: localStorage.getItem("toolbarActions") ? JSON.parse(localStorage.getItem("toolbarActions") || "[]").length : 0 })
+    };
     const TOOLBAR_ACTIONS = [
         { id: 'settings', icon: "/settings.svg", title: "Instillinger", action: "settings" },
         { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
