@@ -82,10 +82,9 @@ export default function Library() {
 
   return (
     <div className="flex flex-col gap-6 text-c-text">
-      <header className="sticky top-0 z-50 w-full border-b border-c-divider bg-c-secondary/80 backdrop-blur-md p-4">
-        <div className=" px-4 py-4 space-y-4">
+      <header className="sticky top-0 z-50 w-full border-b border-c-divider bg-c-tertiery backdrop-blur-md p-4">
+        <div className="px-4 py-4 space-y-4">
 
-          {/* Top Row: Title & Action */}
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-xl font-bold tracking-tight text-white">Bibliotek</h1>
@@ -95,9 +94,7 @@ export default function Library() {
             </button>
           </div>
 
-          {/* Bottom Row: Search & Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
-            {/* Search Bar */}
             <div className="relative flex-1 group">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <Icon src="/search.svg" size="w-4 h-4" className="opacity-40 group-focus-within:opacity-100 group-focus-within:text-c-brand transition-opacity" />
@@ -111,7 +108,6 @@ export default function Library() {
               />
             </div>
 
-            {/* Filter Segmented Control */}
             <nav className="flex bg-black/20 border border-white/5 p-1 rounded-xl w-fit">
               {FILTERS.map((f) => {
                 const isActive = activeFilter === f.id;

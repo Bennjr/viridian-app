@@ -181,7 +181,6 @@ export default function Overlay() {
   return (
     <section className="draggable h-screen flex flex-col bg-c-primary border border-white/10 shadow-2xl overflow-hidden select-none">
 
-      {/* 1. TOOLBAR AREA */}
       <div className="z-10 flex items-center justify-around h-[75px] pr-2 bg-c-secondary/80 backdrop-blur-lg border-b border-white/5">
         <DragHandle></DragHandle>
         {TOOLBAR_ACTIONS.map((item) => {
@@ -206,7 +205,6 @@ export default function Overlay() {
                 `}
               />
 
-              {/* Tooltip-like glow for active state */}
               {isResize && isWindowOpen && (
                 <div className="absolute -bottom-1 size-1 bg-c-brand rounded-full shadow-[0_0_8px_var(--c_brand)]" />
               )}
@@ -215,7 +213,6 @@ export default function Overlay() {
         })}
       </div>
 
-      {/* 2. EXPANDABLE CONTENT AREA */}
       <AnimatePresence>
         {isWindowOpen && (
           <motion.div
@@ -249,7 +246,6 @@ export default function Overlay() {
                 "
               />
 
-              {/* Subtle utility buttons inside the textarea */}
               {text && (
 
                 <div className="absolute bottom-3 left-3 flex gap-2">

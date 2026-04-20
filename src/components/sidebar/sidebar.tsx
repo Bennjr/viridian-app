@@ -18,12 +18,10 @@ const NavItemContent = ({ link, isActive }: { link: any, isActive: boolean }) =>
         <div
             className="flex items-center gap-3 w-full h-full"
             onMouseEnter={() => setIsPressed(true)}
-            onMouseLeave={() => setIsPressed(false)} // Reset if they slide mouse off
+            onMouseLeave={() => setIsPressed(false)}
         >
-            {/* The Indicator Line */}
             <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />
 
-            {/* The Smart Icon */}
             <FolderAnimation isPressed={isPressed} />
 
             <span className="text-[14px]">{link.label}</span>
@@ -54,7 +52,6 @@ export default function Sidebar() {
                                         : "text-c-text/70 hover:bg-c-btn_hover hover:text-c-text"}
                              `}
                             >
-                                {/* Pass the isActive state from NavLink into our smart content wrapper */}
                                 {({ isActive }) => (
                                     <>
                                         <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />
