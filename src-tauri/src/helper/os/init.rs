@@ -1,4 +1,4 @@
-use std::{fs, string::String};
+use std::{fs, string::String, path::Path};
 use serde_json::json;
 
 #[tauri::command]
@@ -14,16 +14,17 @@ pub fn search_files(query: String) -> Vec<serde_json::Value> {
 
     for files in paths {
         let file = files.unwrap();
-        let file_name = file.file_name();
-        let file_name_str = file_name.to_string_lossy();
+        let filename = file.file_name();
+        let filename_str = filename.to_string_lossy();
 
         let file_path = file.path().to_string_lossy().to_string();
 
-        if query.is_empty() || file_name_str.contains(&query) {
+        if query.is_empty() || filename_str.contains(&query) {
             vec.push(json!({
-                "name": file_name_str,
-                "desc": "some desc",
-                "path": file_path
+                    "name": filename_str,
+                    "desc": "some desc",
+                    "path": file_path,
+                    "type": Path::new(&filename).extension()
             }));
         }
     }

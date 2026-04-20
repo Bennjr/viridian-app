@@ -33,8 +33,10 @@ export default function App() {
 
   return (
     <div>
-      <nav className="flex justify-between items-center mb-6">
-        <h2 className="font-bold">Hjem</h2>
+      <nav className="flex justify-between items-center mb-10">
+        <div className="fixed bg-c-secondary w-full p-4">
+          <h2 className="font-bold">Hjem</h2>
+        </div>
       </nav>
 
       <main className="grid auto-cols gap-10">

@@ -47,7 +47,7 @@ export default function Layout() {
 
                 <section className="hero flex-1 overflow-y-auto h-full">
                     {/* The p-8 here ensures the scaled text isn't touching the edges */}
-                    <div className="p-8">
+                    <div className="select-none">
                         <Outlet />
                     </div>
                 </section>

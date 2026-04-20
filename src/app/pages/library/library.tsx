@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "../../global.css";
 import { Icon } from "../../../components";
+import { SingleFileView } from "../../../components/lib_ops/lib_ops";
 
 const FileViewer = ({ label, path, onClose }: any) => {
   const [content, setContent] = useState("");
@@ -71,6 +72,7 @@ export default function Library() {
         if (isCurrent && Array.isArray(data)) {
           const limited = data.length > 50 ? data.slice(0, 50) : data;
           setFiles(limited);
+          console.log(limited)
         }
       })
       .catch(console.error);
@@ -80,38 +82,56 @@ export default function Library() {
 
   return (
     <div className="flex flex-col gap-6 text-c-text">
-      <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold tracking-tight">Bibliotek</h1>
-        <button className="bg-c-brand hover:bg-c-brand/80 text-white px-4 py-1.5 rounded-md text-sm font-semibold transition-colors">
-          Last opp
-        </button>
-      </header>
+      <header className="sticky top-0 z-50 w-full border-b border-c-divider bg-c-secondary/80 backdrop-blur-md p-4">
+        <div className=" px-4 py-4 space-y-4">
 
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <textarea
-            rows={1}
-            placeholder="Søk i biblioteket..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-md px-10 py-2 text-sm outline-none focus:border-c-brand/50 transition-all resize-none overflow-hidden"
-          />
-          <Icon src="/search.svg" size="w-4 h-4" className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
-        </div>
-
-        <nav className="flex bg-white/[0.03] border border-white/10 rounded-md p-1 gap-1">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setActiveFilter(f.id)}
-              className={`px-3 py-1 rounded-sm text-xs font-bold transition-all 
-                ${activeFilter === f.id ? 'bg-c-brand/20 text-c-brand' : 'opacity-40 hover:opacity-100'}`}
-            >
-              {f.label}
+          {/* Top Row: Title & Action */}
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-white">Bibliotek</h1>
+            </div>
+            <button className="bg-c-brand hover:bg-c-brand/90 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95 shadow-lg shadow-c-brand/20">
+              Last opp
             </button>
-          ))}
-        </nav>
-      </div>
+          </div>
+
+          {/* Bottom Row: Search & Filters */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Search Bar */}
+            <div className="relative flex-1 group">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Icon src="/search.svg" size="w-4 h-4" className="opacity-40 group-focus-within:opacity-100 group-focus-within:text-c-brand transition-opacity" />
+              </div>
+              <input
+                type="text"
+                placeholder="Søk i biblioteket..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-c-brand/50 focus:border-c-brand/50 transition-all placeholder:text-white/20"
+              />
+            </div>
+
+            {/* Filter Segmented Control */}
+            <nav className="flex bg-black/20 border border-white/5 p-1 rounded-xl w-fit">
+              {FILTERS.map((f) => {
+                const isActive = activeFilter === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setActiveFilter(f.id)}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${isActive
+                      ? 'bg-c-brand text-white shadow-sm'
+                      : 'text-white/40 hover:text-white hover:bg-white/5'
+                      }`}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+      </header>
 
 
       <section className="w-full bg-c-secondary p-1 rounded-md">
@@ -121,7 +141,7 @@ export default function Library() {
         <Icon src="/chevron-down.svg" size="w-4 h-4" className="opacity-20" />
       </section>
 
-      <main className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 pb-20">
+      <main className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 pb-20 p-8">
         {files.map((item: any) => (
           <div
             key={item.path}
@@ -154,6 +174,7 @@ export default function Library() {
           onClose={() => setSelectedFile(null)}
         />
       )}
+      <SingleFileView files={files} setContent={(content) => FileViewer(content)} onClose={() => setSelectedFile(null)} />
     </div>
   );
 }
