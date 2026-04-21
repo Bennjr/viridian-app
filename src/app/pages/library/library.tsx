@@ -129,14 +129,6 @@ export default function Library() {
         </div>
       </header>
 
-
-      <section className="w-full bg-c-secondary p-1 rounded-md">
-        <div className="flex flex-row">
-          <p>Content</p>
-        </div>
-        <Icon src="/chevron-down.svg" size="w-4 h-4" className="opacity-20" />
-      </section>
-
       <main className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 pb-20 p-8">
         {files.map((item: any) => (
           <div

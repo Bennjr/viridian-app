@@ -9,6 +9,8 @@ export default {
       colors: {
         c: {
           brand: "var(--c_brand)",
+          light_brand: "var(--c-lighter-brand)",
+          secondary_brand: "var(--c-secondary-brand)",
           primary: "var(--c_primary)",
           secondary: "var(--c_secondary_bg)",
           tertiery: "var(--c_tertiery)",

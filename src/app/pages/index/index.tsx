@@ -49,11 +49,16 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto w-full p-8 space-y-10">
+      <main className="max-w-6xl mx-auto w-full p-8 space-y-5">
 
         <section className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">Hei igjen! 👋</h1>
-          <p className="text-c-text/50">Hva vil du utrette i dag?</p>
+        </section>
+
+        <section className="flex">
+          <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-6 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
+            <h1>Noe stort no</h1>
+          </div>
         </section>
 
         <section className="flex flex-col gap-3">

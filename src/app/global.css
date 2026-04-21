@@ -8,6 +8,8 @@
   :root,
   [data-theme="light"] {
     --c_brand: #3a7561;
+    --c-secondary-brand: #4E8A8A;
+    --c-lighter-brand: #7bd4b6;
     --c_primary: #f5f5f5;
     --c_secondary_bg: #ececec;
     --c_tertiery: #e2e2e2;

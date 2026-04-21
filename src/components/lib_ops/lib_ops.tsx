@@ -42,11 +42,11 @@ export function SingleFileView({ files, setContent }: SingleFileViewProps) {
                     <section key={type} className="flex flex-col gap-1">
                         <button
                             onClick={() => toggleCategory(type)}
-                            className="flex items-center justify-between w-full bg-white/5 hover:bg-white/10 p-3 rounded-xl border border-white/5 transition-colors group"
+                            className="flex items-center justify-between w-full bg-c-secondary hover:bg-c-hover p-3 transition-colors group"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="bg-c-brand/20 p-2 rounded-lg">
-                                    <Icon src="/file.svg" size="w-4 h-4" className="text-c-brand" />
+                                <div className="bg-c-brand p-2 rounded-lg">
+                                    <Icon src="/file-text.svg" size="w-4 h-4" className="text-c-brand" />
                                 </div>
                                 <span className="font-bold text-sm uppercase tracking-wider opacity-80">
                                     {type} <span className="ml-1 opacity-40">({typeFiles.length})</span>
@@ -67,7 +67,6 @@ export function SingleFileView({ files, setContent }: SingleFileViewProps) {
                                         onClick={() => setContent(file.content)}
                                         className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:border-c-brand/50 hover:bg-c-brand/5 cursor-pointer transition-all group"
                                     >
-                                        <Icon src="/file-text.svg" size="w-4 h-4" className="opacity-40 group-hover:text-c-brand group-hover:opacity-100" />
                                         <div className="flex flex-col overflow-hidden">
                                             <span className="text-sm font-medium truncate">{file.name}</span>
                                             <span className="text-[10px] opacity-40 truncate">
