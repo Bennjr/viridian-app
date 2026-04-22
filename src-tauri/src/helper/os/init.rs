@@ -1,5 +1,6 @@
 use std::{fs, string::String, path::Path};
-use serde_json::json;
+use serde_json::{json, Value};
+use std::time::UNIX_EPOCH;
 
 #[tauri::command]
 pub fn save_file(path: String) -> Result<(), String> {
@@ -8,27 +9,55 @@ pub fn save_file(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn search_files(query: String) -> Vec<serde_json::Value> {
-    let paths = fs::read_dir("../user/save/lib").map_err(|e| e.to_string()).unwrap();
+pub fn search_files(query: String) -> Result<Vec<Value>, String> {
+    let dir_path = "../user/save/lib"; 
+    let paths = fs::read_dir(dir_path).map_err(|e| e.to_string())?;
+    
     let mut vec = Vec::new();
 
-    for files in paths {
-        let file = files.unwrap();
-        let filename = file.file_name();
-        let filename_str = filename.to_string_lossy();
+    for entry_result in paths {
+        let entry = match entry_result {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
 
-        let file_path = file.path().to_string_lossy().to_string();
+        let path = entry.path();
+        
+        let filename = path.file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string();
 
-        if query.is_empty() || filename_str.contains(&query) {
+        let file_type = if path.is_dir() {
+            "folder".to_string()
+        } else {
+            path.extension()
+                .and_then(|ext| ext.to_str())
+                .unwrap_or("file")
+                .to_lowercase()
+        };
+
+        if query.is_empty() || filename.to_lowercase().contains(&query.to_lowercase()) {
+            let metadata = entry.metadata().map_err(|e| e.to_string())?;
+            
+            let modified = metadata.modified()
+                .unwrap_or(UNIX_EPOCH)
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs();
+
             vec.push(json!({
-                    "name": filename_str,
-                    "desc": "some desc",
-                    "path": file_path,
-                    "type": Path::new(&filename).extension()
+                "name": filename,
+                "path": path.to_string_lossy(),
+                "type": file_type,
+                "modified": modified,
+                "size": metadata.len(),
+                "desc": format!("{} fil", file_type.to_uppercase()) 
             }));
         }
     }
-    return vec
+
+    Ok(vec)
 }
 
 #[tauri::command]

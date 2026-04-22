@@ -66,19 +66,19 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto w-full p-8 space-y-5">
+      <main className="flex flex-col max-w-6xl mx-auto w-full p-8 gap-8">
 
-        <section className="flex flex-col gap-2">
+        <section className="flex">
           <h1 className="text-3xl font-bold tracking-tight">Hei igjen </h1>
         </section>
 
         <section className="flex">
           <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-6 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
-            <h1>Noe stort no</h1>
+            <h1>Stor velkommen til deg</h1>
           </div>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-row gap-2">
               <Icon src="/stopwatch.svg" size="w-4 h-4" />
@@ -126,7 +126,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className="flex flex-col gap-4">
+          <h2>Aktuelt</h2>
+          <div>
+            <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-4 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
+              <p>hallo</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon src="/clock.svg" size="w-4 h-4" className="opacity-50" />
@@ -150,9 +159,9 @@ export default function HomePage() {
         </section>
 
         <section>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 <Icon src="/clock.svg" size="w-4 h-4" className="opacity-50" />
                 <h3 className="font-semibold">Ordbok</h3>
               </div>
@@ -186,23 +195,18 @@ function FileCard({ item }: { item: any }) {
       <div className="aspect-video mb-4 bg-c-tertiery rounded-lg flex items-center justify-center relative overflow-hidden">
         <Icon src="/icons/log.svg" size="w-8 h-8" className="opacity-10 group-hover:opacity-20 transition-opacity" />
         <div className="absolute top-2 right-2">
-          <Icon src="/icons/favorite.svg" size="w-4 h-4" className="opacity-0 group-hover:opacity-40 hover:!opacity-100" />
+          <Icon src="/favorite.svg" size="w-4 h-4" className="opacity-0 group-hover:opacity-40 hover:!opacity-100" />
         </div>
       </div>
 
       <div className="space-y-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Icon src="/icons/notes.svg" size="w-3 h-3" className="opacity-40" />
           <h4 className="font-medium text-sm truncate select-all">{item.name}</h4>
         </div>
         <p className="text-xs opacity-40 line-clamp-2 select-all leading-relaxed">
           {item.desc || "Ingen beskrivelse tilgjengelig for denne filen."}
         </p>
-      </div>
-
-      <div className="mt-4 pt-4 border-t border-c-divider flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-widest opacity-30 font-bold">Dokument</span>
-        <Icon src="/icons/arrow-right.svg" size="w-3 h-3" className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
       </div>
     </div>
   );
