@@ -1,0 +1,84 @@
+{
+  "onboarding": {
+    "progress": "Progreso",
+    "step": "Paso",
+    "of": "de",
+    "welcome": "Bienvenido a Viridian",
+    "welcomeDesc": "Una herramienta diseñada para facilitar la lectura y escritura para personas con dislexia.",
+    "getStarted": "Comenzar",
+    "fontSizeTitle": "Elegir Tamaño de Fuente",
+    "fontSizeDesc": "Elige el tamaño que sea más cómodo de leer.",
+    "small": "Pequeño",
+    "medium": "Mediano",
+    "large": "Grande",
+    "menuPosition": "Posición del Menú",
+    "menuDesc": "¿Cómo quieres acceder a tus herramientas?",
+    "floating": "Flotante",
+    "floatingDesc": "Siempre cerca del texto",
+    "fixed": "Superior",
+    "fixedDesc": "Fijo en la parte superior de la pantalla",
+    "back": "Volver",
+    "next": "Siguiente",
+    "startApp": "Iniciar Viridian",
+    "chooseLanguage": "Elegir idioma",
+    "chooseLanguageDesc": "Elige el idioma que deseas usar en la aplicación.",
+    "themeTitle": "Elegir Tema de Color",
+    "themeDesc": "El modo oscuro suele ser mejor para la dislexia."
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza Viridian para tu experiencia de lectura",
+    "searchPlaceholder": "Buscar en configuración...",
+    "general": "General",
+    "appearance": "Apariencia",
+    "accessibility": "Accesibilidad",
+    "about": "Acerca de la App",
+    "autoStart": "Iniciar automáticamente al iniciar sesión",
+    "notifications": "Notificaciones del sistema",
+    "on": "Activado",
+    "off": "Desactivado",
+    "fontSize": "Tamaño de fuente",
+    "menuTransparency": "Transparencia del menú",
+    "colorTheme": "Tema de color",
+    "language": "Idioma"
+  },
+  "library": {
+    "favorites": "Favoritos",
+    "time": "Tiempo",
+    "fileType": "Tipo de archivo",
+    "library": "Biblioteca",
+    "upload": "Subir",
+    "searchLibrary": "Buscar en biblioteca...",
+    "preview": "Vista previa",
+    "document": "Documento",
+    "clear": "Limpiar"
+  },
+  "sidebar": {
+    "home": "Inicio",
+    "library": "Biblioteca",
+    "log": "Registro",
+    "notes": "Notas",
+    "dictionary": "Diccionario",
+    "typing": "Escritura",
+    "settings": "Configuración"
+  },
+  "index": {
+    "home": "Inicio",
+    "quickSearch": "Búsqueda rápida..."
+  },
+  "dictionary": {
+    "dictionary": "Diccionario",
+    "searchWords": "Buscar palabras...",
+    "searching": "Buscando...",
+    "resultsFor": "Encontrados resultados para",
+    "exactMatches": "Coincidencias exactas",
+    "noExact": "No hay coincidencias exactas",
+    "similarWords": "Palabras similares"
+  },
+  "languages": {
+    "nb": "Norsk",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  }
+}

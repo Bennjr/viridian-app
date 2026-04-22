@@ -3,6 +3,15 @@ import { invoke } from "@tauri-apps/api/core";
 import "../../global.css";
 import { Icon } from "../../../components";
 import { SingleFileView } from "../../../components/lib_ops/lib_ops";
+import { useLanguage } from "../../../context/LanguageContext";
+import { getTranslations } from "../../../utils/translations";
+
+type Lang = "no" | "en" | "es" | "de";
+
+// "name": "something"
+// "path": "something"
+// "desc": "something"
+// "type": "filetype"
 
 const FileViewer = ({ label, path, onClose }: any) => {
   const [content, setContent] = useState("");
@@ -44,7 +53,7 @@ const FileViewer = ({ label, path, onClose }: any) => {
           />
           {content ?
             <div className="absolute bottom-3 right-3 absolute p-2 text-white transition-all ">
-              <button onClick={() => setContent("")}>Tøm</button>
+              <button onClick={() => setContent("")}>{("clear")}</button>
             </div>
             : <div></div>}
         </div>
@@ -53,32 +62,73 @@ const FileViewer = ({ label, path, onClose }: any) => {
   );
 }
 
-const FILTERS = [
-  { id: 'fav', label: 'Favoritter', icon: '/favorite.svg' },
-  { id: 'time', label: 'Tid', icon: '/clock.svg' },
-  { id: 'type', label: 'Filtype', icon: '/folder.svg' },
-];
+  const FILTERS = [
+    { id: 'fav', key: 'favorites', icon: '/favorite.svg' },
+    { id: 'time', key: 'time', icon: '/clock.svg' },
+    { id: 'type', key: 'fileType', icon: '/folder.svg' },
+  ];
 
 export default function Library() {
   const [files, setFiles] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState('fav');
+  const [activeFilter, setActiveFilter] = useState('time'); // Changed default to 'time'
   const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  const { language } = useLanguage();
+  const libraryTranslations = getTranslations(language as Lang, 'library');
+  const t = (key: string) => libraryTranslations[key] || key;
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('library-favorites');
+    if (savedFavorites) {
+      setFavorites(new Set(JSON.parse(savedFavorites)));
+    }
+  }, []);
+
+  // Save favorites to localStorage
+  useEffect(() => {
+    localStorage.setItem('library-favorites', JSON.stringify([...favorites]));
+  }, [favorites]);
+
+  const toggleFavorite = (filePath: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering file selection
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(filePath)) {
+        newFavorites.delete(filePath);
+      } else {
+        newFavorites.add(filePath);
+      }
+      return newFavorites;
+    });
+  };
 
   useEffect(() => {
     let isCurrent = true;
     invoke("search_files", { query: searchQuery })
       .then((data: any) => {
         if (isCurrent && Array.isArray(data)) {
-          const limited = data.length > 50 ? data.slice(0, 50) : data;
-          setFiles(limited);
-          console.log(limited)
+          let processedFiles = data.slice(0, 50);
+
+          // Sort by time (newest first) if time filter is active
+          if (activeFilter === 'time') {
+            processedFiles.sort((a, b) => {
+              // Assuming files have a timestamp or we can use some sorting logic
+              // For now, we'll sort by name length as a simple example
+              // In a real app, you'd sort by creation/modification date
+              return b.name.length - a.name.length;
+            });
+          }
+
+          setFiles(processedFiles);
         }
       })
       .catch(console.error);
 
     return () => { isCurrent = false; };
-  }, [searchQuery]);
+  }, [searchQuery, activeFilter]);
 
   return (
     <div className="flex flex-col gap-6 text-c-text">
@@ -87,10 +137,10 @@ export default function Library() {
 
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Bibliotek</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">{t("library")}</h1>
             </div>
             <button className="bg-c-brand hover:bg-c-brand/90 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95 shadow-lg shadow-c-brand/20">
-              Last opp
+              {t("upload")}
             </button>
           </div>
 
@@ -101,7 +151,7 @@ export default function Library() {
               </div>
               <input
                 type="text"
-                placeholder="Søk i biblioteket..."
+                placeholder={t("searchLibrary")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-c-brand/50 focus:border-c-brand/50 transition-all placeholder:text-white/20"
@@ -120,7 +170,7 @@ export default function Library() {
                       : 'text-white/40 hover:text-white hover:bg-white/5'
                       }`}
                   >
-                    {f.label}
+                    {t(f.key)}
                   </button>
                 );
               })}
@@ -130,16 +180,36 @@ export default function Library() {
       </header>
 
       <main className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 pb-20 p-8">
-        {files.map((item: any) => (
+        {files
+          .filter(item => {
+            if (activeFilter === 'fav') {
+              return favorites.has(item.path);
+            }
+            return true; // Show all for 'time' and 'type' filters
+          })
+          .map((item: any) => (
           <div
             key={item.path}
             onClick={() => setSelectedFile(item)}
-            className="group cursor-pointer flex flex-col bg-white/[0.02] border border-white/5 rounded-lg overflow-hidden transition-all hover:border-c-brand/40 hover:bg-white/[0.04]"
+            className="group cursor-pointer flex flex-col bg-white/[0.02] border border-white/5 rounded-lg overflow-hidden transition-all hover:border-c-brand/40 hover:bg-white/[0.04] relative"
           >
+            {/* Favorite star */}
+            <button
+              onClick={(e) => toggleFavorite(item.path, e)}
+              className="absolute top-2 right-2 z-10 p-1 rounded-full bg-black/20 hover:bg-black/40 transition-colors"
+            >
+              <Icon
+                src="/favorite.svg"
+                size="w-4 h-4"
+                color={favorites.has(item.path) ? "bg-yellow-400" : "bg-white/40"}
+                className={favorites.has(item.path) ? "drop-shadow-sm" : ""}
+              />
+            </button>
+
             <div className="bg-black/20 aspect-video flex flex-col items-center justify-center relative">
               <Icon src="/folder.svg" size="w-10 h-10" className="opacity-[0.03] group-hover:opacity-10 transition-opacity" />
               <span className="text-[9px] font-black uppercase tracking-[0.3em] opacity-[0.03] mt-2 group-hover:opacity-10 transition-opacity">
-                Preview
+                {t("preview")}
               </span>
             </div>
 
@@ -148,7 +218,7 @@ export default function Library() {
                 {item.name}
               </h2>
               <p className="text-[10px] font-bold opacity-20 uppercase tracking-widest mt-1">
-                Dokument
+                {t("document")}
               </p>
             </div>
           </div>

@@ -1,0 +1,84 @@
+{
+  "onboarding": {
+    "progress": "Progress",
+    "step": "Step",
+    "of": "of",
+    "welcome": "Welcome to Viridian",
+    "welcomeDesc": "A tool designed to make reading and writing easier for you with dyslexia.",
+    "getStarted": "Get Started",
+    "fontSizeTitle": "Choose Font Size",
+    "fontSizeDesc": "Choose the size that's most comfortable to read.",
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "menuPosition": "Menu Position",
+    "menuDesc": "How would you like to access your tools?",
+    "floating": "Floating",
+    "floatingDesc": "Always near the text",
+    "fixed": "Top",
+    "fixedDesc": "Fixed at the top of the screen",
+    "back": "Back",
+    "next": "Next",
+    "startApp": "Start Viridian",
+    "chooseLanguage": "Choose Language",
+    "chooseLanguageDesc": "Choose the language you want to use in the app.",
+    "themeTitle": "Choose Color Theme",
+    "themeDesc": "Dark mode is often best for dyslexia."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize Viridian for your reading experience",
+    "searchPlaceholder": "Search settings...",
+    "general": "General",
+    "appearance": "Appearance",
+    "accessibility": "Accessibility",
+    "about": "About App",
+    "autoStart": "Start automatically on login",
+    "notifications": "System notifications",
+    "on": "On",
+    "off": "Off",
+    "fontSize": "Font Size",
+    "menuTransparency": "Menu Transparency",
+    "colorTheme": "Color Theme",
+    "language": "Language"
+  },
+  "library": {
+    "favorites": "Favorites",
+    "time": "Time",
+    "fileType": "File Type",
+    "library": "Library",
+    "upload": "Upload",
+    "searchLibrary": "Search library...",
+    "preview": "Preview",
+    "document": "Document",
+    "clear": "Clear"
+  },
+  "sidebar": {
+    "home": "Home",
+    "library": "Library",
+    "log": "Log",
+    "notes": "Notes",
+    "dictionary": "Dictionary",
+    "typing": "Typing",
+    "settings": "Settings"
+  },
+  "index": {
+    "home": "Home",
+    "quickSearch": "Quick search..."
+  },
+  "dictionary": {
+    "dictionary": "Dictionary",
+    "searchWords": "Search for words...",
+    "searching": "Searching...",
+    "resultsFor": "Found results for",
+    "exactMatches": "Exact matches",
+    "noExact": "No exact matches",
+    "similarWords": "Similar words"
+  },
+  "languages": {
+    "nb": "Norsk",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  }
+}

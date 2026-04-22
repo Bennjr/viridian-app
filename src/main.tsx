@@ -4,13 +4,16 @@ import { HashRouter } from 'react-router-dom';
 import Router from "./app/router";
 
 import { ThemeProvider } from "./context/ThemeContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider>
-      <HashRouter>
-        <Router />
-      </HashRouter>
+      <LanguageProvider>
+        <HashRouter>
+          <Router />
+        </HashRouter>
+      </LanguageProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

@@ -1,35 +1,23 @@
 import { NavLink } from "react-router-dom";
-import { FolderAnimation, Icon } from "../../components";
-import { useState } from "react";
+import { Icon } from "../../components";
+import { useLanguage } from "../../context/LanguageContext";
+import { getTranslations } from "../../utils/translations";
+
+type Lang = "no" | "en" | "es" | "de";
 
 const links = [
-    { label: "Hovedside", svg: "/home.svg", to: "/" },
-    { label: "Bibliotek", svg: "/folder.svg", to: "/library", isFolder: true },
-    { label: "Logg", svg: "/log.svg", to: "/log" },
-    { label: "Notater", svg: "/notes.svg", to: "/notes" },
-    { label: "Ordbok", svg: "/dict.svg", to: "/dict" },
-    { label: "Skriving", svg: "/type.svg", to: "/typing" }
+    { key: "home", svg: "/home.svg", to: "/" },
+    { key: "library", svg: "/folder.svg", to: "/library", isFolder: true },
+    { key: "log", svg: "/log.svg", to: "/log" },
+    { key: "notes", svg: "/notes.svg", to: "/notes" },
+    { key: "dictionary", svg: "/dict.svg", to: "/dict" },
+    { key: "typing", svg: "/type.svg", to: "/typing" }
 ];
 
-const NavItemContent = ({ link, isActive }: { link: any, isActive: boolean }) => {
-    const [isPressed, setIsPressed] = useState(false);
-
-    return (
-        <div
-            className="flex items-center gap-3 w-full h-full"
-            onMouseEnter={() => setIsPressed(true)}
-            onMouseLeave={() => setIsPressed(false)}
-        >
-            <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />
-
-            <FolderAnimation isPressed={isPressed} />
-
-            <span className="text-[14px]">{link.label}</span>
-        </div>
-    );
-};
-
 export default function Sidebar() {
+    const { language } = useLanguage();
+    const sidebarTranslations = getTranslations(language as Lang, 'sidebar');
+    const t = (key: string) => sidebarTranslations[key] || key;
     return (
         <aside className="bg-c-secondary backdrop-blur-md text-c-text w-56 h-full flex flex-col justify-between sticky top-0 z-50 shadow-2xl">
 
@@ -62,7 +50,7 @@ export default function Sidebar() {
                                             size="w-5 h-5"
                                             className="group-hover:scale-110 transition-transform"
                                         />
-                                        <span className="text-[14px]">{link.label}</span>
+                                        <span className="text-[14px]">{t(link.key)}</span>
                                     </>
                                 )}
                             </NavLink>
