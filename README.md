@@ -1,22 +1,21 @@
-# Viridian app
+# Viridian
+
+This is the official repo for the Viridian app
 
 > [!NOTE]
-> This is a early build of the app. More updates are to come
+> This is a very early build, and more features is to come
 
-This is a app, which will be a soft replacement to lyngdys, supported langs will include no, and en. Our priority is no first and en after, more language support may come later
+## FEATURE REQUESTS
 
-This is solely developed by Benjamin and Jordi as a part of our mission of creating a better and more universal tool.
-
-## Building and running the app locally
-
-To run the app, which will build it and run it you will need
-- Rust
-- Cargo
-
-You can check if you have this by running `rustc --version` and `cargo --version` in the terminal.
-If you do not have rust or cargo installed you can find instructions on the official rust website https://rust-lang.org/tools/install/
-
-Commands to build and run the app in dev mode are `pnpm tauri dev` if you use another package manager switch "pnpm" with your preffered package manager. 
-Beware that compatability issues may occur if you use another package manager
-
-## more to come
+- [ ] UI overlay
+- Make the ui transparent on move
+- Make the translate change content on whatever your on using an api or something(?)
+#
+- [ ] Keybinds
+- For opening the ui
+- for all the functions within the ui
+- extra for superusers
+#
+- [ ] TTS
+- A more comprehensive tts system (the tts system right now is temp)
+- Add support for custom voices if wanted
