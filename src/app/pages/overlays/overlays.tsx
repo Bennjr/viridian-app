@@ -1,14 +1,111 @@
 import "../../global.css";
 import { useState, useEffect } from "react";
 
-import { ThemeSelector } from "../../../components"
+import { useLanguage } from "../../../context/LanguageContext";
 
-const ProgressBar = ({ step, total }: { step: number; total: number }) => {
+type Lang = "no" | "en" | "es" | "de";
+
+const TRANSLATIONS: Record<Lang, Record<string, string>> = {
+  no: {
+    progress: "Fremgang",
+    step: "Steg",
+    of: "av",
+    welcome: "Velkommen til Viridian",
+    welcomeDesc: "Et verktøy designet for å gjøre lesing og skriving enklere for deg med dysleksi.",
+    getStarted: "Kom i gang",
+    fontSizeTitle: "Velg tekststørrelse",
+    fontSizeDesc: "Velg den størrelsen som er mest behagelig å lese.",
+    small: "Liten",
+    medium: "Medium",
+    large: "Stor",
+    menuPosition: "Menyplassering",
+    menuDesc: "Hvordan vil du ha tilgang til verktøyene dine?",
+    floating: "Flytende",
+    floatingDesc: "Alltid nær teksten",
+    fixed: "Topp",
+    fixedDesc: "Fast i toppen av skjermen",
+    back: "Tilbake",
+    next: "Neste",
+    startApp: "Start Viridian",
+  },
+  en: {
+    progress: "Progress",
+    step: "Step",
+    of: "of",
+    welcome: "Welcome to Viridian",
+    welcomeDesc: "A tool designed to make reading and writing easier for you with dyslexia.",
+    getStarted: "Get Started",
+    fontSizeTitle: "Choose Font Size",
+    fontSizeDesc: "Choose the size that's most comfortable to read.",
+    small: "Small",
+    medium: "Medium",
+    large: "Large",
+    menuPosition: "Menu Position",
+    menuDesc: "How would you like to access your tools?",
+    floating: "Floating",
+    floatingDesc: "Always near the text",
+    fixed: "Top",
+    fixedDesc: "Fixed at the top of the screen",
+    themeTitle: "Choose Color Theme",
+    themeDesc: "Dark mode is often best for dyslexia.",
+    back: "Back",
+    next: "Next",
+    startApp: "Start Viridian",
+  },
+  es: {
+    progress: "Progreso",
+    step: "Paso",
+    of: "de",
+    welcome: "Bienvenido a Viridian",
+    welcomeDesc: "Una herramienta diseñada para facilitar la lectura y escritura para personas con dislexia.",
+    getStarted: "Comenzar",
+    fontSizeTitle: "Elegir Tamaño de Fuente",
+    fontSizeDesc: "Elige el tamaño que sea más cómodo de leer.",
+    small: "Pequeño",
+    medium: "Mediano",
+    large: "Grande",
+    menuPosition: "Posición del Menú",
+    menuDesc: "¿Cómo quieres acceder a tus herramientas?",
+    floating: "Flotante",
+    floatingDesc: "Siempre cerca del texto",
+    fixed: "Superior",
+    fixedDesc: "Fijo en la parte superior de la pantalla",
+    back: "Volver",
+    next: "Siguiente",
+    startApp: "Iniciar Viridian",
+  },
+  de: {
+    progress: "Fortschritt",
+    step: "Schritt",
+    of: "von",
+    welcome: "Willkommen bei Viridian",
+    welcomeDesc: "Ein Werkzeug, das entwickelt wurde, um das Lesen und Schreiben für Menschen mit Dyslexie zu erleichtern.",
+    getStarted: "Loslegen",
+    fontSizeTitle: "Schriftgröße wählen",
+    fontSizeDesc: "Wähle die Größe, die am angenehmsten zu lesen ist.",
+    small: "Klein",
+    medium: "Mittel",
+    large: "Groß",
+    menuPosition: "Menüposition",
+    menuDesc: "Wie möchtest du auf deine Werkzeuge zugreifen?",
+    floating: "Schwebend",
+    floatingDesc: "Immer nahe am Text",
+    fixed: "Oben",
+    fixedDesc: "Fest oben auf dem Bildschirm",
+    back: "Zurück",
+    next: "Weiter",
+    startApp: "Viridian starten",
+    themeTitle: "Farbthema wählen",
+    themeDesc: "Dark Mode ist oft am besten für Dyslexie.",
+  },
+};
+
+const ProgressBar = ({ step, total, t }: { step: number; total: number; t: (key: string) => string }) => {
     return (
         <div className="flex flex-col gap-2 w-full max-w-xs mx-auto mb-8">
             <div className="flex justify-between text-[10px] uppercase tracking-widest opacity-50 font-bold">
-                <span>Fremgang</span>
-                <span>Steg {step} av {total}</span>
+                <span>{t("progress")}</span>
+                <span>{t("step")} {step} {t("of")} {total}</span>
             </div>
             <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                 <div
@@ -26,11 +123,15 @@ interface Props {
 
 export default function Onboarding({ setFirstStart }: Props) {
     const [step, setStep] = useState(0);
-    const totalSteps = 3;
+    const totalSteps = 4;
 
     const [fontSize, setFontSize] = useState("medium");
     const [theme, setTheme] = useState("light");
     const [textMode, setTextMode] = useState("floating");
+    const [selectedLanguage, setSelectedLanguage] = useState<Lang>("no");
+
+    const { language, setLanguage } = useLanguage();
+    const t = (key: string) => TRANSLATIONS[language][key] || key;
 
     useEffect(() => {
         setFontSize(localStorage.getItem("fontSize") || "medium");
@@ -54,15 +155,15 @@ export default function Onboarding({ setFirstStart }: Props) {
             {step === 0 && (
                 <div className="flex-1 flex flex-col items-center justify-center p-10 text-center animate-in fade-in zoom-in duration-700">
                     <div className="mb-6 size-24 bg-c-brand rounded-3xl shadow-2xl shadow-c-brand/20 flex items-center justify-center text-4xl font-black text-white">V</div>
-                    <h1 className="text-5xl font-black tracking-tight mb-4">Velkommen til Viridian</h1>
+                    <h1 className="text-5xl font-black tracking-tight mb-4">{t("welcome")}</h1>
                     <p className="text-xl opacity-60 max-w-md leading-relaxed mb-10">
-                        Et verktøy designet for å gjøre lesing og skriving enklere for deg med dysleksi.
+                        {t("welcomeDesc")}
                     </p>
                     <button
                         className="bg-c-brand text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl shadow-c-brand/20 hover:scale-105 active:scale-95 transition-all"
                         onClick={nextStep}
                     >
-                        Kom i gang
+                        {t("getStarted")}
                     </button>
                 </div>
             )}
@@ -70,7 +171,7 @@ export default function Onboarding({ setFirstStart }: Props) {
             {step > 0 && (
                 <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full p-8">
 
-                    <ProgressBar step={step} total={totalSteps} />
+                    <ProgressBar step={step} total={totalSteps} t={t} />
 
                     <div className="flex-1 flex flex-col justify-center">
 
@@ -78,15 +179,15 @@ export default function Onboarding({ setFirstStart }: Props) {
                         {step === 1 && (
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
                                 <div className="text-center">
-                                    <h2 className="text-3xl font-bold mb-2">Velg tekststørrelse</h2>
-                                    <p className="opacity-50">Velg den størrelsen som er mest behagelig å lese.</p>
+                                    <h2 className="text-3xl font-bold mb-2">{t("fontSizeTitle")}</h2>
+                                    <p className="opacity-50">{t("fontSizeDesc")}</p>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-4">
                                     {[
-                                        { id: 'small', label: 'Liten', size: 'text-sm' },
-                                        { id: 'medium', label: 'Medium', size: 'text-base' },
-                                        { id: 'large', label: 'Stor', size: 'text-xl' }
+                                        { id: 'small', label: t('small'), size: 'text-sm' },
+                                        { id: 'medium', label: t('medium'), size: 'text-base' },
+                                        { id: 'large', label: t('large'), size: 'text-xl' }
                                     ].map((opt) => (
                                         <button
                                             key={opt.id}
@@ -107,14 +208,14 @@ export default function Onboarding({ setFirstStart }: Props) {
                         {step === 2 && (
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
                                 <div className="text-center">
-                                    <h2 className="text-3xl font-bold mb-2">Menyplassering</h2>
-                                    <p className="opacity-50">Hvordan vil du ha tilgang til verktøyene dine?</p>
+                                    <h2 className="text-3xl font-bold mb-2">{t("menuPosition")}</h2>
+                                    <p className="opacity-50">{t("menuDesc")}</p>
                                 </div>
 
                                 <div className="flex gap-4">
                                     {[
-                                        { id: 'floating', label: 'Flytende', desc: 'Alltid nær teksten' },
-                                        { id: 'fixed', label: 'Topp', desc: 'Fast i toppen av skjermen' }
+                                        { id: 'floating', label: t('floating'), desc: t('floatingDesc') },
+                                        { id: 'fixed', label: t('fixed'), desc: t('fixedDesc') }
                                     ].map((mode) => (
                                         <button
                                             key={mode.id}
@@ -138,14 +239,33 @@ export default function Onboarding({ setFirstStart }: Props) {
                             </div>
                         )}
 
-                        {/* STEP 3: THEME */}
-                        {step === 3 && (
+                        {/* STEP 4: LANGUAGE */}
+                        {step === 4 && (
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
                                 <div className="text-center">
-                                    <h2 className="text-3xl font-bold mb-2">Velg fargetema</h2>
-                                    <p className="opacity-50">Dark mode er ofte best for dysleksi.</p>
+                                    <h2 className="text-3xl font-bold mb-2">Velg språk</h2>
+                                    <p className="opacity-50">Velg språket du vil bruke i appen.</p>
                                 </div>
-                                <ThemeSelector />
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { id: 'no', label: 'Norsk', flag: '🇳🇴' },
+                                        { id: 'en', label: 'English', flag: '🇺🇸' },
+                                        { id: 'es', label: 'Español', flag: '🇪🇸' },
+                                        { id: 'de', label: 'Deutsch', flag: '🇩🇪' }
+                                    ].map((lang) => (
+                                        <button
+                                            key={lang.id}
+                                            onClick={() => setSelectedLanguage(lang.id as Lang)}
+                                            className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center gap-4
+                                                            ${selectedLanguage === lang.id ? 'border-c-brand bg-c-brand/5' : 'border-white/5 bg-c-secondary hover:border-white/10'}
+                                                        `}
+                                        >
+                                            <span className="text-3xl">{lang.flag}</span>
+                                            <span className="text-sm font-bold">{lang.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -155,15 +275,23 @@ export default function Onboarding({ setFirstStart }: Props) {
                         <button
                             onClick={prevStep}
                             className="px-6 py-2 font-bold opacity-40 hover:opacity-100 transition-opacity"
+                            disabled={step === 0}
                         >
-                            Tilbake
+                            {t("back")}
                         </button>
 
                         <button
                             className="bg-c-brand text-white px-10 py-3 rounded-xl font-bold shadow-lg shadow-c-brand/20 hover:scale-105 active:scale-95 transition-all"
-                            onClick={step === totalSteps ? () => setFirstStart(false) : nextStep}
+                            onClick={() => {
+                                if (step === totalSteps) {
+                                    setLanguage(selectedLanguage);
+                                    setFirstStart(false);
+                                } else {
+                                    nextStep();
+                                }
+                            }}
                         >
-                            {step === totalSteps ? 'Start Viridian' : 'Neste'}
+                            {step === totalSteps ? t("startApp") : t("next")}
                         </button>
                     </div>
                 </div>

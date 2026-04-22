@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Icon } from "../../../components";
+import { useLanguage } from "../../../context/LanguageContext";
+import { getTranslations } from "../../../utils/translations";
+
+type Lang = "no" | "en" | "es" | "de";
 
 export default function HomePage() {
   const [files, setFiles] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const { language } = useLanguage();
+  const indexTranslations = getTranslations(language as Lang, 'index');
+  const t = (key: string) => indexTranslations[key] || key;
 
   useEffect(() => {
     let isCurrent = true;
@@ -32,7 +39,7 @@ export default function HomePage() {
       >
         <div className="flex items-center gap-2 pointer-events-none">
           <Icon src="/icons/home.svg" size="w-4 h-4" color="bg-c-brand" />
-          <h2 className="text-sm font-medium opacity-70">Hjem</h2>
+          <h2 className="text-sm font-medium opacity-70">{t("home")}</h2>
         </div>
 
         <div className="flex items-center gap-4">
@@ -40,7 +47,7 @@ export default function HomePage() {
             <Icon src="/icons/search.svg" size="w-4 h-4" className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity" />
             <input
               type="text"
-              placeholder="Hurtigsøk..."
+              placeholder={t("quickSearch")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-c-secondary/50 border border-c-divider rounded-full pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-c-brand w-48 focus:w-64 transition-all"
@@ -52,7 +59,7 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto w-full p-8 space-y-5">
 
         <section className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">Hei igjen! 👋</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Hei igjen </h1>
         </section>
 
         <section className="flex">

@@ -1,830 +1,509 @@
-/**
- * Writing.tsx — Norsk språklæringsapp (Ordtrening)
- *
- * Arkitektur (én fil, tydelig delt i seksjoner):
- *   § 1  Typer & konstanter
- *   § 2  Lokal ordbok + normalisering (norsk)
- *   § 3  Levenshtein distance + autokorrektur
- *   § 4  API-lag (stavekontroll, oversettelse, fonetikk, TTS)
- *   § 5  React-komponenter (LangRow, WordCard, LoadingCard, LangPicker)
- *   § 6  Hoved-komponent (Writing)
- *
- * Avhengigheter: kun react + tailwindcss + global.css (CSS-variabler)
- */
+import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "../../../context/LanguageContext";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import "../../global.css";
-import { Icon } from "../../../components";
+type Lang = "no" | "en" | "es" | "de";
 
-/* ═══════════════════════════════════════════════════════════
-   § 1  TYPER & KONSTANTER
-═══════════════════════════════════════════════════════════ */
-
-type LangCode = "no" | "en" | "es";
-
-interface Translation {
-  lang: LangCode;
-  word: string;
-  phonetic: string;
-}
-
-interface WordEntry {
-  id: number;
-  inputRaw: string;       // Hva brukeren faktisk tastet
-  corrected: string;      // Riktig ord på kildespråket (etter autokorrektur)
-  sourceLang: LangCode;   // Hvilket språk brukeren skrev på
-  wasAutoFixed: boolean;
-  translations: Translation[];
-  addedAt: number;
-}
-
-interface AutocorrectResult {
-  word: string;
-  confidence: "high" | "medium" | "low";
-  source: "exact" | "normalized" | "levenshtein" | "api" | "unchanged";
-}
-
-/** Metadataene for hvert språk som vises i UI */
-const ALL_LANGUAGES: { code: LangCode; label: string; flag: string; icon: string; placeholder: string }[] = [
-  { code: "no", label: "Norsk",   flag: "🇳🇴", icon: "/translate.svg", placeholder: "Skriv et norsk ord..."    },
-  { code: "en", label: "English", flag: "🇬🇧", icon: "/translate.svg", placeholder: "Type an English word..."  },
-  { code: "es", label: "Español", flag: "🇪🇸", icon: "/translate.svg", placeholder: "Escribe una palabra..."   },
-];
-
-/** MyMemory bruker IETF-tags — "nb" for norsk bokmål, ikke "no" */
-const MYMEMORY_LANG: Record<LangCode, string> = { no: "nb", en: "en", es: "es" };
-
-/** TTS-locale per språk */
-const TTS_LANG: Record<LangCode, string> = { no: "nb-NO", en: "en-US", es: "es-ES" };
-
-/** Ordbok-API URL per kildespråk */
-const SPELLCHECK_API: Record<LangCode, (word: string) => string> = {
-  no: (w) => `https://ord.uib.no/api/suggest?q=${encodeURIComponent(w)}&dict=bm,nn&n=5`,
-  en: (w) => `https://api.datamuse.com/words?sp=${encodeURIComponent(w)}&v=en&max=1`,
-  es: (w) => `https://api.datamuse.com/words?sp=${encodeURIComponent(w)}&v=es&max=1`,
-};
-
-/* ═══════════════════════════════════════════════════════════
-   § 2  LOKAL ORDBOK + NORMALISERING (norsk)
-═══════════════════════════════════════════════════════════ */
-
-const LOCAL_DICTIONARY_NO = new Set([
-  "hei","ha","det","er","jeg","du","han","hun","vi","de",
-  "og","i","på","til","av","for","med","en","et","ei",
-  "ikke","som","men","om","kan","vil","skal","har","var",
-  "hus","bil","hund","katt","mann","kvinne","barn","dag",
-  "natt","tid","år","land","by","skole","arbeid","mat",
-  "vann","bok","ord","navn","sted","vei","dør","vindu",
-  "stol","bord","seng","rom","hjem","familie","venn",
-  "verden","folk","liv","problem","spørsmål","svar",
-  "gå","komme","si","gjøre","se","vite","ta","få",
-  "gi","bli","spørre","jobbe","lese","skrive","høre",
-  "tenke","forstå","bruke","finne","trenge","like",
-  "elske","hate","hjelpe","prøve","klare","ønske",
-  "snakke","fortelle","vise","lage","spise","drikke",
-  "god","dårlig","stor","liten","ny","gammel","ung",
-  "lang","kort","høy","lav","fin","stygg","glad","trist",
-  "rask","sakte","sterk","svak","varm","kald","riktig",
-  "feil","viktig","interessant","morsom","kjedelig",
-  "fokus","kanskje","selvfølgelig","definitivt","spesielt",
-  "egentlig","faktisk","plutselig","allerede","fortsatt",
-  "forskjell","mulighet","situasjon","forklaring",
-  "beskrivelse","opplevelse","betydning","utvikling",
-]);
-
-const NORMALIZATION_RULES_NO: [RegExp, string][] = [
-  [/kv/g,            "hv"],
-  [/sj(?!e)/g,       "skj"],
-  [/z/g,             "s"],
-  [/x/g,             "ks"],
-  [/c(?=[ei])/g,     "s"],
-  [/c(?=[aouå])/g,   "k"],
-  [/ph/g,            "f"],
-  [/tj(?!e)/g,       "kj"],
-  [/tion$/g,         "sjon"],
-  [/ght/g,           "kt"],
-  [/ll(?=[^aeiouæøå])/g, "l"],
-  [/ss(?=[^aeiouæøå])/g, "s"],
-];
-
-const WORD_CORRECTIONS_NO: Record<string, string> = {
-  "heg":"jeg","kansje":"kanskje","kanksje":"kanskje","kanskej":"kanskje",
-  "fokuz":"fokus","fokuss":"fokus","selvfølelig":"selvfølgelig",
-  "defenitivt":"definitivt","spesiellt":"spesielt","egentling":"egentlig",
-  "plutsling":"plutselig","alerede":"allerede","mangen":"mange",
-  "myge":"mye","noken":"noen","nokon":"noen","sien":"siden",
-  "huse":"hus","bille":"bil","dago":"dag","store":"stor",
-};
-
-/* ═══════════════════════════════════════════════════════════
-   § 3  LEVENSHTEIN + AUTOKORREKTUR
-═══════════════════════════════════════════════════════════ */
-
-/** Klassisk iterativ Levenshtein (O(m) plass, rolling array) */
-function levenshtein(a: string, b: string): number {
-  const la = a.length, lb = b.length;
-  if (la === 0) return lb;
-  if (lb === 0) return la;
-  let prev = Array.from({ length: lb + 1 }, (_, i) => i);
-  for (let i = 1; i <= la; i++) {
-    const curr = [i];
-    for (let j = 1; j <= lb; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
-    }
-    prev = curr;
-  }
-  return prev[lb];
-}
-
-function normalizeWordNo(word: string): string {
-  let w = word.toLowerCase().trim();
-  for (const [pat, rep] of NORMALIZATION_RULES_NO) w = w.replace(pat, rep);
-  return w;
-}
-
-function findBestLocalCandidate(
-  word: string,
-  dict: Set<string>
-): { word: string; distance: number } | null {
-  const lower = word.toLowerCase();
-  let best: { word: string; distance: number } | null = null;
-  for (const dictWord of dict) {
-    if (Math.abs(dictWord.length - lower.length) > 3) continue;
-    const dist = levenshtein(lower, dictWord);
-    if (dist === 0) return { word: dictWord, distance: 0 };
-    const maxAllowed = dictWord.length >= 5 ? 2 : 1;
-    if (dist <= maxAllowed && (!best || dist < best.distance))
-      best = { word: dictWord, distance: dist };
-  }
-  return best;
-}
-
-/**
- * Lokal autokorrektur — kun brukt for norsk.
- * Engelsk og spansk sendes rett til API.
- */
-function autocorrectLocalNo(raw: string): AutocorrectResult {
-  const lower = raw.toLowerCase().trim();
-  if (WORD_CORRECTIONS_NO[lower])
-    return { word: WORD_CORRECTIONS_NO[lower], confidence: "high", source: "exact" };
-  if (LOCAL_DICTIONARY_NO.has(lower))
-    return { word: lower, confidence: "high", source: "exact" };
-  const normalized = normalizeWordNo(lower);
-  if (normalized !== lower && LOCAL_DICTIONARY_NO.has(normalized))
-    return { word: normalized, confidence: "high", source: "normalized" };
-  const cRaw  = findBestLocalCandidate(lower, LOCAL_DICTIONARY_NO);
-  const cNorm = normalized !== lower ? findBestLocalCandidate(normalized, LOCAL_DICTIONARY_NO) : null;
-  const best  = !cNorm ? cRaw : !cRaw ? cNorm : cRaw.distance <= cNorm.distance ? cRaw : cNorm;
-  if (best) return { word: best.word, confidence: best.distance === 1 ? "high" : "medium", source: "levenshtein" };
-  return { word: lower, confidence: "low", source: "unchanged" };
-}
-
-/* ═══════════════════════════════════════════════════════════
-   § 4  API-LAG
-═══════════════════════════════════════════════════════════ */
-
-/** Verifiser / korriger norsk ord via UiB Ordbok-API */
-async function verifyWithOrdbokAPI(word: string): Promise<string> {
-  try {
-    const res = await fetch(SPELLCHECK_API.no(word), { signal: AbortSignal.timeout(4000) });
-    if (!res.ok) return word;
-    const data = await res.json();
-    const exact   = data?.a?.exact?.[0]?.[0];
-    if (exact) return exact.toLowerCase();
-    const similar = data?.a?.similar?.[0]?.[0];
-    if (similar && levenshtein(word, similar.toLowerCase()) <= 2) return similar.toLowerCase();
-  } catch { /* nettverksfeil */ }
-  return word;
-}
-
-/** Verifiser / korriger engelsk eller spansk via Datamuse */
-async function verifyWithDatamuse(word: string, lang: "en" | "es"): Promise<string> {
-  try {
-    const res = await fetch(SPELLCHECK_API[lang](word), { signal: AbortSignal.timeout(4000) });
-    if (!res.ok) return word;
-    const data = await res.json();
-    const candidate: string = data[0]?.word ?? "";
-    if (candidate && levenshtein(word.toLowerCase(), candidate) <= 2) return candidate;
-  } catch { /* nettverksfeil */ }
-  return word;
-}
-
-/**
- * Komplett stavekontroll-pipeline per kildespråk.
- *   norsk   → lokal autokorrektur + UiB API
- *   engelsk → Datamuse
- *   spansk  → Datamuse (spansk)
- */
-async function correctWord(raw: string, lang: LangCode): Promise<string> {
-  const lower = raw.toLowerCase().trim();
-  if (lang === "no") {
-    const local = autocorrectLocalNo(lower);
-    if (local.confidence === "high") return local.word;
-    const fromApi = await verifyWithOrdbokAPI(local.word);
-    return fromApi !== lower ? fromApi : local.word;
-  }
-  if (lang === "en") return await verifyWithDatamuse(lower, "en");
-  if (lang === "es") return await verifyWithDatamuse(lower, "es");
-  return lower;
-}
-
-/** Oversett ett ord via MyMemory (gratis, ingen API-nøkkel) */
-async function translateWord(word: string, from: LangCode, to: LangCode): Promise<string> {
-  if (from === to || !word) return word;
-  const fromCode = MYMEMORY_LANG[from];
-  const toCode   = MYMEMORY_LANG[to];
-  try {
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${fromCode}|${toCode}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!res.ok) return word;
-    const data = await res.json();
-    const ok = Number(data?.responseStatus) === 200;
-    const translated: string = data?.responseData?.translatedText ?? "";
-    if (ok && translated && translated.toLowerCase() !== word.toLowerCase())
-      return translated.toLowerCase().trim();
-  } catch { /* timeout */ }
-  return word;
-}
-
-/** IPA-fonetikk for engelske ord via Free Dictionary API */
-async function getEnglishPhonetic(word: string): Promise<string> {
-  try {
-    const res = await fetch(
-      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`,
-      { signal: AbortSignal.timeout(4000) }
-    );
-    if (!res.ok) return syllabify(word, "en");
-    const data = await res.json();
-    const ipa = data[0]?.phonetic ?? data[0]?.phonetics?.find((p: { text?: string }) => p.text)?.text;
-    return ipa ?? syllabify(word, "en");
-  } catch {
-    return syllabify(word, "en");
-  }
-}
-
-/** Menneskelig lesbar stavelsesdeling — hjelper uttalen uten å kreve IPA */
-function syllabify(word: string, lang: LangCode): string {
-  const w = word.toLowerCase();
-  if (lang === "no") {
-    return w
-      .replace(/([aeiouæøå])([^aeiouæøå]{2,})([aeiouæøå])/g, "$1$2-$3")
-      .replace(/([aeiouæøå]{2})([^aeiouæøå])/g, "$1-$2")
-      .replace(/([^aeiouæøå])([aeiouæøå]{2})/g, "$1-$2")
-      .replace(/--+/g, "-").replace(/^-|-$/g, "") || w;
-  }
-  if (lang === "es") {
-    return w
-      .replace(/([aeiouáéíóú])([^aeiouáéíóú]{1,2})([aeiouáéíóú])/g, "$1$2-$3")
-      .replace(/--+/g, "-").replace(/^-|-$/g, "") || w;
-  }
-  // Engelsk — fallback (IPA hentes via API)
-  return w
-    .replace(/([aeiou])([^aeiou]{2})([aeiou])/g, "$1-$2$3")
-    .replace(/([aeiou]{2})([^aeiou])/g, "$1-$2")
-    .replace(/--+/g, "-").replace(/^-|-$/g, "") || w;
-}
-
-async function getReadablePhonetic(word: string, lang: LangCode): Promise<string> {
-  if (!word) return "";
-  if (lang === "en") return await getEnglishPhonetic(word);
-  return syllabify(word, lang);
-}
-
-/** TTS via browser SpeechSynthesis */
-function speakWord(word: string, lang: LangCode): void {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(word);
-  utt.lang  = TTS_LANG[lang] ?? "nb-NO";
-  utt.rate  = 0.85;
-  utt.pitch = 1;
-  window.speechSynthesis.speak(utt);
-}
-
-/**
- * Bygger komplett WordEntry fra råinput + valgt kildespråk.
- *
- * 1. Korriger ordet på kildespråket
- * 2. Oversett til de to andre språkene parallelt
- * 3. Hent fonetikk for alle tre parallelt
- */
-async function buildWordEntry(rawInput: string, sourceLang: LangCode): Promise<Omit<WordEntry, "id">> {
-  const trimmed  = rawInput.trim();
-  const corrected = await correctWord(trimmed, sourceLang);
-  const wasAutoFixed = corrected !== trimmed.toLowerCase();
-
-  // Alle tre språk — kildespråket bruker corrected direkte
-  const OTHER_LANGS = (["no", "en", "es"] as LangCode[]).filter((l) => l !== sourceLang);
-
-  const translationPromises: Promise<Translation>[] = [
-    // Kildespråket selv
-    (async (): Promise<Translation> => {
-      const phonetic = await getReadablePhonetic(corrected, sourceLang);
-      return { lang: sourceLang, word: corrected, phonetic };
-    })(),
-    // De to andre
-    ...OTHER_LANGS.map(async (targetLang): Promise<Translation> => {
-      const word    = await translateWord(corrected, sourceLang, targetLang);
-      const phonetic = await getReadablePhonetic(word, targetLang);
-      return { lang: targetLang, word, phonetic };
-    }),
-  ];
-
-  const translations = await Promise.all(translationPromises);
-
-  // Sorter alltid: no → en → es for konsistent rekkefølge på bakside
-  const order: LangCode[] = ["no", "en", "es"];
-  translations.sort((a, b) => order.indexOf(a.lang) - order.indexOf(b.lang));
-
-  return { inputRaw: trimmed, corrected, sourceLang, wasAutoFixed, translations, addedAt: Date.now() };
-}
-
-/* ═══════════════════════════════════════════════════════════
-   § 5  REACT-KOMPONENTER
-═══════════════════════════════════════════════════════════ */
-
-/* ─── LangPicker ────────────────────────────────────────── */
-
-interface LangPickerProps {
-  value: LangCode;
-  onChange: (lang: LangCode) => void;
-}
-
-function LangPicker({ value, onChange }: LangPickerProps) {
-  return (
-    <div className="flex gap-3 bg-gradient-to-r from-c-secondary/30 to-c-secondary/10 p-3 rounded-2xl border border-c-brand/20 shadow-lg backdrop-blur-md">
-      {ALL_LANGUAGES.map(({ code, label, icon }) => (
-        <button
-          key={code}
-          onClick={() => onChange(code)}
-          className={`
-            px-5 py-3 rounded-xl font-bold text-sm uppercase tracking-wider
-            transition-all duration-300 flex items-center gap-2
-            hover:scale-105 active:scale-95
-            ${value === code
-              ? "bg-gradient-to-r from-c-brand to-c-brand/80 text-white shadow-lg shadow-c-brand/40"
-              : "text-c-text/60 hover:text-c-text/80 hover:bg-white/10"
-            }
-          `}
-        >
-          <Icon
-            src={icon}
-            color={value === code ? "text-white" : "text-c-brand"}
-            size="w-4 h-4"
-          />
-          {code.toUpperCase()} {label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-/* ─── LangRow ───────────────────────────────────────────── */
-
-interface LangRowProps {
-  translation: Translation;
-  isSource: boolean; // Er dette kildespråket? → fremhev
-}
-
-function LangRow({ translation, isSource }: LangRowProps) {
-  const [speaking, setSpeaking] = useState(false);
-  const meta = ALL_LANGUAGES.find((l) => l.code === translation.lang)!;
-
-  const handleSpeak = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSpeaking(true);
-    speakWord(translation.word, translation.lang);
-    setTimeout(() => setSpeaking(false), 1200);
+type DictResult = {
+  q: string;
+  cnt: number;
+  cmatch: number;
+  a: {
+    exact: [string, number][];
+    similar: [string, number][];
   };
+};
 
-  return (
-    <div className={`
-      flex items-center gap-4 rounded-2xl px-5 py-4 group/row
-      transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
-      ${isSource
-        ? "bg-c-brand/15 border border-c-brand/30 shadow-sm"
-        : "bg-white/5 hover:bg-white/10"
+const LANG_LABELS: Record<Lang, string> = {
+  no: "Norsk",
+  en: "English",
+  es: "Español",
+  de: "Deutsch",
+};
+
+const MYMEMORY_LANG: Record<Lang, string> = {
+  no: "nb",
+  en: "en",
+  es: "es",
+  de: "de",
+};
+
+const TRANSLATIONS: Record<Lang, Record<string, string>> = {
+  no: {
+    title: "Ordbok & oversetter",
+    description: "Skriv et ord, velg språk og få rettelser, lignende ord og oversettelse.",
+    from: "Fra",
+    to: "Til",
+    language: "Velg språk",
+    placeholder: "Skriv et ord...",
+    loading: "Laster...",
+    corrected: "Rettet",
+    correctedTo: "til",
+    showing: "Viser resultater for",
+    translation: "Oversettelse",
+    word: "Ord",
+    noTranslation: "Ingen oversettelse funnet",
+    suggestions: "Forslag",
+    exactMatches: "Eksakte treff",
+    noExact: "Ingen eksakte treff",
+    startSearch: "Skriv noe for å starte søket...",
+    didYouMean: "Mente du",
+  },
+  en: {
+    title: "Dictionary & Translator",
+    description: "Type a word, choose languages and get corrections, similar words and translation.",
+    from: "From",
+    to: "To",
+    language: "Choose language",
+    placeholder: "Type a word...",
+    loading: "Loading...",
+    corrected: "Corrected",
+    correctedTo: "to",
+    showing: "Showing results for",
+    translation: "Translation",
+    word: "Word",
+    noTranslation: "No translation found",
+    suggestions: "Suggestions",
+    exactMatches: "Exact matches",
+    noExact: "No exact matches",
+    startSearch: "Type something to start searching...",
+    didYouMean: "Did you mean",
+  },
+  es: {
+    title: "Diccionario y Traductor",
+    description: "Escribe una palabra, elige idiomas y obtén correcciones, palabras similares y traducción.",
+    from: "De",
+    to: "A",
+    language: "Elegir idioma",
+    placeholder: "Escribe una palabra...",
+    loading: "Cargando...",
+    corrected: "Corregido",
+    correctedTo: "a",
+    showing: "Mostrando resultados para",
+    translation: "Traducción",
+    word: "Palabra",
+    noTranslation: "No se encontró traducción",
+    suggestions: "Sugerencias",
+    exactMatches: "Coincidencias exactas",
+    noExact: "No hay coincidencias exactas",
+    startSearch: "Escribe algo para empezar a buscar...",
+    didYouMean: "Quizás quisiste decir",
+  },
+  de: {
+    title: "Wörterbuch & Übersetzer",
+    description: "Schreibe ein Wort, wähle Sprachen und erhalte Korrekturen, ähnliche Wörter und Übersetzung.",
+    from: "Von",
+    to: "Zu",
+    language: "Sprache wählen",
+    placeholder: "Schreibe ein Wort...",
+    loading: "Lädt...",
+    corrected: "Korrigiert",
+    correctedTo: "zu",
+    showing: "Zeigt Ergebnisse für",
+    translation: "Übersetzung",
+    word: "Wort",
+    noTranslation: "Keine Übersetzung gefunden",
+    suggestions: "Vorschläge",
+    exactMatches: "Exakte Treffer",
+    noExact: "Keine exakten Treffer",
+    startSearch: "Schreibe etwas, um zu suchen...",
+    didYouMean: "Meintest du",
+  },
+};
+
+function createJsonFetcher<T>(timeout = 5000) {
+  return async (url: string): Promise<T | null> => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      if (!res.ok) return null;
+      return (await res.json()) as T;
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+}
+
+const fetchJson = createJsonFetcher<any>(5000);
+
+async function fetchNorwegianSuggestions(word: string): Promise<DictResult> {
+  try {
+    const data = await invoke<DictResult>("suggest_word", { query: word, dict: "bm" });
+    return data;
+  } catch {
+    return {
+      q: word,
+      cnt: 0,
+      cmatch: 0,
+      a: { exact: [[word, 100]], similar: [] },
+    };
+  }
+}
+
+async function fetchDatamuseSuggestions(word: string, lang: "en" | "es" | "de"): Promise<DictResult> {
+  const exactUrl = `https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&max=5&v=${lang}`;
+  const similarUrl = `https://api.datamuse.com/words?ml=${encodeURIComponent(word)}&max=6&v=${lang}`;
+
+  const exactData = await fetchJson(exactUrl);
+  const similarData = await fetchJson(similarUrl);
+
+  const exactMatches: [string, number][] = Array.isArray(exactData)
+    ? exactData.slice(0, 5).map((item: any, i: number) => [String(item.word), 100 - i])
+    : [];
+
+  const similarMatches: [string, number][] = Array.isArray(similarData)
+    ? similarData.slice(0, 6).map((item: any, i: number) => [String(item.word), 80 - i])
+    : [];
+
+  if (exactMatches.length === 0) {
+    exactMatches.push([word, 100]);
+  }
+
+  return {
+    q: word,
+    cnt: exactMatches.length + similarMatches.length,
+    cmatch: exactMatches.length,
+    a: { exact: exactMatches, similar: similarMatches },
+  };
+}
+
+const SLANG_TRANSLATIONS: Record<string, Record<Lang, string>> = {
+  // Spansk slang
+  "que tal": { no: "Hva skjer", en: "What's up", es: "Qué tal", de: "Wie geht's" },
+  "vale": { no: "Ok", en: "Okay", es: "Vale", de: "Okay" },
+  "tio": { no: "Kompis", en: "Dude", es: "Tío", de: "Kumpel" },
+  "guay": { no: "Kult", en: "Cool", es: "Guay", de: "Cool" },
+  "joder": { no: "Faen", en: "Damn", es: "Joder", de: "Verdammt" },
+  "hostia": { no: "Herregud", en: "Holy shit", es: "Hostia", de: "Heilige Scheiße" },
+  "coño": { no: "Faen", en: "Fuck", es: "Coño", de: "Scheiße" },
+  "puta": { no: "Fitte", en: "Bitch", es: "Puta", de: "Schlampe" },
+  "cabrón": { no: "Svin", en: "Bastard", es: "Cabrón", de: "Bastard" },
+  "hola": { no: "Hei", en: "Hi", es: "Hola", de: "Hallo" },
+  "como estas": { no: "Hvordan har du det", en: "How are you", es: "Cómo estás", de: "Wie geht es dir" },
+  // Norsk naturlig
+  "æ": { no: "Jeg", en: "I", es: "Yo", de: "Ich" },
+  "du": { no: "Du", en: "You", es: "Tú", de: "Du" },
+  "han": { no: "Han", en: "He", es: "Él", de: "Er" },
+  "hun": { no: "Hun", en: "She", es: "Ella", de: "Sie" },
+  "vi": { no: "Vi", en: "We", es: "Nosotros", de: "Wir" },
+  "dere": { no: "Dere", en: "You (pl)", es: "Vosotros", de: "Ihr" },
+  "de": { no: "De", en: "They", es: "Ellos", de: "Sie" },
+  "hva skjer": { no: "Hva skjer", en: "What's up", es: "Qué pasa", de: "Was geht" },
+  "hvordan går det": { no: "Hvordan går det", en: "How's it going", es: "Cómo va", de: "Wie läuft's" },
+  "faen": { no: "Faen", en: "Damn", es: "Joder", de: "Verdammt" },
+  "herregud": { no: "Herregud", en: "Oh my god", es: "Dios mío", de: "Mein Gott" },
+  "fitte": { no: "Fitte", en: "Bitch", es: "Puta", de: "Schlampe" },
+  "svin": { no: "Svin", en: "Bastard", es: "Cabrón", de: "Bastard" },
+  "hey": { no: "Hei", en: "Hey", es: "Ey", de: "Hey" },
+  "sup": { no: "Hva skjer", en: "What's up", es: "Qué pasa", de: "Was los" },
+  "yo": { no: "Jeg", en: "I", es: "Yo", de: "Ich" },
+  "tu": { no: "Du", en: "You", es: "Tú", de: "Du" },
+  "el": { no: "Han", en: "He", es: "Él", de: "Er" },
+  "la": { no: "Hun", en: "She", es: "Ella", de: "Sie" },
+  "wie gehts": { no: "Hvordan går det", en: "How's it going", es: "Cómo estás", de: "Wie geht's" },
+  "was geht": { no: "Hva skjer", en: "What's up", es: "Qué pasa", de: "Was geht" },
+  // Legg til flere etter behov
+};
+
+async function checkSpelling(text: string, lang: Lang): Promise<string> {
+  if (lang === "no") {
+    // Bruk LanguageTool for norsk
+    const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=nb-NO`;
+    const data = await fetchJson(url);
+    if (data?.matches) {
+      let corrected = text;
+      data.matches.forEach((match: any) => {
+        if (match.replacements && match.replacements.length > 0) {
+          const offset = match.offset;
+          const length = match.length;
+          const replacement = match.replacements[0].value;
+          corrected = corrected.substring(0, offset) + replacement + corrected.substring(offset + length);
+        }
+      });
+      return corrected;
+    }
+  } else if (lang === "es") {
+    // For spansk, bruk LanguageTool
+    const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=es`;
+    const data = await fetchJson(url);
+    if (data?.matches) {
+      let corrected = text;
+      data.matches.forEach((match: any) => {
+        if (match.replacements && match.replacements.length > 0) {
+          const offset = match.offset;
+          const length = match.length;
+          const replacement = match.replacements[0].value;
+          corrected = corrected.substring(0, offset) + replacement + corrected.substring(offset + length);
+        }
+      });
+      return corrected;
+    }
+  }
+  return text;
+}
+
+async function fetchDefinition(word: string, lang: Lang): Promise<string> {
+  if (lang === "no") {
+    const url = `https://ordbokapi.org/api/v1/entries/${encodeURIComponent(word)}`;
+    const data = await fetchJson(url);
+    if (Array.isArray(data) && data.length > 0) {
+      const entry = data[0];
+      if (entry.definitions && entry.definitions.length > 0) {
+        return entry.definitions[0].text || "Ingen definisjon";
       }
-    `}>
-      <span className="text-xl leading-none select-none">{meta.flag}</span>
-      <div className="flex-1 min-w-0">
-        <p className={`font-semibold text-base leading-tight truncate capitalize ${isSource ? "text-c-brand" : "text-c-text"}`}>
-          {translation.word}
-        </p>
-        <p className="text-c-text/50 text-sm font-mono tracking-wide truncate">
-          {translation.phonetic}
-        </p>
-      </div>
-      <button
-        onClick={handleSpeak}
-        title={`Hør ${meta.label} uttale`}
-        className={`
-          shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-sm
-          transition-all duration-200 active:scale-90 hover:scale-110
-          ${speaking
-            ? "bg-c-brand text-white shadow-md"
-            : "bg-c-brand/20 text-c-brand hover:bg-c-brand hover:text-white opacity-70 group-hover/row:opacity-100"
+    }
+    return "Ingen definisjon";
+  } else {
+    // For English, Spanish, and German, use Datamuse
+    const url = `https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=d&v=${lang}`;
+    const data = await fetchJson(url);
+    if (Array.isArray(data) && data.length > 0 && data[0].defs) {
+      return data[0].defs[0].split('\t')[1] || "No definition";
+    }
+    return "No definition";
+  }
+}
+
+async function fetchAllDefinitions(word: string): Promise<Record<Lang, string>> {
+  const langs: Lang[] = ["no", "en", "es", "de"];
+  const promises = langs.map(lang => fetchDefinition(word, lang).then(def => ({ lang, def })));
+  const results = await Promise.all(promises);
+  const defs: Record<Lang, string> = {} as any;
+  results.forEach(({ lang, def }) => {
+    defs[lang] = def;
+  });
+  return defs;
+}
+
+async function translateWord(word: string, from: Lang, to: Lang): Promise<string> {
+  if (!word || from === to) return word;
+
+  // For setninger, oversett hele
+  if (word.includes(' ')) {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${MYMEMORY_LANG[from]}|${MYMEMORY_LANG[to]}`;
+    const result = await fetchJson(url);
+    const translated = result?.responseData?.translatedText;
+    if (typeof translated === "string" && translated.trim().length > 0) {
+      return translated.trim();
+    }
+    return word;
+  }
+
+  // For enkeltord, sjekk slang først
+  const lowerWord = word.toLowerCase();
+  if (SLANG_TRANSLATIONS[lowerWord]) {
+    return SLANG_TRANSLATIONS[lowerWord][to] || word;
+  }
+
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${MYMEMORY_LANG[from]}|${MYMEMORY_LANG[to]}`;
+  const result = await fetchJson(url);
+
+  const translated = result?.responseData?.translatedText;
+  if (typeof translated === "string" && translated.trim().length > 0) {
+    return translated.trim();
+  }
+
+  return word;
+}
+
+export default function Typing() {
+  const [query, setQuery] = useState("");
+  const [sourceLang, setSourceLang] = useState<Lang>("no");
+  const [targetLang, setTargetLang] = useState<Lang>("en");
+  const [data, setData] = useState<DictResult | null>(null);
+  const [translation, setTranslation] = useState("");
+  const [corrected, setCorrected] = useState("");
+  const [definitions, setDefinitions] = useState<Record<string, Record<Lang, string>>>({});
+  const [loading, setLoading] = useState(false);
+
+  const { language: uiLang } = useLanguage();
+
+  const t = (key: string) => TRANSLATIONS[uiLang][key] || key;
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setData(null);
+      setTranslation("");
+      setCorrected("");
+      setDefinitions({});
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setLoading(true);
+      const normalized = query.trim().toLowerCase();
+
+      const lookup = async () => {
+        let correctedText = normalized;
+        if (normalized.includes(' ')) {
+          // Setning: Rett stavefeil
+          correctedText = await checkSpelling(normalized, sourceLang);
+        }
+
+        const words = correctedText.split(/\s+/).filter(w => w.length > 0);
+        const uniqueWords = [...new Set(words)];
+
+        // Få forslag for hvert unike ord
+        const wordPromises = uniqueWords.map(async (word) => {
+          if (sourceLang === "no") {
+            return await fetchNorwegianSuggestions(word);
+          } else {
+            return await fetchDatamuseSuggestions(word, sourceLang as "en" | "es" | "de");
           }
-        `}
-      >
-        {speaking ? "🔊" : "▶"}
-      </button>
-    </div>
-  );
-}
+        });
 
-/* ─── WordCard ──────────────────────────────────────────── */
+        const wordDicts = await Promise.all(wordPromises);
 
-interface WordCardProps {
-  entry: WordEntry;
-  onDelete: (id: number) => void;
-  displayLang: LangCode;
-}
+        // Kombiner alle exact matches
+        const allExact: [string, number][] = [];
+        wordDicts.forEach(dict => {
+          allExact.push(...dict.a.exact);
+        });
+        const uniqueExact = allExact.filter((item, index, arr) => 
+          arr.findIndex(([w]) => w === item[0]) === index
+        );
 
-function WordCard({ entry, onDelete, displayLang }: WordCardProps) {
-  const [flipped, setFlipped] = useState(false);
-  const [viewLang, setViewLang] = useState<LangCode>(entry.sourceLang);
-  const sourceMeta = ALL_LANGUAGES.find((l) => l.code === entry.sourceLang)!;
+        const combinedDict: DictResult = {
+          q: normalized,
+          cnt: uniqueExact.length,
+          cmatch: uniqueExact.length,
+          a: { exact: uniqueExact, similar: [] }
+        };
 
-  const displayedTranslation = entry.translations.find((t) => t.lang === viewLang) || entry.translations[0];
+        const translatedWord = await translateWord(correctedText, sourceLang, targetLang);
+
+        setData(combinedDict);
+        setCorrected(correctedText);
+        setTranslation(translatedWord);
+
+        const defPromises = uniqueExact.map(([word]) => fetchAllDefinitions(word).then(defs => ({ word, defs })));
+        const defs = await Promise.all(defPromises);
+        const defObj = Object.fromEntries(defs.map(({ word, defs }) => [word, defs]));
+        setDefinitions(defObj);
+      };
+
+      lookup().catch(console.error).finally(() => setLoading(false));
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [query, sourceLang, targetLang]);
 
   return (
-    <div
-      className="[perspective:1200px] group relative"
-      style={{ animation: "wordCardIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
-    >
-      {/* Slett */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }}
-        aria-label="Slett kort"
-        className="
-          absolute -top-3 -right-3 z-30 w-8 h-8 rounded-full
-          bg-red-500 hover:bg-red-400 text-white
-          flex items-center justify-center text-sm font-bold
-          opacity-0 group-hover:opacity-100
-          transition-all duration-200 shadow-lg shadow-red-500/40 hover:scale-110
-        "
-      >✕</button>
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="font-bold text-2xl tracking-tight">{t("title")}</h2>
+          <p className="mt-1 text-xs text-c-muted_text max-w-xl">
+            {t("description")}
+          </p>
+        </div>
 
-      {/* Auto-fikset badge */}
-      {entry.wasAutoFixed && (
-        <div className="
-          absolute -top-3 -left-3 z-30 bg-amber-500 text-white
-          text-xs font-bold uppercase tracking-wide px-3 py-1
-          rounded-full shadow-lg opacity-0 group-hover:opacity-100
-          transition-all duration-200
-        ">
-          Rettet
+        <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
+          <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
+            {t("from")}
+            <select
+              value={sourceLang}
+              onChange={(e) => setSourceLang(e.target.value as Lang)}
+              className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
+            >
+              <option value="no">Norsk</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="de">Deutsch</option>
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
+            {t("to")}
+            <select
+              value={targetLang}
+              onChange={(e) => setTargetLang(e.target.value as Lang)}
+              className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
+            >
+              <option value="no">Norsk</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="de">Deutsch</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div className="relative group">
+        <input
+          type="text"
+          placeholder={t("placeholder")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-full bg-c-secondary border border-white/5 rounded-2xl px-5 py-5 text-c-text placeholder:text-c-text/20 focus:border-c-brand/50 outline-none transition-all shadow-sm text-lg"
+        />
+        {loading && (
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 animate-pulse text-c-brand text-xs font-bold uppercase tracking-widest">
+            {t("loading")}
+          </div>
+        )}
+      </div>
+
+      {!loading && data && corrected !== query.trim().toLowerCase() && (
+        <div className="text-sm text-c-muted_text px-1">
+          {t("didYouMean")} <span className="text-c-brand font-bold">"{corrected}"</span>?
         </div>
       )}
 
-      {/* Flip-wrapper */}
-      <div
-        onClick={() => setFlipped((f) => !f)}
-        className="relative w-full cursor-pointer transition-all duration-700 [transform-style:preserve-3d]"
-        style={{
-          transform:  flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-          minHeight:  "260px",
-          height:     flipped ? "auto" : "260px",
-        }}
-      >
-        {/* ── FORSIDE ── */}
-        <div className="
-          absolute inset-0 flex flex-col items-center justify-center
-          bg-gradient-to-br from-c-secondary to-c-secondary/95 border border-white/10
-          rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300
-          [backface-visibility:hidden] p-6 text-center select-none
-        ">
-          {/* Kildespråk-badge */}
-          <span className="text-3xl mb-3">{sourceMeta.flag}</span>
-          <span className="text-sm font-bold tracking-widest text-c-text/30 uppercase mb-4">
-            Du skrev
-          </span>
-          <p className="font-bold text-c-text/40 line-through italic text-3xl break-all leading-tight">
-            {entry.inputRaw}
-          </p>
-          {entry.wasAutoFixed && (
-            <p className="mt-4 text-sm text-amber-500/70 font-medium bg-amber-500/10 px-3 py-1 rounded-lg">
-              ≈ rettet automatisk
-            </p>
-          )}
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2">
-            <div className="text-xs text-c-text/20 font-medium bg-white/5 px-3 py-1 rounded-full">
-              Klikk for å se svar →
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <section className="flex flex-col gap-4">
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">{t("translation")}</h3>
+          <div className="rounded-3xl border border-white/5 bg-c-secondary p-6 space-y-4">
+            <div className="text-sm text-c-muted_text">{t("from")} {LANG_LABELS[sourceLang]} {t("to")} {LANG_LABELS[targetLang]}</div>
+            <div className="rounded-3xl border border-white/5 bg-c-secondary/80 px-4 py-5">
+              <div className="text-xs uppercase tracking-[0.2em] text-c-muted_text">{t("word")}</div>
+              <div className="mt-2 text-2xl font-bold text-c-text">{corrected || "—"}</div>
+            </div>
+            <div className="rounded-3xl border border-white/5 bg-c-secondary/80 px-4 py-5">
+              <div className="text-xs uppercase tracking-[0.2em] text-c-muted_text">{t("translation")}</div>
+              <div className="mt-2 text-xl font-semibold text-c-brand">{translation || t("noTranslation")}</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ── BAKSIDE ── */}
-        <div
-          className="
-            absolute inset-0 flex flex-col
-            bg-gradient-to-br from-c-secondary to-c-secondary/95 border-2 border-c-brand
-            rounded-3xl shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)]
-            p-6 gap-3.5
-          "
-          style={{ minHeight: "260px", height: "auto" }}
-        >
-          <div className="text-center pb-4 border-b border-c-brand/20">
-            <span className="text-sm font-bold tracking-widest text-c-brand/60 uppercase">
-              Riktig ord
-            </span>
-            <div className="flex items-center justify-center gap-3 mt-2">
-              <p className="font-bold text-c-text text-3xl tracking-tight">
-                {entry.corrected}
-              </p>
-              <button
-                onClick={(e) => { e.stopPropagation(); speakWord(entry.corrected, entry.sourceLang); }}
-                className="w-9 h-9 bg-c-brand/20 hover:bg-c-brand text-c-brand hover:text-white rounded-xl flex items-center justify-center text-sm transition-all active:scale-90 hover:scale-105 shadow-sm"
-              >🔊
-              </button>
+        <section className="flex flex-col gap-4">
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">{t("suggestions")}</h3>
+
+          <div className="rounded-3xl border border-white/5 bg-c-secondary p-6 space-y-4">
+            <div className="text-xs uppercase tracking-[0.2em] opacity-50">{t("exactMatches")}</div>
+            <div className="flex flex-col gap-2">
+              {data?.a.exact.length ? (
+                data.a.exact.map(([word, score], index) => (
+                  <div key={`exact-${word}-${index}`} className="rounded-xl border border-white/5 bg-c-secondary/80 px-4 py-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-c-text">{word}</span>
+                      <span className="text-[10px] font-mono opacity-20">{score}</span>
+                    </div>
+                    <div className="space-y-1 text-xs text-c-muted_text">
+                      <div><strong>{LANG_LABELS[sourceLang].toUpperCase()}:</strong> {definitions[word]?.[sourceLang] || "Laster..."}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border-2 border-dashed border-white/5 px-4 py-8 text-center opacity-40 text-sm">
+                  {t("noExact")}
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Språk-tab-knapper */}
-          <div className="flex justify-center gap-2 flex-wrap">
-            {entry.translations.map((t) => {
-              const langMeta = ALL_LANGUAGES.find((l) => l.code === t.lang);
-              return (
-                <button
-                  key={t.lang}
-                  onClick={(e) => { e.stopPropagation(); setViewLang(t.lang); }}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all duration-200 ${
-                    viewLang === t.lang
-                      ? "bg-gradient-to-r from-c-brand to-c-brand/80 text-white shadow-md shadow-c-brand/30"
-                      : "bg-c-secondary/40 text-c-text/50 hover:bg-c-secondary/60 hover:text-c-text/70"
-                  }`}
-                >
-                  {t.lang.toUpperCase()}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <LangRow
-              translation={displayedTranslation}
-              isSource={displayedTranslation.lang === entry.sourceLang}
-            />
-          </div>
-        </div>
+        </section>
       </div>
+
+      {!loading && query && !data && (
+        <div className="py-20 text-center opacity-30 italic">
+          {t("startSearch")}
+        </div>
+      )}
     </div>
   );
 }
 
-/* ─── LoadingCard ───────────────────────────────────────── */
-
-function LoadingCard() {
-  return (
-    <div className="h-[260px] rounded-3xl border border-white/10 bg-gradient-to-br from-c-secondary to-c-secondary/90 flex flex-col items-center justify-center gap-4 shadow-xl">
-      <div className="flex gap-2">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="w-4 h-4 rounded-full bg-c-brand shadow-sm"
-            style={{ animation: `dotBounce 1s ease-in-out ${i * 0.15}s infinite` }}
-          />
-        ))}
-      </div>
-      <p className="text-base font-bold tracking-widest text-c-text/30 uppercase">
-        Behandler ord...
-      </p>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   § 6  HOVED-KOMPONENT
-═══════════════════════════════════════════════════════════ */
-
-const STORAGE_KEY = "ordtrening_v5";
-
-export default function Writing() {
-  const [input, setInput]         = useState("");
-  const [wordLog, setWordLog]     = useState<WordEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg]   = useState<string | null>(null);
-  const [fontSize, setFontSize]   = useState("medium");
-
-  const filteredWordLog = wordLog; // Ingen filtrering via søk, hold full objektliste
-
-  // Kildespråk — starter alltid på norsk
-  const [sourceLang, setSourceLang] = useState<LangCode>("no");
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleLangChange = (lang: LangCode) => {
-    setSourceLang(lang);
-    setWordLog((prev) =>
-      prev.map((entry) => {
-        const target = entry.translations.find((t) => t.lang === lang);
-        if (!target) return entry;
-        return {
-          ...entry,
-          sourceLang: lang,
-          inputRaw: target.word,
-          corrected: target.word,
-          wasAutoFixed: false,
-        };
-      })
-    );
-    setInput("");
-    setErrorMsg(null);
-    setTimeout(() => inputRef.current?.focus(), 50);
-  };
-
-  // Last inn lagrede data
-  useEffect(() => {
-    setFontSize(localStorage.getItem("fontSize") ?? "medium");
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setWordLog(JSON.parse(saved));
-    } catch { /* korrupt data — ignorer */ }
-  }, []);
-
-  // Lagre ved endring
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(wordLog));
-  }, [wordLog]);
-
-  // (All logikk for språkbytte er allerede håndtert ovenfor)
-
-  const handleAdd = useCallback(async () => {
-    const raw = input.trim();
-    if (!raw || isLoading) return;
-    setIsLoading(true);
-    setErrorMsg(null);
-    setInput("");
-    try {
-      const entry = await buildWordEntry(raw, sourceLang);
-      setWordLog((prev) => [{ id: Date.now(), ...entry }, ...prev]);
-      speakWord(entry.corrected, sourceLang);
-    } catch (err) {
-      console.error("buildWordEntry feilet:", err);
-      setErrorMsg("Noe gikk galt. Prøv igjen.");
-    } finally {
-      setIsLoading(false);
-      inputRef.current?.focus();
-    }
-  }, [input, isLoading, sourceLang]);
-
-  const handleDelete = useCallback((id: number) => {
-    setWordLog((prev) => prev.filter((w) => w.id !== id));
-  }, []);
-
-  const currentLangMeta = ALL_LANGUAGES.find((l) => l.code === sourceLang)!;
-
-  const fontConfig: Record<string, string> = {
-    small:  "[&_h1]:text-2xl [&_h2]:text-xl [&_p]:text-sm",
-    medium: "[&_h1]:text-4xl [&_h2]:text-3xl [&_p]:text-base",
-    large:  "[&_h1]:text-5xl [&_h2]:text-4xl [&_p]:text-xl",
-  };
-
-  return (
-    <div className="h-full flex flex-col">
-      <style>{`
-        @keyframes wordCardIn {
-          from { opacity: 0; transform: scale(0.88) translateY(12px); }
-          to   { opacity: 1; transform: scale(1)    translateY(0);    }
-        }
-        @keyframes dotBounce {
-          0%, 100% { transform: translateY(0);    opacity: 0.4; }
-          50%       { transform: translateY(-8px); opacity: 1;   }
-        }
-      `}</style>
-
-      <div className="space-y-10 animate-in fade-in duration-700">
-
-        {/* ── HEADER ── */}
-        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-8">
-          <div className="flex-1">
-            <h1 className="font-black tracking-tight text-c-text leading-tight text-5xl mb-2">
-              Ordtrening
-            </h1>
-            <p className="text-c-text/60 font-medium text-lg max-w-md">
-              Skriv et ord — vi retter, oversetter og lærer deg det med umiddelbar tilbakemelding.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {wordLog.length > 0 && (
-              <div className="text-sm text-c-text/40 font-medium">
-                {wordLog.length} ord lagret
-              </div>
-            )}
-            {wordLog.length > 0 && (
-              <button
-                onClick={() => { if (window.confirm("Er du sikker på at du vil slette alle ord?")) setWordLog([]); }}
-                className="px-4 py-2 text-sm font-semibold text-red-500 hover:text-red-400 hover:bg-red-50/10 rounded-lg transition-all duration-200 border border-red-500/20 hover:border-red-400/30"
-              >
-                Tøm alt
-              </button>
-            )}
-          </div>
-        </header>
-
-        {/* ── SPRÅKVELGER + INPUT ── */}
-        <div className="
-          max-w-3xl mx-auto w-full
-          bg-gradient-to-br from-c-secondary to-c-secondary/90
-          border border-white/10 shadow-2xl
-          rounded-3xl p-8
-          focus-within:border-c-brand/30 focus-within:shadow-c-brand/10
-          transition-all duration-300
-          flex flex-col gap-5
-        ">
-          {/* Velger øverst i boksen */}
-          <div className="flex justify-center">
-            <LangPicker value={sourceLang} onChange={handleLangChange} />
-          </div>
-
-          {/* Label */}
-          <div className="text-center">
-            <p className="text-sm font-semibold tracking-wide text-c-text/50 uppercase mb-1">
-              Skriv på {currentLangMeta.label}
-            </p>
-            <span className="text-2xl">{currentLangMeta.flag}</span>
-          </div>
-
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => { setInput(e.target.value); setErrorMsg(null); }}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            disabled={isLoading}
-            placeholder="Skriv et norsk ord..."
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            className="
-              w-full bg-white/5 border-2 border-white/10 rounded-2xl
-              px-6 py-4 text-c-text font-semibold text-center text-xl
-              outline-none focus:border-c-brand focus:bg-white/10 focus:shadow-xl focus:shadow-c-brand/10
-              placeholder-c-text/30 transition-all duration-200
-              disabled:opacity-50 disabled:cursor-not-allowed
-            "
-          />
-
-          {errorMsg && (
-            <div className="text-center">
-              <p className="text-sm font-medium text-red-400 bg-red-400/10 py-3 px-4 rounded-xl border border-red-400/20">
-                {errorMsg}
-              </p>
-            </div>
-          )}
-
-          <button
-            onClick={handleAdd}
-            disabled={isLoading || !input.trim()}
-            className="
-              w-full bg-gradient-to-br from-c-brand via-c-brand to-c-brand/90 text-white
-              py-5 rounded-2xl font-extrabold text-lg tracking-wider
-              hover:brightness-125 hover:shadow-2xl hover:shadow-c-brand/50
-              active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed
-              transition-all duration-300 flex items-center justify-center gap-3
-              shadow-2xl shadow-c-brand/30 border border-c-brand/50
-            "
-          >
-            {isLoading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                <span>Behandler...</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Legg til ord</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* ── STATISTIKK ── */}
-        {wordLog.length > 0 && (
-          <div className="flex items-center gap-6 max-w-3xl mx-auto w-full">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-c-brand/20 to-transparent" />
-            <div className="bg-gradient-to-r from-c-secondary/40 to-c-secondary/20 px-6 py-3 rounded-full border border-c-brand/20 shadow-lg">
-              <span className="text-xs font-bold text-c-brand uppercase tracking-wider">
-                {filteredWordLog.length} ord i ordbok
-              </span>
-            </div>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-c-brand/20 to-transparent" />
-          </div>
-        )}
-
-        {/* ── KORT-GRID ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
-          {isLoading && <LoadingCard />}
-          {filteredWordLog.map((entry) => (
-            <WordCard key={entry.id} entry={entry} onDelete={handleDelete} displayLang={sourceLang} />
-          ))}
-        </div>
-
-      </div>
-    </div>
-  );
-}

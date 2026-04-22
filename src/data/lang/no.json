@@ -1,0 +1,84 @@
+{
+  "onboarding": {
+    "progress": "Fremgang",
+    "step": "Steg",
+    "of": "av",
+    "welcome": "Velkommen til Viridian",
+    "welcomeDesc": "Et verktøy designet for å gjøre lesing og skriving enklere for deg med dysleksi.",
+    "getStarted": "Kom i gang",
+    "fontSizeTitle": "Velg tekststørrelse",
+    "fontSizeDesc": "Velg den størrelsen som er mest behagelig å lese.",
+    "small": "Liten",
+    "medium": "Medium",
+    "large": "Stor",
+    "menuPosition": "Menyplassering",
+    "menuDesc": "Hvordan vil du ha tilgang til verktøyene dine?",
+    "floating": "Flytende",
+    "floatingDesc": "Alltid nær teksten",
+    "fixed": "Topp",
+    "fixedDesc": "Fast i toppen av skjermen",
+    "back": "Tilbake",
+    "next": "Neste",
+    "startApp": "Start Viridian",
+    "chooseLanguage": "Velg språk",
+    "chooseLanguageDesc": "Velg språket du vil bruke i appen.",
+    "themeTitle": "Velg fargetema",
+    "themeDesc": "Dark mode er ofte best for dysleksi."
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "subtitle": "Tilpass Viridian for din leseopplevelse",
+    "searchPlaceholder": "Søk i innstillinger...",
+    "general": "Generelt",
+    "appearance": "Utseende",
+    "accessibility": "Tilgjengelighet",
+    "about": "Om Appen",
+    "autoStart": "Start automatisk ved pålogging",
+    "notifications": "System-varslinger",
+    "on": "På",
+    "off": "Av",
+    "fontSize": "Tekststørrelse",
+    "menuTransparency": "Meny Gjennomsiktighet",
+    "colorTheme": "Fargetema",
+    "language": "Språk"
+  },
+  "library": {
+    "favorites": "Favoritter",
+    "time": "Tid",
+    "fileType": "Filtype",
+    "library": "Bibliotek",
+    "upload": "Last opp",
+    "searchLibrary": "Søk i biblioteket...",
+    "preview": "Preview",
+    "document": "Dokument",
+    "clear": "Tøm"
+  },
+  "sidebar": {
+    "home": "Hovedside",
+    "library": "Bibliotek",
+    "log": "Logg",
+    "notes": "Notater",
+    "dictionary": "Ordbok",
+    "typing": "Skriving",
+    "settings": "Innstillinger"
+  },
+  "index": {
+    "home": "Hjem",
+    "quickSearch": "Hurtigsøk..."
+  },
+  "dictionary": {
+    "dictionary": "Ordbok",
+    "searchWords": "Søk etter ord...",
+    "searching": "Søker...",
+    "resultsFor": "Fant resultater for",
+    "exactMatches": "Eksakte treff",
+    "noExact": "Ingen eksakte treff",
+    "similarWords": "Lignende ord"
+  },
+  "languages": {
+    "nb": "Norsk",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  }
+}

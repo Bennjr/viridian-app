@@ -1,0 +1,84 @@
+{
+  "onboarding": {
+    "progress": "Fortschritt",
+    "step": "Schritt",
+    "of": "von",
+    "welcome": "Willkommen bei Viridian",
+    "welcomeDesc": "Ein Werkzeug, das entwickelt wurde, um das Lesen und Schreiben für Menschen mit Dyslexie zu erleichtern.",
+    "getStarted": "Loslegen",
+    "fontSizeTitle": "Schriftgröße wählen",
+    "fontSizeDesc": "Wähle die Größe, die am angenehmsten zu lesen ist.",
+    "small": "Klein",
+    "medium": "Mittel",
+    "large": "Groß",
+    "menuPosition": "Menüposition",
+    "menuDesc": "Wie möchtest du auf deine Werkzeuge zugreifen?",
+    "floating": "Schwebend",
+    "floatingDesc": "Immer nahe am Text",
+    "fixed": "Oben",
+    "fixedDesc": "Fest oben auf dem Bildschirm",
+    "back": "Zurück",
+    "next": "Weiter",
+    "startApp": "Viridian starten",
+    "chooseLanguage": "Sprache wählen",
+    "chooseLanguageDesc": "Wähle die Sprache, die du in der App verwenden möchtest.",
+    "themeTitle": "Farbthema wählen",
+    "themeDesc": "Dark Mode ist oft am besten für Dyslexie."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Passe Viridian an deine Leseerfahrung an",
+    "searchPlaceholder": "In Einstellungen suchen...",
+    "general": "Allgemein",
+    "appearance": "Aussehen",
+    "accessibility": "Barrierefreiheit",
+    "about": "Über die App",
+    "autoStart": "Automatisch beim Anmelden starten",
+    "notifications": "Systembenachrichtigungen",
+    "on": "Ein",
+    "off": "Aus",
+    "fontSize": "Schriftgröße",
+    "menuTransparency": "Menütransparenz",
+    "colorTheme": "Farbthema",
+    "language": "Sprache"
+  },
+  "library": {
+    "favorites": "Favoriten",
+    "time": "Zeit",
+    "fileType": "Dateityp",
+    "library": "Bibliothek",
+    "upload": "Hochladen",
+    "searchLibrary": "In Bibliothek suchen...",
+    "preview": "Vorschau",
+    "document": "Dokument",
+    "clear": "Löschen"
+  },
+  "sidebar": {
+    "home": "Startseite",
+    "library": "Bibliothek",
+    "log": "Protokoll",
+    "notes": "Notizen",
+    "dictionary": "Wörterbuch",
+    "typing": "Schreiben",
+    "settings": "Einstellungen"
+  },
+  "index": {
+    "home": "Startseite",
+    "quickSearch": "Schnellsuche..."
+  },
+  "dictionary": {
+    "dictionary": "Wörterbuch",
+    "searchWords": "Nach Wörtern suchen...",
+    "searching": "Suchen...",
+    "resultsFor": "Ergebnisse gefunden für",
+    "exactMatches": "Exakte Treffer",
+    "noExact": "Keine exakten Treffer",
+    "similarWords": "Ähnliche Wörter"
+  },
+  "languages": {
+    "nb": "Norsk",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  }
+}

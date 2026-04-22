@@ -1,5 +1,48 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "../../../context/LanguageContext";
+import { getTranslations } from "../../../utils/translations";
+
+type Lang = "no" | "en" | "es" | "de";
+
+const TRANSLATIONS: Record<Lang, Record<string, string>> = {
+  no: {
+    dictionary: "Ordbok",
+    searchWords: "Søk etter ord...",
+    searching: "Søker...",
+    resultsFor: "Fant resultater for",
+    exactMatches: "Eksakte treff",
+    noExact: "Ingen eksakte treff",
+    similarWords: "Lignende ord",
+  },
+  en: {
+    dictionary: "Dictionary",
+    searchWords: "Search for words...",
+    searching: "Searching...",
+    resultsFor: "Found results for",
+    exactMatches: "Exact matches",
+    noExact: "No exact matches",
+    similarWords: "Similar words",
+  },
+  es: {
+    dictionary: "Diccionario",
+    searchWords: "Buscar palabras...",
+    searching: "Buscando...",
+    resultsFor: "Encontrados resultados para",
+    exactMatches: "Coincidencias exactas",
+    noExact: "No hay coincidencias exactas",
+    similarWords: "Palabras similares",
+  },
+  de: {
+    dictionary: "Wörterbuch",
+    searchWords: "Nach Wörtern suchen...",
+    searching: "Suchen...",
+    resultsFor: "Ergebnisse gefunden für",
+    exactMatches: "Exakte Treffer",
+    noExact: "Keine exakten Treffer",
+    similarWords: "Ähnliche Wörter",
+  },
+};
 
 type DictResponse = {
   q: string;
@@ -15,6 +58,9 @@ export default function Dict() {
   const [query, setQuery] = useState("");
   const [data, setData] = useState<DictResponse | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { language } = useLanguage();
+  const t = (key: string) => TRANSLATIONS[language][key] || key;
 
   useEffect(() => {
     if (!query.trim()) {
@@ -37,21 +83,21 @@ export default function Dict() {
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="font-bold text-2xl tracking-tight">Ordbok</h2>
+        <h2 className="font-bold text-2xl tracking-tight">{t("dictionary")}</h2>
       </div>
 
       {/* Search Bar */}
       <div className="relative group">
         <input
           type="text"
-          placeholder="Søk etter ord..."
+          placeholder={t("searchWords")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full bg-c-secondary border border-white/5 rounded-2xl px-5 py-4 text-c-text placeholder:text-c-text/20 focus:border-c-brand/50 outline-none transition-all shadow-sm"
         />
         {loading && (
           <div className="absolute right-5 top-1/2 -translate-y-1/2 animate-pulse text-c-brand text-xs font-bold uppercase tracking-widest">
-            Søker...
+            {t("searching")}
           </div>
         )}
       </div>
@@ -59,7 +105,7 @@ export default function Dict() {
       {/* Result Info (Spans full width) */}
       {!loading && data && (
         <div className="text-sm text-c-muted_text px-1">
-          Fant {data.cnt} resultater for <span className="text-c-brand font-bold">"{data.q}"</span>
+          {t("resultsFor")} <span className="text-c-brand font-bold">"{data.q}"</span>
         </div>
       )}
 
@@ -69,7 +115,7 @@ export default function Dict() {
         {/* LEFT COLUMN: Exact Matches */}
         <section className="flex flex-col gap-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
-            Eksakte treff
+            {t("exactMatches")}
           </h3>
 
           <div className="flex flex-col gap-2">
@@ -85,7 +131,7 @@ export default function Dict() {
               ))
             ) : (
               <div className="p-8 border-2 border-dashed border-white/5 rounded-2xl text-center opacity-20 text-sm">
-                Ingen eksakte treff
+                {t("noExact")}
               </div>
             )}
           </div>
@@ -94,7 +140,7 @@ export default function Dict() {
         {/* RIGHT COLUMN: Similar Matches */}
         <section className="flex flex-col gap-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
-            Lignende ord
+            {t("similarWords")}
           </h3>
 
           <div className="flex flex-col gap-2">
