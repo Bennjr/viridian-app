@@ -43,28 +43,6 @@ export default function HomePage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-c-main text-c-text">
-      <header
-        data-tauri-drag-region
-        className="h-16 flex items-center justify-between px-8 sticky top-0 z-50 bg-c-main/80 backdrop-blur-md border-b border-c-divider"
-      >
-        <div className="flex items-center gap-2 pointer-events-none">
-          <Icon src="/icons/home.svg" size="w-4 h-4" color="bg-c-brand" />
-          <h2 className="text-sm font-medium opacity-70">{t("home")}</h2>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="relative group">
-            <Icon src="/icons/search.svg" size="w-4 h-4" className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity" />
-            <input
-              type="text"
-              placeholder={t("quickSearch")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-c-secondary/50 border border-c-divider rounded-full pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-c-brand w-48 focus:w-64 transition-all"
-            />
-          </div>
-        </div>
-      </header>
 
       <main className="flex flex-col max-w-6xl mx-auto w-full p-8 gap-8">
 
@@ -250,7 +228,6 @@ function Dict() {
         )}
       </div>
 
-      {/* Result Info (Spans full width) */}
       {
         !loading && dictData && (
           <div className="text-sm text-c-muted_text px-1">
@@ -259,10 +236,8 @@ function Dict() {
         )
       }
 
-      {/* Two Column Content Area */}
       <div className="grid grid-cols-2 gap-8 items-start">
 
-        {/* LEFT COLUMN: Exact Matches */}
         <section className="flex flex-col gap-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
             Eksakte treff
@@ -287,7 +262,6 @@ function Dict() {
           </div>
         </section>
 
-        {/* RIGHT COLUMN: Similar Matches */}
         <section className="flex flex-col gap-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
             Lignende ord
@@ -314,7 +288,6 @@ function Dict() {
 
       </div>
 
-      {/* Empty State */}
       {
         !loading && dictQuery && !dictData && (
           <div className="py-20 text-center opacity-30 italic">

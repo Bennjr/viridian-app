@@ -63,14 +63,14 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
                     <h2>Biblotek</h2>
                     <div className="flex flex-row gap-4">
                         <button>Legg til fil</button>
-                        <div className="flex">
-                            <Icon src="/search.svg" size="w-4 h-4" className="fixed pointer-events-none"></Icon>
+                        <div className="flex relative">
+                            <Icon src="/search.svg" size="w-4 h-4" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></Icon>
                             <input
                                 type="text"
                                 placeholder={("Hurtigsøk")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-c-brand/50 focus:border-c-brand/50 transition-all placeholder:text-white/20"
+                                className="w-full bg-c-secondary border border-c-divider rounded-xl px-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-c-brand/50 focus:border-c-brand/50 transition-all placeholder:text-white/20"
                             />
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
                     </div>
                 </div>
                 <div className="flex flex-row justify-center">
-                    <button onClick={goView} className="border-c-divider border p-4 px-8 hover:border-c-btn_hover transition-all duration-200 active:size-0.98">Se alle filer</button>
+                    <button onClick={goView} className="border-c-divider border p-4 px-8 hover:border-c-btn_hover transition-all duration-200 active:scale-[0.96]">Se alle filer</button>
                 </div>
             </section>
 

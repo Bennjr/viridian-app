@@ -71,7 +71,7 @@ const FILTERS = [
 export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => void }) {
     const [files, setFiles] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeFilter, setActiveFilter] = useState('time'); // Changed default to 'time'
+    const [activeFilter, setActiveFilter] = useState('time');
     const [selectedFile, setSelectedFile] = useState<any>(null);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
@@ -91,7 +91,7 @@ export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => vo
     }, [favorites]);
 
     const toggleFavorite = (filePath: string, e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent triggering file selection
+        e.stopPropagation();
         setFavorites(prev => {
             const newFavorites = new Set(prev);
             if (newFavorites.has(filePath)) {
