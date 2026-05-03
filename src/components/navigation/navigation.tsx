@@ -22,11 +22,11 @@ export default function Sidebar() {
         <div>
             <aside className="bg-c-secondary backdrop-blur-md text-c-text w-56 h-full flex flex-col justify-between sticky top-0 z-50 shadow-2xl">
 
-                <div className="">
-                    <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-c-text">Generell</h2>
+                <div className="h-14 border-b border-r border-c-divider">
+                    <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-c-text">VIRIDIAN</h2>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto py-4">
+                <nav className="flex-1 overflow-y-auto py-4 border-r border-b border-c-divider">
                     <ul className="space-y-1 px-3">
                         {links.map((link) => (
                             <li key={link.to}>
@@ -60,21 +60,42 @@ export default function Sidebar() {
                     </ul>
                 </nav>
 
-                <div className="p-3 border-t border-white/5">
-                    <NavLink
-                        to="/settings"
-                        className={({ isActive }) => `
+                <div className="flex flex-col gap-2 p-3 border-r border-c-divider">
+                    <div className="">
+                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-c-muted_text">Instillinger</h3>
+                    </div>
+                    <div>
+                        <NavLink
+                            to="/settings"
+                            className={({ isActive }) => `
+                        flex gap-3 p-3 rounded-xl transition-all
+                        ${isActive ? "bg-c-brand/10 text-c-brand" : "hover:bg-c-btn_hover text-c-text"}
+                    `}
+                        >
+                            <Icon
+                                src="/settings.svg"
+                                color="bg-current"
+                                size="w-5 h-5"
+                            />
+                            <span className="text-[14px]">Innstillinger</span>
+                        </NavLink>
+                    </div>
+                    <div>
+                        <NavLink
+                            to="/settings"
+                            className={({ isActive }) => `
                         flex items-center gap-3 p-3 rounded-xl transition-all
                         ${isActive ? "bg-c-brand/10 text-c-brand" : "hover:bg-c-btn_hover text-c-text/70"}
                     `}
-                    >
-                        <Icon
-                            src="/settings.svg"
-                            color="bg-current"
-                            size="w-5 h-5"
-                        />
-                        <span className="text-[14px]">Innstillinger</span>
-                    </NavLink>
+                        >
+                            <Icon
+                                src="/settings.svg"
+                                color="bg-current"
+                                size="w-5 h-5"
+                            />
+                            <span className="text-[14px]">Brukerkonto</span>
+                        </NavLink>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -83,11 +104,10 @@ export default function Sidebar() {
 
 export function Topbar() {
     return (
-        <header className="h-14 flex items-center px-8 bg-c-primary backdrop-blur-sm shadow-2xl">
+        <header className="h-14 flex items-center px-8 bg-c-secondary border-b border-c-divider">
             <div className="flex-1">
                 <span className="text-c-text/50 text-sm font-medium">content for now</span>
             </div>
-            {/* You can add user profile, search, etc here later */}
         </header>
     );
 };

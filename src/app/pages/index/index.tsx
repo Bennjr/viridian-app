@@ -50,12 +50,6 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold tracking-tight">Hei igjen </h1>
         </section>
 
-        <section className="flex">
-          <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-6 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
-            <h1>Stor velkommen til deg</h1>
-          </div>
-        </section>
-
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-row gap-2">

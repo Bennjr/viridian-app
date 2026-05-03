@@ -13,7 +13,7 @@
     --c_primary: #f5f5f5;
     --c_secondary_bg: #ececec;
     --c_tertiery: #e2e2e2;
-    --c_dividers: #ffffff;
+    --c_dividers: #dadada;
     --c_text: #1d1d1d;
     --c_text_muted: #666666;
     --c_hover: #dbdbdb;
@@ -30,8 +30,6 @@
     --c_scrollbar_hover: #aaaaaa;
   }
 
-  /* --- 2. DARK THEME VARIABLES --- */
-  /* This block triggers if the system is dark OR the user forces 'dark' */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --c_primary: #2a2b2a;
