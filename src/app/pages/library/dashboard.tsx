@@ -8,50 +8,50 @@ import { useLanguage } from "../../../context/LanguageContext";
 type Lang = "no" | "en" | "es" | "de";
 
 const TRANSLATIONS: Record<Lang, Record<string, string>> = {
-  no: {
-    library: "Bibliotek",
-    addFile: "Legg til fil",
-    quickSearch: "Hurtigsøk",
-    recentFiles: "Nyelige filer",
-    lastEdited: "Sist redigert",
-    fileType: "Filtype",
-    seeAll: "Se alle",
-    seeAllFiles: "Se alle filer",
-    pdf: "PDF",
-  },
-  en: {
-    library: "Library",
-    addFile: "Add File",
-    quickSearch: "Quick Search",
-    recentFiles: "Recent Files",
-    lastEdited: "Last Edited",
-    fileType: "File Type",
-    seeAll: "See All",
-    seeAllFiles: "See All Files",
-    pdf: "PDF",
-  },
-  es: {
-    library: "Biblioteca",
-    addFile: "Agregar Archivo",
-    quickSearch: "Búsqueda Rápida",
-    recentFiles: "Archivos Recientes",
-    lastEdited: "Última Edición",
-    fileType: "Tipo de Archivo",
-    seeAll: "Ver Todo",
-    seeAllFiles: "Ver Todos los Archivos",
-    pdf: "PDF",
-  },
-  de: {
-    library: "Bibliothek",
-    addFile: "Datei Hinzufügen",
-    quickSearch: "Schnellsuche",
-    recentFiles: "Aktuelle Dateien",
-    lastEdited: "Zuletzt Bearbeitet",
-    fileType: "Dateityp",
-    seeAll: "Alle Anzeigen",
-    seeAllFiles: "Alle Dateien Anzeigen",
-    pdf: "PDF",
-  },
+    no: {
+        library: "Bibliotek",
+        addFile: "Legg til fil",
+        quickSearch: "Hurtigsøk",
+        recentFiles: "Nyelige filer",
+        lastEdited: "Sist redigert",
+        fileType: "Filtype",
+        seeAll: "Se alle",
+        seeAllFiles: "Se alle filer",
+        pdf: "PDF",
+    },
+    en: {
+        library: "Library",
+        addFile: "Add File",
+        quickSearch: "Quick Search",
+        recentFiles: "Recent Files",
+        lastEdited: "Last Edited",
+        fileType: "File Type",
+        seeAll: "See All",
+        seeAllFiles: "See All Files",
+        pdf: "PDF",
+    },
+    es: {
+        library: "Biblioteca",
+        addFile: "Agregar Archivo",
+        quickSearch: "Búsqueda Rápida",
+        recentFiles: "Archivos Recientes",
+        lastEdited: "Última Edición",
+        fileType: "Tipo de Archivo",
+        seeAll: "Ver Todo",
+        seeAllFiles: "Ver Todos los Archivos",
+        pdf: "PDF",
+    },
+    de: {
+        library: "Bibliothek",
+        addFile: "Datei Hinzufügen",
+        quickSearch: "Schnellsuche",
+        recentFiles: "Aktuelle Dateien",
+        lastEdited: "Zuletzt Bearbeitet",
+        fileType: "Dateityp",
+        seeAll: "Alle Anzeigen",
+        seeAllFiles: "Alle Dateien Anzeigen",
+        pdf: "PDF",
+    },
 };
 
 export default function LibraryDashboard({ goView }: { goView: () => void }) {
@@ -135,15 +135,15 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
                     <button className="hover:text-c-brand transition-all duration-200" onClick={goView}>{t("seeAll")}</button>
                 </div>
                 <div className="flex flex-col gap-4">
-                    <div className="flex w-full bg-c-brand h-[300px] rounded-xl">
-                        <h2>{t("library")}</h2>
+                    <div className="flex w-full bg-c-brand h-[300px] rounded-xl border border-transparent hover:brightness-110 hover:border-c-brand transition-all duration-200 overflow-hidden">
+                        <img className="w-full h-full object-cover" src="https://media.istockphoto.com/id/1218913590/photo/cat-with-a-little-tongue-out-and-shrug.jpg?s=170667a&w=0&k=20&c=Otgd27cLp00Su8-hQ3qdaVxJvKX8PVLn6U7oqjW2X5o=" alt="" />
                     </div>
                     <div className="flex flex-row gap-4">
                         <div className="flex w-full bg-c-brand h-[200px] rounded-xl">
-                            <h2>{t("library")}</h2>
+                            <img className="w-full h-full object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwoo6vtZAjPuCw8DnodIBrfGeN5nWd9tUj1g&s" alt="" />
                         </div>
                         <div className="flex w-full bg-c-brand h-[200px] rounded-xl">
-                            <h2>{t("library")}</h2>
+                            <img className="w-full h-full object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4dQB-JQt7-t6YhBy36DTe9Fjz2qdgL6Cb4A&s" alt="" />
                         </div>
                     </div>
                 </div>
