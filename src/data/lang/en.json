@@ -40,7 +40,9 @@
     "fontSize": "Font Size",
     "menuTransparency": "Menu Transparency",
     "colorTheme": "Color Theme",
-    "language": "Language"
+    "language": "Language",
+    "settingsSection": "Settings",
+    "userAccount": "User Account"
   },
   "library": {
     "favorites": "Favorites",
@@ -51,7 +53,12 @@
     "searchLibrary": "Search library...",
     "preview": "Preview",
     "document": "Document",
-    "clear": "Clear"
+    "clear": "Clear",
+    "addFile": "Add File",
+    "quickSearch": "Quick Search",
+    "recentFiles": "Recent Files",
+    "lastEdited": "Last Edited",
+    "noFilesFound": "No files found"
   },
   "sidebar": {
     "home": "Home",
@@ -89,12 +96,66 @@
   },
   "dictionary": {
     "dictionary": "Dictionary",
+    "subtitle": "Explore words, discover their meanings and variations",
     "searchWords": "Search for words...",
     "searching": "Searching...",
     "resultsFor": "Found results for",
     "exactMatches": "Exact matches",
     "noExact": "No exact matches",
-    "similarWords": "Similar words"
+    "similarWords": "Similar words",
+    "emptyTitle": "Ready to explore?",
+    "emptyDescription": "Type a word in the search box to find exact matches and similar words",
+    "noSimilarWords": "No similar words found",
+    "results": "results"
+  },
+  "notes": {
+    "title": "My Notes",
+    "newNote": "New Note",
+    "editing": "Editing note",
+    "done": "Done",
+    "placeholder": "Start typing here...",
+    "lastEdited": "Last edited:",
+    "noContent": "No text in this note yet...",
+    "shopping": "Shopping",
+    "shoppingDesc": "Buy milk and bread on the way home.",
+    "today": "Today",
+    "viridianPlans": "Viridian Plans",
+    "viridianDesc": "Fix overlay window and dictionary integration.",
+    "yesterday": "Yesterday",
+    "meetingNote": "Meeting Note",
+    "meetingDesc": "Remember to discuss accessibility for dyslexic people.",
+    "mar12": "Mar 12",
+    "password": "Password",
+    "passwordDesc": "Never save passwords here, but this is a test.",
+    "mar10": "Mar 10"
+  },
+  "log": {
+    "title": "Log",
+    "appTheme": "App Theme",
+    "description": "Some description"
+  },
+  "themes": {
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "contrast": "Contrast"
+  },
+  "toolbar": {
+    "settings": "Settings",
+    "speak": "Read text aloud",
+    "chat": "AI Assistant",
+    "translate": "Translate",
+    "hide": "Hide window",
+    "resize": "Show/Hide field"
+  },
+  "overlay": {
+    "explain": "Explain",
+    "summarize": "Summarize",
+    "correctErrors": "Correct errors"
+  },
+  "navigation": {
+    "content": "content for now",
+    "viridian": "VIRIDIAN"
   },
   "languages": {
     "no": "Norsk",

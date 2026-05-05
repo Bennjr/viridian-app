@@ -92,11 +92,10 @@ export default function Settings() {
     const settingsTranslations = getTranslations(language as Lang, 'settings');
     const langTranslations = getTranslations(language as Lang, 'languages');
     const LANG_LABELS = langTranslations;
-    const t = (key: string) => settingsTranslations[key] || key;
+    const t = (key: string) => settingsTranslations[key] || TRANSLATIONS[language as Lang]?.[key] || key;
 
     return (
         <div className="bg-c-primary text-c-text h-screen flex flex-col overflow-hidden">
-
             <header className="px-8 pt-12 pb-8 max-w-5xl w-full mx-auto flex-shrink-0">
                 <div className="flex items-end gap-4 mb-6">
                     <NavLink to="/" className="p-2 hover:bg-c-secondary rounded-full transition-colors">
@@ -144,7 +143,6 @@ export default function Settings() {
                             </DoubleSelect>
                         </div>
                     </section>
-
                     <section className="space-y-4">
                         <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 ml-1">{t("appearance")}</h3>
                         <div className="bg-c-secondary/30 border border-white/5 rounded-3xl p-6 space-y-8">
@@ -166,10 +164,10 @@ export default function Settings() {
                                     onChange={(e) => setLanguage(e.target.value as Lang)}
                                     className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none w-full"
                                 >
-                                    <option value="no">{LANG_LABELS.no}</option>
-                                    <option value="en">{LANG_LABELS.en}</option>
-                                    <option value="es">{LANG_LABELS.es}</option>
-                                    <option value="de">{LANG_LABELS.de}</option>
+                                    <option value="no">{LANG_LABELS.no || "Norsk"}</option>
+                                    <option value="en">{LANG_LABELS.en || "English"}</option>
+                                    <option value="es">{LANG_LABELS.es || "Español"}</option>
+                                    <option value="de">{LANG_LABELS.de || "Deutsch"}</option>
                                 </select>
                             </div>
                         </div>
@@ -179,10 +177,9 @@ export default function Settings() {
                     <section className="space-y-4">
                         <ToolbarDragDrop></ToolbarDragDrop>
                     </section>
-
                     <div className="h-20" />
-                </div>
-            </main>
-        </div>
+                </div >
+            </main >
+        </div >
     );
 }

@@ -2,11 +2,85 @@ import { useEffect, useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { Icon } from "../index"
 import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "../../context/LanguageContext";
+
+type Lang = "no" | "en" | "es" | "de";
 
 interface SettingItemProps {
     label: string;
     children: React.ReactNode;
 }
+
+const TRANSLATIONS: Record<Lang, Record<string, string>> = {
+  no: {
+    system: "System",
+    light: "Lys",
+    dark: "Mørk",
+    contrast: "Kontrast",
+    chooseFontSize: "Velg tekststørrelse",
+    chooseFontDesc: "Velg den størrelsen som er mest behagelig å lese.",
+    small: "Liten",
+    medium: "Medium",
+    large: "Stor",
+    settings: "Instillinger",
+    speak: "Les opp tekst",
+    chat: "AI Assistent",
+    translate: "Oversett",
+    hide: "Skjul vindu",
+    resize: "Vis/Skjul felt",
+  },
+  en: {
+    system: "System",
+    light: "Light",
+    dark: "Dark",
+    contrast: "Contrast",
+    chooseFontSize: "Choose Font Size",
+    chooseFontDesc: "Select the size that is most comfortable to read.",
+    small: "Small",
+    medium: "Medium",
+    large: "Large",
+    settings: "Settings",
+    speak: "Read Text Aloud",
+    chat: "AI Assistant",
+    translate: "Translate",
+    hide: "Hide Window",
+    resize: "Show/Hide Field",
+  },
+  es: {
+    system: "Sistema",
+    light: "Claro",
+    dark: "Oscuro",
+    contrast: "Contraste",
+    chooseFontSize: "Elegir Tamaño de Fuente",
+    chooseFontDesc: "Selecciona el tamaño que sea más cómodo de leer.",
+    small: "Pequeño",
+    medium: "Mediano",
+    large: "Grande",
+    settings: "Configuración",
+    speak: "Leer en Voz Alta",
+    chat: "Asistente de IA",
+    translate: "Traducir",
+    hide: "Ocultar Ventana",
+    resize: "Mostrar/Ocultar Campo",
+  },
+  de: {
+    system: "System",
+    light: "Hell",
+    dark: "Dunkel",
+    contrast: "Kontrast",
+    chooseFontSize: "Schriftgröße Wählen",
+    chooseFontDesc: "Wählen Sie die Größe, die am angenehmsten zu lesen ist.",
+    small: "Klein",
+    medium: "Mittel",
+    large: "Groß",
+    settings: "Einstellungen",
+    speak: "Text Vorlesen",
+    chat: "KI-Assistent",
+    translate: "Übersetzen",
+    hide: "Fenster Ausblenden",
+    resize: "Feld Anzeigen/Ausblenden",
+  },
+};
 
 // Inside settingitems.tsx
 export function DoubleSelect({ label, children }: SettingItemProps) {
@@ -71,15 +145,17 @@ export function Toggle({ label, enabled, onChange }: ToggleProps) {
     );
 }
 
-const THEMES = [
-    { id: 'default', label: 'System' },
-    { id: 'light', label: 'Lys' },
-    { id: 'dark', label: 'Mørk' },
-    { id: 'contrast', label: 'Kontrast' },
-];
-
 export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
+    const { language } = useLanguage();
+    const t = (key: string) => TRANSLATIONS[language as Lang][key] || key;
+
+    const THEMES = [
+        { id: 'default', label: t("system") },
+        { id: 'light', label: t("light") },
+        { id: 'dark', label: t("dark") },
+        { id: 'contrast', label: t("contrast") },
+    ];
 
     return (
         <ul className="grid grid-cols-4 gap-3 select-none p-6 border border-c-divider rounded-lg">
@@ -145,6 +221,9 @@ export function FontSize() {
         return localStorage.getItem("fontSize") || "medium";
     });
 
+    const { language } = useLanguage();
+    const t = (key: string) => TRANSLATIONS[language as Lang][key] || key;
+
     useEffect(() => {
         localStorage.setItem("fontSize", fontSize);
     }, [fontSize]);
@@ -152,15 +231,15 @@ export function FontSize() {
     return (
         <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
             <div className="text-center">
-                <h2 className="text-3xl font-bold mb-2">Velg tekststørrelse</h2>
-                <p className="opacity-50">Velg den størrelsen som er mest behagelig å lese.</p>
+                <h2 className="text-3xl font-bold mb-2">{t("chooseFontSize")}</h2>
+                <p className="opacity-50">{t("chooseFontDesc")}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
                 {[
-                    { id: 'small', label: 'Liten', size: 'text-sm' },
-                    { id: 'medium', label: 'Medium', size: 'text-base' },
-                    { id: 'large', label: 'Stor', size: 'text-xl' }
+                    { id: 'small', label: t("small"), size: 'text-sm' },
+                    { id: 'medium', label: t("medium"), size: 'text-base' },
+                    { id: 'large', label: t("large"), size: 'text-xl' }
                 ].map((opt) => (
                     <button
                         key={opt.id}
@@ -179,7 +258,13 @@ export function FontSize() {
 }
 
 export function ToolbarDragDrop() {
-    const [toolbarActions, setToolbarActions] = useState(localStorage.getItem("toolbarActions") || []);
+    const [toolbarActions, setToolbarActions] = useState<string[]>(() => {
+        const stored = localStorage.getItem("toolbarActions");
+        return stored ? JSON.parse(stored) : [];
+    });
+
+    const { language } = useLanguage();
+    const t = (key: string) => TRANSLATIONS[language as Lang][key] || key;
 
     useEffect(() => {
         localStorage.setItem("toolbarActions", JSON.stringify(toolbarActions));
@@ -195,13 +280,14 @@ export function ToolbarDragDrop() {
         });
         invoke("trigger_w_len", { len: localStorage.getItem("toolbarActions") ? JSON.parse(localStorage.getItem("toolbarActions") || "[]").length : 0 })
     };
+
     const TOOLBAR_ACTIONS = [
-        { id: 'settings', icon: "/settings.svg", title: "Instillinger", action: "settings" },
-        { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
-        { id: 'chat', icon: '/star.svg', title: 'AI Assistent', action: 'toggleChat' },
-        { id: 'translate', icon: '/translate.svg', title: 'Oversett', action: 'translate' },
-        { id: 'hide', icon: '/eye.svg', title: 'Skjul vindu', action: 'toggleEye' },
-        { id: 'resize', icon: '/chevron-down.svg', title: 'Vis/Skjul felt', action: 'windowSizeToggle', isChevron: true },
+        { id: 'settings', icon: "/settings.svg", title: t("settings"), action: "settings" },
+        { id: 'speak', icon: '/audio.svg', title: t("speak"), action: 'speak' },
+        { id: 'chat', icon: '/star.svg', title: t("chat"), action: 'toggleChat' },
+        { id: 'translate', icon: '/translate.svg', title: t("translate"), action: 'translate' },
+        { id: 'hide', icon: '/eye.svg', title: t("hide"), action: 'toggleEye' },
+        { id: 'resize', icon: '/chevron-down.svg', title: t("resize"), action: 'windowSizeToggle', isChevron: true },
     ];
 
     return (

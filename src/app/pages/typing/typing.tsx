@@ -91,7 +91,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
   },
   de: {
     title: "Wörterbuch & Übersetzer",
-    description: "Schreibe ein Wort, wähle Sprachen und erhalte Korrekturen, ähnliche Wörter und Übersetzung.",
+    description: "Schreibe ein Wort, wähle Sprachen und erhalte Korrektionen, ähnliche Wörter und Übersetzung.",
     from: "Von",
     to: "Zu",
     language: "Sprache wählen",
@@ -171,81 +171,6 @@ async function fetchDatamuseSuggestions(word: string, lang: "en" | "es" | "de"):
   };
 }
 
-const SLANG_TRANSLATIONS: Record<string, Record<Lang, string>> = {
-  // Spansk slang
-  "que tal": { no: "Hva skjer", en: "What's up", es: "Qué tal", de: "Wie geht's" },
-  "vale": { no: "Ok", en: "Okay", es: "Vale", de: "Okay" },
-  "tio": { no: "Kompis", en: "Dude", es: "Tío", de: "Kumpel" },
-  "guay": { no: "Kult", en: "Cool", es: "Guay", de: "Cool" },
-  "joder": { no: "Faen", en: "Damn", es: "Joder", de: "Verdammt" },
-  "hostia": { no: "Herregud", en: "Holy shit", es: "Hostia", de: "Heilige Scheiße" },
-  "coño": { no: "Faen", en: "Fuck", es: "Coño", de: "Scheiße" },
-  "puta": { no: "Fitte", en: "Bitch", es: "Puta", de: "Schlampe" },
-  "cabrón": { no: "Svin", en: "Bastard", es: "Cabrón", de: "Bastard" },
-  "hola": { no: "Hei", en: "Hi", es: "Hola", de: "Hallo" },
-  "como estas": { no: "Hvordan har du det", en: "How are you", es: "Cómo estás", de: "Wie geht es dir" },
-  // Norsk naturlig
-  "æ": { no: "Jeg", en: "I", es: "Yo", de: "Ich" },
-  "du": { no: "Du", en: "You", es: "Tú", de: "Du" },
-  "han": { no: "Han", en: "He", es: "Él", de: "Er" },
-  "hun": { no: "Hun", en: "She", es: "Ella", de: "Sie" },
-  "vi": { no: "Vi", en: "We", es: "Nosotros", de: "Wir" },
-  "dere": { no: "Dere", en: "You (pl)", es: "Vosotros", de: "Ihr" },
-  "de": { no: "De", en: "They", es: "Ellos", de: "Sie" },
-  "hva skjer": { no: "Hva skjer", en: "What's up", es: "Qué pasa", de: "Was geht" },
-  "hvordan går det": { no: "Hvordan går det", en: "How's it going", es: "Cómo va", de: "Wie läuft's" },
-  "faen": { no: "Faen", en: "Damn", es: "Joder", de: "Verdammt" },
-  "herregud": { no: "Herregud", en: "Oh my god", es: "Dios mío", de: "Mein Gott" },
-  "fitte": { no: "Fitte", en: "Bitch", es: "Puta", de: "Schlampe" },
-  "svin": { no: "Svin", en: "Bastard", es: "Cabrón", de: "Bastard" },
-  "hey": { no: "Hei", en: "Hey", es: "Ey", de: "Hey" },
-  "sup": { no: "Hva skjer", en: "What's up", es: "Qué pasa", de: "Was los" },
-  "yo": { no: "Jeg", en: "I", es: "Yo", de: "Ich" },
-  "tu": { no: "Du", en: "You", es: "Tú", de: "Du" },
-  "el": { no: "Han", en: "He", es: "Él", de: "Er" },
-  "la": { no: "Hun", en: "She", es: "Ella", de: "Sie" },
-  "wie gehts": { no: "Hvordan går det", en: "How's it going", es: "Cómo estás", de: "Wie geht's" },
-  "was geht": { no: "Hva skjer", en: "What's up", es: "Qué pasa", de: "Was geht" },
-  // Legg til flere etter behov
-};
-
-async function checkSpelling(text: string, lang: Lang): Promise<string> {
-  if (lang === "no") {
-    // Bruk LanguageTool for norsk
-    const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=nb-NO`;
-    const data = await fetchJson(url);
-    if (data?.matches) {
-      let corrected = text;
-      data.matches.forEach((match: any) => {
-        if (match.replacements && match.replacements.length > 0) {
-          const offset = match.offset;
-          const length = match.length;
-          const replacement = match.replacements[0].value;
-          corrected = corrected.substring(0, offset) + replacement + corrected.substring(offset + length);
-        }
-      });
-      return corrected;
-    }
-  } else if (lang === "es") {
-    // For spansk, bruk LanguageTool
-    const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=es`;
-    const data = await fetchJson(url);
-    if (data?.matches) {
-      let corrected = text;
-      data.matches.forEach((match: any) => {
-        if (match.replacements && match.replacements.length > 0) {
-          const offset = match.offset;
-          const length = match.length;
-          const replacement = match.replacements[0].value;
-          corrected = corrected.substring(0, offset) + replacement + corrected.substring(offset + length);
-        }
-      });
-      return corrected;
-    }
-  }
-  return text;
-}
-
 async function fetchDefinition(word: string, lang: Lang): Promise<string> {
   if (lang === "no") {
     const url = `https://ordbokapi.org/api/v1/entries/${encodeURIComponent(word)}`;
@@ -258,7 +183,6 @@ async function fetchDefinition(word: string, lang: Lang): Promise<string> {
     }
     return "Ingen definisjon";
   } else {
-    // For English, Spanish, and German, use Datamuse
     const url = `https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=d&v=${lang}`;
     const data = await fetchJson(url);
     if (Array.isArray(data) && data.length > 0 && data[0].defs) {
@@ -279,35 +203,41 @@ async function fetchAllDefinitions(word: string): Promise<Record<Lang, string>> 
   return defs;
 }
 
+// Stavekontroll
+async function checkSpelling(text: string, lang: Lang): Promise<string> {
+  const langMap: Record<Lang, string> = {
+    no: "nb-NO",
+    en: "en-US",
+    es: "es",
+    de: "de",
+  };
+
+  const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=${langMap[lang]}`;
+  const data = await fetchJson(url);
+  
+  if (data?.matches) {
+    let corrected = text;
+    data.matches
+      .sort((a: any, b: any) => b.offset - a.offset)
+      .forEach((match: any) => {
+        if (match.replacements && match.replacements.length > 0) {
+          const replacement = match.replacements[0].value;
+          corrected = corrected.substring(0, match.offset) + replacement + corrected.substring(match.offset + match.length);
+        }
+      });
+    return corrected;
+  }
+  return text;
+}
+
+// Oversettelse
 async function translateWord(word: string, from: Lang, to: Lang): Promise<string> {
   if (!word || from === to) return word;
-
-  // For setninger, oversett hele
-  if (word.includes(' ')) {
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${MYMEMORY_LANG[from]}|${MYMEMORY_LANG[to]}`;
-    const result = await fetchJson(url);
-    const translated = result?.responseData?.translatedText;
-    if (typeof translated === "string" && translated.trim().length > 0) {
-      return translated.trim();
-    }
-    return word;
-  }
-
-  // For enkeltord, sjekk slang først
-  const lowerWord = word.toLowerCase();
-  if (SLANG_TRANSLATIONS[lowerWord]) {
-    return SLANG_TRANSLATIONS[lowerWord][to] || word;
-  }
-
+  
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${MYMEMORY_LANG[from]}|${MYMEMORY_LANG[to]}`;
   const result = await fetchJson(url);
-
-  const translated = result?.responseData?.translatedText;
-  if (typeof translated === "string" && translated.trim().length > 0) {
-    return translated.trim();
-  }
-
-  return word;
+  
+  return result?.responseData?.translatedText?.trim() || word;
 }
 
 export default function Typing() {
@@ -320,9 +250,9 @@ export default function Typing() {
   const [definitions, setDefinitions] = useState<Record<string, Record<Lang, string>>>({});
   const [loading, setLoading] = useState(false);
 
+  // 🎯 Bruk context for UI-språk (som Settings gjør)
   const { language: uiLang } = useLanguage();
-
-  const t = (key: string) => TRANSLATIONS[uiLang][key] || key;
+  const t = (key: string) => TRANSLATIONS[uiLang as Lang][key] || key;
 
   useEffect(() => {
     if (!query.trim()) {
@@ -338,16 +268,15 @@ export default function Typing() {
       const normalized = query.trim().toLowerCase();
 
       const lookup = async () => {
+        // 🎯 Bruk checkSpelling for stavekontroll
         let correctedText = normalized;
         if (normalized.includes(' ')) {
-          // Setning: Rett stavefeil
           correctedText = await checkSpelling(normalized, sourceLang);
         }
 
         const words = correctedText.split(/\s+/).filter(w => w.length > 0);
         const uniqueWords = [...new Set(words)];
 
-        // Få forslag for hvert unike ord
         const wordPromises = uniqueWords.map(async (word) => {
           if (sourceLang === "no" || sourceLang === "en" || sourceLang === "es" || sourceLang === "de") {
             return await fetchDictionarySuggestions(word, sourceLang);
@@ -358,7 +287,6 @@ export default function Typing() {
 
         const wordDicts = await Promise.all(wordPromises);
 
-        // Kombiner alle exact matches
         const allExact: [string, number][] = [];
         wordDicts.forEach(dict => {
           allExact.push(...dict.a.exact);
@@ -506,4 +434,3 @@ export default function Typing() {
     </div>
   );
 }
-
