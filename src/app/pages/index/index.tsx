@@ -143,7 +143,7 @@ export default function HomePage() {
 
 function QuickActionCard({ title, desc, icon }: any) {
   return (
-    <button className="flex items-center gap-4 p-4 rounded-2xl bg-c-secondary border border-c-divider hover:border-c-brand/50 hover:bg-c-tertiary transition-all text-left group">
+    <button className="flex items-center gap-4 p-4 rounded-2xl bg-c-secondary border border-c-divider hover:border-c-brand/50 hover:bg-c-tertiery hover:size-[1.1] hover:border-c-brand active:size-[0.98] transition-all text-left group duration-200">
       <div className={`w-12 h-12 rounded-xl bg-c-main flex items-center justify-center shadow-inner`}>
         <Icon src={`/icons/${icon}.svg`} size="w-6 h-6" className="opacity-80 group-hover:scale-110 transition-transform" />
       </div>
@@ -197,7 +197,11 @@ function Dict({ t, language }: { t: (key: string) => string; language: string })
     const timeout = setTimeout(() => {
       setLoading(true);
       invoke<DictResponse>("suggest_word", { query: dictQuery, lang: language })
-        .then((res) => setDictData(res))
+        .then((res) => {
+          res.a.exact = res.a.exact.slice(0, 5);
+          res.a.similar = res.a.similar.slice(0, 5);
+          setDictData(res);
+        })
         .catch(console.error)
         .finally(() => setLoading(false));
     }, 500);
@@ -231,7 +235,7 @@ function Dict({ t, language }: { t: (key: string) => string; language: string })
 
       <div className="grid grid-cols-2 gap-8 items-start">
 
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-4 min-h-[275px]">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
             {getTranslations("no" as Lang, 'dictionary')["exactMatches"]}
           </h3>
@@ -255,7 +259,7 @@ function Dict({ t, language }: { t: (key: string) => string; language: string })
           </div>
         </section>
 
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-4 min-h-[275px]">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
             {getTranslations("no" as Lang, 'dictionary')["similarWords"]}
           </h3>

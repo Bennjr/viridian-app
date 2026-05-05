@@ -363,7 +363,7 @@ export default function Typing() {
         wordDicts.forEach(dict => {
           allExact.push(...dict.a.exact);
         });
-        const uniqueExact = allExact.filter((item, index, arr) => 
+        const uniqueExact = allExact.filter((item, index, arr) =>
           arr.findIndex(([w]) => w === item[0]) === index
         );
 
@@ -393,7 +393,7 @@ export default function Typing() {
   }, [query, sourceLang, targetLang]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-6xl mx-auto">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="font-bold text-2xl tracking-tight">{t("title")}</h2>

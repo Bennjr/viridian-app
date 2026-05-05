@@ -12,7 +12,7 @@
     --c-lighter-brand: #7bd4b6;
     --c_primary: #f5f5f5;
     --c_secondary_bg: #ececec;
-    --c_tertiery: #e2e2e2;
+    --c_tertiery: #b1b1b1;
     --c_dividers: #dadada;
     --c_text: #1d1d1d;
     --c_text_muted: #666666;
@@ -20,7 +20,7 @@
     --c_btn: #f0f0f0;
     --c_btn_hover: #e0e0e0;
 
-    --o_bg: #ffffff;
+    --o_bg: #f5f5f5;
     --o_btn_bg: #333333;
     --o_icon_bg: #000000;
     --o_icon_bg_hover: #444444;
@@ -96,6 +96,7 @@
   body {
     @apply overscroll-none overflow-hidden h-screen transition-colors duration-300;
     color: var(--c_text);
+    font-family: Calibri;
   }
 
   h1,

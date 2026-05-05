@@ -30,7 +30,7 @@ export default function Notes() {
     };
 
     return (
-        <div className="h-full flex flex-col max-w-[1200px] mx-auto">
+        <div className="h-full flex flex-col max-w-[1200px] mx-auto p-8">
             <AnimatePresence mode="wait">
                 {viewingNote ? (
                     <motion.div

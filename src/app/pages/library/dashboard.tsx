@@ -23,7 +23,7 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
     }, [favorites]);
 
     const toggleFavorite = (filePath: string, e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent triggering file selection
+        e.stopPropagation();
         setFavorites(prev => {
             const newFavorites = new Set(prev);
             if (newFavorites.has(filePath)) {

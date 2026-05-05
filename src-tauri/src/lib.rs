@@ -36,6 +36,7 @@ pub fn run() {
             helper::translate,
             helper::search_files,
             helper::save_file,
+            helper::show_in_folder,
         ])
         .setup(|app| {
             let _handle = app.handle().clone();

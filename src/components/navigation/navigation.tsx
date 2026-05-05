@@ -8,7 +8,6 @@ type Lang = "no" | "en" | "es" | "de";
 const links = [
     { key: "home", svg: "/home.svg", to: "/" },
     { key: "library", svg: "/folder.svg", to: "/library", isFolder: true },
-    { key: "log", svg: "/log.svg", to: "/log" },
     { key: "notes", svg: "/notes.svg", to: "/notes" },
     { key: "dictionary", svg: "/dict.svg", to: "/dict" },
     { key: "typing", svg: "/type.svg", to: "/typing" }
@@ -88,11 +87,7 @@ export default function Sidebar() {
                         ${isActive ? "bg-c-brand/10 text-c-brand" : "hover:bg-c-btn_hover text-c-text/70"}
                     `}
                         >
-                            <Icon
-                                src="/settings.svg"
-                                color="bg-current"
-                                size="w-5 h-5"
-                            />
+                            <div className="w-5 h-5 rounded-full bg-red-500">c</div>
                             <span className="text-[14px]">Brukerkonto</span>
                         </NavLink>
                     </div>

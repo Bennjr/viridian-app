@@ -49,7 +49,7 @@ export default function Layout() {
                     <Topbar />
 
                     <section className="flex-1 overflow-y-auto h-full">
-                        <div className="select-none p-8">
+                        <div className="select-none">
                             <Outlet />
                         </div>
                     </section>

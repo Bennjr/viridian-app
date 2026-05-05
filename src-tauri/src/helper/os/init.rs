@@ -1,6 +1,8 @@
 use std::{fs, string::String, path::Path};
 use serde_json::{json, Value};
 use std::time::UNIX_EPOCH;
+use tauri_plugin_opener::OpenerExt;
+use std::process::Command;
 
 #[tauri::command]
 pub fn save_file(path: String) -> Result<(), String> {
@@ -65,4 +67,37 @@ pub fn get_content(path: String) -> String {
     let contents = fs::read_to_string(path)
         .expect("Should have been able to read the file");
     return contents
+}
+
+#[tauri::command]
+pub fn show_in_folder(path: String) {
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("explorer")
+            .args(["/select,", &path])
+            .spawn()
+            .unwrap();
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open")
+            .args(["-R", &path])
+            .spawn()
+            .unwrap();
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let path = Path::new(&path);
+        let dir = if path.is_dir() {
+            path
+        } else {
+            path.parent().unwrap_or(Path::new("/"))
+        };
+        Command::new("xdg-open")
+            .arg(dir)
+            .spawn()
+            .unwrap();
+    }
 }

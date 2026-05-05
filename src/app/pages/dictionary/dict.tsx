@@ -85,7 +85,7 @@ export default function Dict() {
   }, [query, language]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-6xl mx-auto">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto p-8">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="font-bold text-2xl tracking-tight">{t("dictionary")}</h2>
