@@ -1,21 +1,21 @@
 import { NavLink } from "react-router-dom";
 import "../../global.css";
-
+ 
 import { Icon } from "../../../components";
-
+ 
 import { DoubleSelect, Slider, Toggle, ThemeSelector, FontSize, ToolbarDragDrop } from "../../../components"
 import { useLanguage } from "../../../context/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
-
+ 
 type Lang = "no" | "en" | "es" | "de";
-
+ 
 const LANG_LABELS: Record<Lang, string> = {
   no: "Norsk",
   en: "English",
   es: "Español",
   de: "Deutsch",
 };
-
+ 
 const TRANSLATIONS: Record<Lang, Record<string, string>> = {
   no: {
     title: "Innstillinger",
@@ -86,18 +86,18 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     language: "Sprache",
   },
 };
-
+ 
 export default function Settings() {
     const { language, setLanguage } = useLanguage();
     const settingsTranslations = getTranslations(language as Lang, 'settings');
     const langTranslations = getTranslations(language as Lang, 'languages');
     const LANG_LABELS = langTranslations;
-    const t = (key: string) => settingsTranslations[key] || key;
-
+    const t = (key: string) => settingsTranslations[key] || TRANSLATIONS[language as Lang]?.[key] || key;
+ 
     return (
         /* 1. Force the container to be exactly the screen height and stop it from scrolling */
         <div className="bg-c-primary text-c-text h-screen flex flex-col overflow-hidden">
-
+ 
             {/* 2. HEADER: Remains at the top */}
             <header className="px-8 pt-12 pb-8 max-w-5xl w-full mx-auto flex-shrink-0">
                 <div className="flex items-end gap-4 mb-6">
@@ -109,7 +109,7 @@ export default function Settings() {
                         <p className="opacity-50 text-sm">{t("subtitle")}</p>
                     </div>
                 </div>
-
+ 
                 <div className="relative group">
                     <input
                         type="text"
@@ -121,10 +121,10 @@ export default function Settings() {
                     </div>
                 </div>
             </header>
-
+ 
             {/* 3. MAIN AREA: Takes up the remaining space */}
             <main className="flex-1 max-w-5xl w-full mx-auto grid grid-cols-[200px_1fr] gap-12 overflow-hidden px-8 pb-8">
-
+ 
                 {/* 4. NAV: Stays put because the parent main is overflow-hidden */}
                 <nav className="flex flex-col gap-2 h-fit pt-2">
                     <button className="text-left px-4 py-2 rounded-lg bg-c-brand/10 text-c-brand font-bold text-sm">{t("general")}</button>
@@ -132,10 +132,10 @@ export default function Settings() {
                     <button className="text-left px-4 py-2 rounded-lg hover:bg-white/5 text-sm opacity-50">{t("accessibility")}</button>
                     <button className="text-left px-4 py-2 rounded-lg hover:bg-white/5 text-sm opacity-50">{t("about")}</button>
                 </nav>
-
+ 
                 {/* 5. CONTENT: The ONLY part that scrolls */}
                 <div className="space-y-10 overflow-y-auto pr-6 h-full custom-scrollbar">
-
+ 
                     {/* SECTION: GENERELT */}
                     <section className="space-y-4">
                         <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 ml-1">{t("general")}</h3>
@@ -148,7 +148,7 @@ export default function Settings() {
                             </DoubleSelect>
                         </div>
                     </section>
-
+ 
                     {/* SECTION: UTSEENDE */}
                     <section className="space-y-4">
                         <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 ml-1">{t("appearance")}</h3>
@@ -171,20 +171,20 @@ export default function Settings() {
                                     onChange={(e) => setLanguage(e.target.value as Lang)}
                                     className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none w-full"
                                 >
-                                    <option value="no">{LANG_LABELS.no}</option>
-                                    <option value="en">{LANG_LABELS.en}</option>
-                                    <option value="es">{LANG_LABELS.es}</option>
-                                    <option value="de">{LANG_LABELS.de}</option>
+                                    <option value="no">{LANG_LABELS.no || "Norsk"}</option>
+                                    <option value="en">{LANG_LABELS.en || "English"}</option>
+                                    <option value="es">{LANG_LABELS.es || "Español"}</option>
+                                    <option value="de">{LANG_LABELS.de || "Deutsch"}</option>
                                 </select>
                             </div>
                         </div>
                     </section>
-
-
+ 
+ 
                     <section className="space-y-4">
                         <ToolbarDragDrop></ToolbarDragDrop>
                     </section>
-
+ 
                     {/* Extra padding so the bottom isn't cut off */}
                     <div className="h-20" />
                 </div>

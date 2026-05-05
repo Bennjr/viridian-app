@@ -40,7 +40,9 @@
     "fontSize": "Tekststørrelse",
     "menuTransparency": "Meny Gjennomsiktighet",
     "colorTheme": "Fargetema",
-    "language": "Språk"
+    "language": "Språk",
+    "settingsSection": "Innstillinger",
+    "userAccount": "Brukerkonto"
   },
   "library": {
     "favorites": "Favoritter",
@@ -51,7 +53,12 @@
     "searchLibrary": "Søk i biblioteket...",
     "preview": "Preview",
     "document": "Dokument",
-    "clear": "Tøm"
+    "clear": "Tøm",
+    "addFile": "Legg til fil",
+    "quickSearch": "Hurtigsøk",
+    "recentFiles": "Nylige filer",
+    "lastEdited": "Sist redigert",
+    "noFilesFound": "Ingen filer funnet"
   },
   "sidebar": {
     "home": "Hovedside",
@@ -89,12 +96,66 @@
   },
   "dictionary": {
     "dictionary": "Ordbok",
+    "subtitle": "Utforsk ord, oppdagelsene deres betydning og variasjoner",
     "searchWords": "Søk etter ord...",
     "searching": "Søker...",
     "resultsFor": "Fant resultater for",
     "exactMatches": "Eksakte treff",
     "noExact": "Ingen eksakte treff",
-    "similarWords": "Lignende ord"
+    "similarWords": "Lignende ord",
+    "emptyTitle": "Klar til å utforske?",
+    "emptyDescription": "Skriv et ord i søkefeltet for å finne eksakte treff og lignende ord",
+    "noSimilarWords": "Ingen lignende ord funnet",
+    "results": "resultater"
+  },
+  "notes": {
+    "title": "Mine Notater",
+    "newNote": "Nytt notat",
+    "editing": "Redigerer notat",
+    "done": "Ferdig",
+    "placeholder": "Begynn å skrive her...",
+    "lastEdited": "Sist endret:",
+    "noContent": "Ingen tekst i dette notatet ennå...",
+    "shopping": "Innkjøp",
+    "shoppingDesc": "Kjøp melk og brød på vei hjem.",
+    "today": "I dag",
+    "viridianPlans": "Viridian Planer",
+    "viridianDesc": "Fikse overlay vindu og ordbok integrasjon.",
+    "yesterday": "I går",
+    "meetingNote": "Møtenotat",
+    "meetingDesc": "Husk å diskutere tilgjengelighet for dyslektikere.",
+    "mar12": "12. Mars",
+    "password": "Passord",
+    "passwordDesc": "Aldri lagre passord her, men dette er en test.",
+    "mar10": "10. Mars"
+  },
+  "log": {
+    "title": "Logg",
+    "appTheme": "App Tema",
+    "description": "Noen beskrivelse"
+  },
+  "themes": {
+    "system": "System",
+    "light": "Lys",
+    "dark": "Mørk",
+    "contrast": "Kontrast"
+  },
+  "toolbar": {
+    "settings": "Instillinger",
+    "speak": "Les opp tekst",
+    "chat": "AI Assistent",
+    "translate": "Oversett",
+    "hide": "Skjul vindu",
+    "resize": "Vis/Skjul felt"
+  },
+  "overlay": {
+    "explain": "Forklar",
+    "summarize": "Oppsummer",
+    "correctErrors": "Rett feil"
+  },
+  "navigation": {
+    "content": "innhold for nå",
+    "viridian": "VIRIDIAN"
   },
   "languages": {
     "no": "Norsk",
