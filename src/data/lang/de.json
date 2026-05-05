@@ -64,7 +64,28 @@
   },
   "index": {
     "home": "Startseite",
-    "quickSearch": "Schnellsuche..."
+    "quickSearch": "Schnellsuche...",
+    "welcomeBack": "Willkommen zurück",
+    "bigWelcome": "Große Willkommen für dich",
+    "quickActions": "Schnellaktionen",
+    "edit": "Bearbeiten",
+    "uploadFiles": "Dateien hochladen",
+    "dragDropFiles": "Dateien hierher ziehen und ablegen",
+    "newNote": "Neue Notiz",
+    "startBlankSheet": "Ein leeres Blatt starten",
+    "translate": "Übersetzen",
+    "changeLanguage": "Dokumentsprache ändern",
+    "trending": "Trends",
+    "hello": "hallo",
+    "recentFiles": "Kürzlich verwendet",
+    "seeAll": "Alles anzeigen",
+    "noFilesFound": "Keine Dateien gefunden",
+    "dictionary": "Wörterbuch",
+    "searchDictionary": "Im Wörterbuch suchen",
+    "noDescription": "Keine Beschreibung für diese Datei verfügbar.",
+    "foundResults": "{{count}} Ergebnisse gefunden für",
+    "noSimilarWords": "Keine ähnlichen Wörter",
+    "searchWords": "Nach Wörtern suchen..."
   },
   "dictionary": {
     "dictionary": "Wörterbuch",
@@ -76,7 +97,7 @@
     "similarWords": "Ähnliche Wörter"
   },
   "languages": {
-    "nb": "Norsk",
+    "no": "Norsk",
     "en": "English",
     "es": "Español",
     "de": "Deutsch"

@@ -69,12 +69,12 @@ export default function HomePage() {
       <main className="flex flex-col max-w-6xl mx-auto w-full p-8 gap-8">
 
         <section className="flex">
-          <h1 className="text-3xl font-bold tracking-tight">Hei igjen </h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("welcomeBack")}</h1>
         </section>
 
         <section className="flex">
           <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-6 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
-            <h1>Stor velkommen til deg</h1>
+            <h1>{t("bigWelcome")}</h1>
           </div>
         </section>
 
@@ -82,55 +82,49 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div className="flex flex-row gap-2">
               <Icon src="/stopwatch.svg" size="w-4 h-4" />
-              <h3 className="font-semibold">Hurtigtaster</h3>
+              <h3 className="font-semibold">{t("quickActions")}</h3>
             </div>
-            <button className="text-xs text-c-brand hover:underline font-medium">Rediger</button>
+            <button className="text-xs text-c-brand hover:underline font-medium">{t("edit")}</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <QuickActionCard
-              title="Last opp filer"
-              desc="Dra og slipp filer her"
+              title={t("uploadFiles")}
+              desc={t("dragDropFiles")}
               icon="upload"
-              color="text-blue-400"
             />
             <QuickActionCard
-              title="Nytt notat"
-              desc="Start et blankt ark"
+              title={t("newNote")}
+              desc={t("startBlankSheet")}
               icon="notes"
-              color="text-amber-400"
             />
             <QuickActionCard
-              title="Oversett"
-              desc="Endre språk på dokument"
+              title={t("translate")}
+              desc={t("changeLanguage")}
               icon="translate"
-              color="text-emerald-400"
             />
             <QuickActionCard
-              title="Oversett"
-              desc="Endre språk på dokument"
+              title={t("translate")}
+              desc={t("changeLanguage")}
               icon="translate"
-              color="text-emerald-400"
             />
             <QuickActionCard
-              title="Oversett"
-              desc="Endre språk på dokument"
+              title={t("translate")}
+              desc={t("changeLanguage")}
               icon="translate"
-              color="text-emerald-400"
             />
             <QuickActionCard
-              title="Oversett"
-              desc="Endre språk på dokument"
+              title={t("translate")}
+              desc={t("changeLanguage")}
               icon="translate"
-              color="text-emerald-400"
             />
           </div>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2>Aktuelt</h2>
+          <h2>{t("trending")}</h2>
           <div>
             <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-4 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
-              <p>hallo</p>
+              <p>{t("hello")}</p>
             </div>
           </div>
         </section>
@@ -139,9 +133,9 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon src="/clock.svg" size="w-4 h-4" className="opacity-50" />
-              <h3 className="font-semibold">Nylige filer</h3>
+              <h3 className="font-semibold">{t("recentFiles")}</h3>
             </div>
-            <button className="text-xs text-c-brand hover:underline font-medium">Se alle</button>
+            <button className="text-xs text-c-brand hover:underline font-medium">{t("seeAll")}</button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -152,7 +146,7 @@ export default function HomePage() {
             {files.length === 0 && (
               <div className="col-span-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-c-divider rounded-2xl opacity-40">
                 <Icon src="/icons/search.svg" size="w-10 h-10" className="mb-2" />
-                <p>Ingen filer funnet</p>
+                <p>{t("noFilesFound")}</p>
               </div>
             )}
           </div>
@@ -163,11 +157,11 @@ export default function HomePage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Icon src="/clock.svg" size="w-4 h-4" className="opacity-50" />
-                <h3 className="font-semibold">Ordbok</h3>
+                <h3 className="font-semibold">{t("dictionary")}</h3>
               </div>
-              <button className="text-xs text-c-brand hover:underline font-medium">Søk i ordbok</button>
+              <button className="text-xs text-c-brand hover:underline font-medium">{t("searchDictionary")}</button>
             </div>
-            <Dict />
+            <Dict t={t} language={language} />
           </div>
         </section>
       </main>
@@ -175,7 +169,7 @@ export default function HomePage() {
   );
 }
 
-function QuickActionCard({ title, desc, icon, color }: any) {
+function QuickActionCard({ title, desc, icon }: any) {
   return (
     <button className="flex items-center gap-4 p-4 rounded-2xl bg-c-secondary border border-c-divider hover:border-c-brand/50 hover:bg-c-tertiary transition-all text-left group">
       <div className={`w-12 h-12 rounded-xl bg-c-main flex items-center justify-center shadow-inner`}>
@@ -205,17 +199,22 @@ function FileCard({ item }: { item: any }) {
           <h4 className="font-medium text-sm truncate select-all">{item.name}</h4>
         </div>
         <p className="text-xs opacity-40 line-clamp-2 select-all leading-relaxed">
-          {item.desc || "Ingen beskrivelse tilgjengelig for denne filen."}
+          {item.desc || getTranslations("no" as Lang, 'index')["noDescription"]}
         </p>
       </div>
     </div>
   );
 }
 
-function Dict() {
+function Dict({ t, language }: { t: (key: string) => string; language: string }) {
   const [dictQuery, setDictQuery] = useState("");
   const [dictData, setDictData] = useState<DictResponse | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Reset data when language changes
+  useEffect(() => {
+    setDictData(null);
+  }, [language]);
 
   useEffect(() => {
     if (!dictQuery.trim()) {
@@ -225,27 +224,27 @@ function Dict() {
 
     const timeout = setTimeout(() => {
       setLoading(true);
-      invoke<DictResponse>("suggest_word", { query: dictQuery, dict: "bm" })
+      invoke<DictResponse>("suggest_word", { query: dictQuery, lang: language })
         .then((res) => setDictData(res))
         .catch(console.error)
         .finally(() => setLoading(false));
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [dictQuery]);
+  }, [dictQuery, language]);
   return (
     <div>
       <div className="relative group">
         <input
           type="text"
-          placeholder="Søk etter ord..."
+          placeholder={t("searchWords")}
           value={dictQuery}
           onChange={(e) => setDictQuery(e.target.value)}
           className="w-full bg-c-secondary border border-white/5 rounded-2xl px-5 py-4 text-c-text placeholder:text-c-text/20 focus:border-c-brand/50 outline-none transition-all shadow-sm"
         />
         {loading && (
           <div className="absolute right-5 top-1/2 -translate-y-1/2 animate-pulse text-c-brand text-xs font-bold uppercase tracking-widest">
-            Søker...
+            {t("searching")}
           </div>
         )}
       </div>
@@ -254,7 +253,7 @@ function Dict() {
       {
         !loading && dictData && (
           <div className="text-sm text-c-muted_text px-1">
-            Fant {dictData.cnt} resultater for <span className="text-c-brand font-bold">"{dictData.q}"</span>
+            {t("foundResults").replace("{{count}}", dictData.cnt.toString())} <span className="text-c-brand font-bold">"{dictData.q}"</span>
           </div>
         )
       }
@@ -265,7 +264,7 @@ function Dict() {
         {/* LEFT COLUMN: Exact Matches */}
         <section className="flex flex-col gap-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
-            Eksakte treff
+            {getTranslations("no" as Lang, 'dictionary')["exactMatches"]}
           </h3>
 
           <div className="flex flex-col gap-2">
@@ -281,7 +280,7 @@ function Dict() {
               ))
             ) : (
               <div className="p-8 border-2 border-dashed border-white/5 rounded-2xl text-center opacity-20 text-sm">
-                Ingen eksakte treff
+                {getTranslations("no" as Lang, 'index')["noExact"] || "Ingen eksakte treff"}
               </div>
             )}
           </div>
@@ -290,7 +289,7 @@ function Dict() {
         {/* RIGHT COLUMN: Similar Matches */}
         <section className="flex flex-col gap-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">
-            Lignende ord
+            {getTranslations("no" as Lang, 'dictionary')["similarWords"]}
           </h3>
 
           <div className="flex flex-col gap-2">
@@ -306,7 +305,7 @@ function Dict() {
               ))
             ) : (
               <div className="p-8 border-2 border-dashed border-white/5 rounded-2xl text-center opacity-20 text-sm">
-                Ingen lignende ord
+                {t("noSimilarWords")}
               </div>
             )}
           </div>

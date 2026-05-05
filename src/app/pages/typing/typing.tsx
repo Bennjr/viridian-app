@@ -130,9 +130,9 @@ function createJsonFetcher<T>(timeout = 5000) {
 
 const fetchJson = createJsonFetcher<any>(5000);
 
-async function fetchNorwegianSuggestions(word: string): Promise<DictResult> {
+async function fetchDictionarySuggestions(word: string, lang: "no" | "en" | "es" | "de"): Promise<DictResult> {
   try {
-    const data = await invoke<DictResult>("suggest_word", { query: word, dict: "bm" });
+    const data = await invoke<DictResult>("suggest_word", { query: word, lang: lang });
     return data;
   } catch {
     return {
@@ -349,8 +349,8 @@ export default function Typing() {
 
         // Få forslag for hvert unike ord
         const wordPromises = uniqueWords.map(async (word) => {
-          if (sourceLang === "no") {
-            return await fetchNorwegianSuggestions(word);
+          if (sourceLang === "no" || sourceLang === "en" || sourceLang === "es" || sourceLang === "de") {
+            return await fetchDictionarySuggestions(word, sourceLang);
           } else {
             return await fetchDatamuseSuggestions(word, sourceLang as "en" | "es" | "de");
           }

@@ -64,7 +64,28 @@
   },
   "index": {
     "home": "Hjem",
-    "quickSearch": "Hurtigsøk..."
+    "quickSearch": "Hurtigsøk...",
+    "welcomeBack": "Hei igjen",
+    "bigWelcome": "Stor velkommen til deg",
+    "quickActions": "Hurtigtaster",
+    "edit": "Rediger",
+    "uploadFiles": "Last opp filer",
+    "dragDropFiles": "Dra og slipp filer her",
+    "newNote": "Nytt notat",
+    "startBlankSheet": "Start et blankt ark",
+    "translate": "Oversett",
+    "changeLanguage": "Endre språk på dokument",
+    "trending": "Aktuelt",
+    "hello": "hallo",
+    "recentFiles": "Nylige filer",
+    "seeAll": "Se alle",
+    "noFilesFound": "Ingen filer funnet",
+    "dictionary": "Ordbok",
+    "searchDictionary": "Søk i ordbok",
+    "noDescription": "Ingen beskrivelse tilgjengelig for denne filen.",
+    "foundResults": "Fant {{count}} resultater for",
+    "noSimilarWords": "Ingen lignende ord",
+    "searchWords": "Søk etter ord..."
   },
   "dictionary": {
     "dictionary": "Ordbok",
@@ -76,7 +97,7 @@
     "similarWords": "Lignende ord"
   },
   "languages": {
-    "nb": "Norsk",
+    "no": "Norsk",
     "en": "English",
     "es": "Español",
     "de": "Deutsch"

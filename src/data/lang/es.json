@@ -64,7 +64,28 @@
   },
   "index": {
     "home": "Inicio",
-    "quickSearch": "Búsqueda rápida..."
+    "quickSearch": "Búsqueda rápida...",
+    "welcomeBack": "Bienvenido de vuelta",
+    "bigWelcome": "Gran bienvenida para ti",
+    "quickActions": "Acciones rápidas",
+    "edit": "Editar",
+    "uploadFiles": "Subir archivos",
+    "dragDropFiles": "Arrastra y suelta archivos aquí",
+    "newNote": "Nueva nota",
+    "startBlankSheet": "Comienza una hoja en blanco",
+    "translate": "Traducir",
+    "changeLanguage": "Cambiar idioma del documento",
+    "trending": "Tendencias",
+    "hello": "hola",
+    "recentFiles": "Archivos recientes",
+    "seeAll": "Ver todo",
+    "noFilesFound": "No se encontraron archivos",
+    "dictionary": "Diccionario",
+    "searchDictionary": "Buscar en diccionario",
+    "noDescription": "No hay descripción disponible para este archivo.",
+    "foundResults": "Se encontraron {{count}} resultados para",
+    "noSimilarWords": "Sin palabras similares",
+    "searchWords": "Buscar palabras..."
   },
   "dictionary": {
     "dictionary": "Diccionario",
@@ -76,7 +97,7 @@
     "similarWords": "Palabras similares"
   },
   "languages": {
-    "nb": "Norsk",
+    "no": "Norsk",
     "en": "English",
     "es": "Español",
     "de": "Deutsch"

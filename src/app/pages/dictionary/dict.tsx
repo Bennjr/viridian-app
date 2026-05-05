@@ -62,6 +62,11 @@ export default function Dict() {
   const { language } = useLanguage();
   const t = (key: string) => TRANSLATIONS[language][key] || key;
 
+  // Reset data when language changes
+  useEffect(() => {
+    setData(null);
+  }, [language]);
+
   useEffect(() => {
     if (!query.trim()) {
       setData(null);
@@ -70,14 +75,14 @@ export default function Dict() {
 
     const timeout = setTimeout(() => {
       setLoading(true);
-      invoke<DictResponse>("suggest_word", { query: query, dict: "bm" })
+      invoke<DictResponse>("suggest_word", { query: query, lang: language })
         .then((res) => setData(res))
         .catch(console.error)
         .finally(() => setLoading(false));
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, language]);
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">

@@ -18,20 +18,76 @@ pub struct DictResponse {
 }
 
 #[tauri::command]
-pub async fn suggest_word(query: String, dict: String) -> Result<DictResponse, String> {
+pub async fn suggest_word(query: String, lang: String) -> Result<DictResponse, String> {
     let client = Client::new();
     let encoded = urlencoding::encode(&query);
-    let url = format!("https://ord.uib.no/api/suggest?q={}&dict={}&n=10&include=eis&dform=int", encoded, dict);
+    
+    // Map language codes to dictionary codes
+    let dict = match lang.as_str() {
+        "no" => "bm",      // Norwegian Bokmål
+        "en" => "en",      // English
+        "es" => "es",      // Spanish
+        "de" => "de",      // German
+        _ => "bm",         // Default to Norwegian
+    };
+    
+    // Primary search with inflectional forms and higher result limit
+    let url = format!("https://ord.uib.no/api/suggest?q={}&dict={}&n=30&include=eis&dform=int", encoded, dict);
 
     let response = client
-        .get(url)
+        .get(&url)
         .header("accept", "application/json")
         .send()
         .await
         .map_err(|e| e.to_string())?;
 
-    let data: DictResponse = response.json().await.map_err(|e| e.to_string())?;
-    Ok(data)
+    match response.json::<DictResponse>().await {
+        Ok(mut data) => {
+            // If we got results, return them
+            if !data.a.exact.is_empty() || !data.a.similar.is_empty() {
+                return Ok(data);
+            }
+
+            // If no results and query is longer than 3 chars, try fallback searches
+            if query.len() > 3 {
+                // Try without dform parameter for broader search
+                let fallback_url = format!("https://ord.uib.no/api/suggest?q={}&dict={}&n=30&include=eis", encoded, dict);
+                
+                if let Ok(fallback_response) = client
+                    .get(&fallback_url)
+                    .header("accept", "application/json")
+                    .send()
+                    .await
+                {
+                    if let Ok(fallback_data) = fallback_response.json::<DictResponse>().await {
+                        if !fallback_data.a.exact.is_empty() || !fallback_data.a.similar.is_empty() {
+                            return Ok(fallback_data);
+                        }
+                    }
+                }
+
+                // Try fuzzy search (sp parameter)
+                let fuzzy_url = format!("https://ord.uib.no/api/suggest?sp={}*&dict={}&n=30&include=eis", encoded, dict);
+                
+                if let Ok(fuzzy_response) = client
+                    .get(&fuzzy_url)
+                    .header("accept", "application/json")
+                    .send()
+                    .await
+                {
+                    if let Ok(fuzzy_data) = fuzzy_response.json::<DictResponse>().await {
+                        if !fuzzy_data.a.exact.is_empty() || !fuzzy_data.a.similar.is_empty() {
+                            return Ok(fuzzy_data);
+                        }
+                    }
+                }
+            }
+
+            // Return the original empty result
+            Ok(data)
+        }
+        Err(e) => Err(e.to_string()),
+    }
 }
 
 // --- Gemini Structs ---

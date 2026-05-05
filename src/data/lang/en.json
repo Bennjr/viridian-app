@@ -64,7 +64,28 @@
   },
   "index": {
     "home": "Home",
-    "quickSearch": "Quick search..."
+    "quickSearch": "Quick search...",
+    "welcomeBack": "Welcome back",
+    "bigWelcome": "Big welcome to you",
+    "quickActions": "Quick Actions",
+    "edit": "Edit",
+    "uploadFiles": "Upload files",
+    "dragDropFiles": "Drag and drop files here",
+    "newNote": "New note",
+    "startBlankSheet": "Start a blank sheet",
+    "translate": "Translate",
+    "changeLanguage": "Change language in document",
+    "trending": "Trending",
+    "hello": "hello",
+    "recentFiles": "Recent files",
+    "seeAll": "See all",
+    "noFilesFound": "No files found",
+    "dictionary": "Dictionary",
+    "searchDictionary": "Search dictionary",
+    "noDescription": "No description available for this file.",
+    "foundResults": "Found {{count}} results for",
+    "noSimilarWords": "No similar words",
+    "searchWords": "Search for words..."
   },
   "dictionary": {
     "dictionary": "Dictionary",
@@ -76,7 +97,7 @@
     "similarWords": "Similar words"
   },
   "languages": {
-    "nb": "Norsk",
+    "no": "Norsk",
     "en": "English",
     "es": "Español",
     "de": "Deutsch"
