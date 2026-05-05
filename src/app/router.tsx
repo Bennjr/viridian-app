@@ -10,13 +10,13 @@ import Layout from "./pages/layout/layout";
 import Index from "./pages/index/index";
 import Library from "./pages/library/library";
 import Settings from "./pages/settings/settings";
-import Log from "./pages/log/log";
+import Fileview from "./pages/fileview/fileview";
 import Notes from "./pages/notes/notes";
 import Dict from "./pages/dictionary/dict";
 import Typing from "./pages/typing/typing";
 
 //other
-import Onboarding from "./pages/overlays/overlays";
+import Onboarding from "./pages/start/start";
 
 
 export default function Router() {
@@ -53,7 +53,7 @@ export default function Router() {
       >
         <Route index element={<Index />} />
         <Route path="library" element={<Library />} />
-        <Route path="log" element={<Log />} />
+        <Route path="fileview" element={<Fileview />} />
         <Route path="notes" element={<Notes />} />
         <Route path="dict" element={<Dict />} />
         <Route path="typing" element={<Typing />} />

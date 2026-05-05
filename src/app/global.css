@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "PublicSans";
+  src: url("/Public_Sans/PublicSans-VariableFont_wght.ttf");
+}
+
 @layer base {
 
   /* --- 1. LIGHT THEME VARIABLES --- */
@@ -96,7 +101,7 @@
   body {
     @apply overscroll-none overflow-hidden h-screen transition-colors duration-300;
     color: var(--c_text);
-    font-family: Calibri;
+    font-family: PublicSans;
   }
 
   h1,

@@ -1,13 +1,15 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Icon } from "..";
 import { useLanguage } from "../../context/LanguageContext";
 import { getTranslations } from "../../utils/translations";
+import { useState } from "react";
 
 type Lang = "no" | "en" | "es" | "de";
 
 const links = [
     { key: "home", svg: "/home.svg", to: "/" },
     { key: "library", svg: "/folder.svg", to: "/library", isFolder: true },
+    { key: "fileview", svg: "/folder.svg", to: "fileview" },
     { key: "notes", svg: "/notes.svg", to: "/notes" },
     { key: "dictionary", svg: "/dict.svg", to: "/dict" },
     { key: "typing", svg: "/type.svg", to: "/typing" }
@@ -98,10 +100,65 @@ export default function Sidebar() {
 }
 
 export function Topbar() {
+    const { language } = useLanguage();
+    const location = useLocation();
+
+    const tSidebar = (key: string) => getTranslations(language as any, 'sidebar')[key] || key;
+    const tLib = (key: string) => getTranslations(language as any, 'library')[key] || key;
+
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const getPageTitle = () => {
+        const path = location.pathname;
+        if (path === "/") return tSidebar("home");
+        if (path === "/library") return tSidebar("library");
+        if (path === "/fileview") return tSidebar("fileview")
+        if (path === "/notes") return tSidebar("notes");
+        if (path === "/dict") return tSidebar("dictionary");
+        if (path === "/typing") return tSidebar("typing");
+        if (path === "/settings") return "Innstillinger";
+        return "Viridian";
+    };
+
+    const isLibrary = location.pathname === "/library";
+
     return (
-        <header className="h-14 flex items-center px-8 bg-c-secondary border-b border-c-divider">
-            <div className="flex-1">
-                <span className="text-c-text/50 text-sm font-medium">content for now</span>
+        <header className="h-14 flex items-center px-8 bg-c-secondary border-b border-c-divider shrink-0 z-40 select-none">
+            <div className="flex-1 flex items-center justify-between">
+
+                <h2 className="text-sm font-bold tracking-[0.2em] text-c-text/80">
+                    {getPageTitle()}
+                </h2>
+
+                {isLibrary && (
+                    <div className="flex items-center gap-4 animate-in fade-in duration-300">
+                        <div className="flex relative group">
+                            <Icon
+                                src="/search.svg"
+                                size="w-3.5 h-3.5"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity pointer-events-none"
+                            />
+                            <input
+                                type="text"
+                                placeholder={tLib("quickSearch") || "SØK..."}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-64 bg-c-primary border border-c-divider rounded-lg px-9 py-1.5 text-[11px] font-bold tracking-wider outline-none focus:border-c-brand/50 transition-all placeholder:text-c-text/10"
+                            />
+                        </div>
+
+                        <button className="flex items-center gap-2 bg-c-brand text-white px-4 py-1.5 rounded-lg text-[11px] font-bold tracking-tight hover:brightness-110 active:scale-95 transition-all shadow-sm">
+                            <span>{tLib("addFile") || "UPLOAD"}</span>
+                            <Icon src="/upload.svg" size="w-3 h-3" color="bg-white" />
+                        </button>
+                    </div>
+                )}
+
+                {!isLibrary && (
+                    <div className="text-[10px] font-bold text-c-text/20 tracking-[0.2em] uppercase">
+                        Viridian System v1.0
+                    </div>
+                )}
             </div>
         </header>
     );

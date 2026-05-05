@@ -1,283 +1,200 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../../context/LanguageContext";
-
-type Lang = "no" | "en" | "es" | "de";
-
-const TRANSLATIONS: Record<Lang, Record<string, string>> = {
-  no: {
-    dictionary: "Ordbok",
-    subtitle: "Utforsk ord, oppdagelsene deres betydning og variasjoner",
-    searchWords: "Søk etter ord...",
-    searching: "Søker...",
-    resultsFor: "Fant resultater for",
-    exactMatches: "Eksakte treff",
-    noExact: "Ingen eksakte treff",
-    similarWords: "Lignende ord",
-    emptyTitle: "Klar til å utforske?",
-    emptyDescription: "Skriv et ord i søkefeltet for å finne eksakte treff og lignende ord",
-    noSimilarWords: "Ingen lignende ord funnet",
-    results: "resultater",
-  },
-  en: {
-    dictionary: "Dictionary",
-    subtitle: "Explore words, discover their meanings and variations",
-    searchWords: "Search for words...",
-    searching: "Searching...",
-    resultsFor: "Found results for",
-    exactMatches: "Exact matches",
-    noExact: "No exact matches",
-    similarWords: "Similar words",
-    emptyTitle: "Ready to explore?",
-    emptyDescription: "Type a word in the search box to find exact matches and similar words",
-    noSimilarWords: "No similar words found",
-    results: "results",
-  },
-  es: {
-    dictionary: "Diccionario",
-    subtitle: "Explora palabras, descubre sus significados y variaciones",
-    searchWords: "Buscar palabras...",
-    searching: "Buscando...",
-    resultsFor: "Encontrados resultados para",
-    exactMatches: "Coincidencias exactas",
-    noExact: "No hay coincidencias exactas",
-    similarWords: "Palabras similares",
-    emptyTitle: "¿Listo para explorar?",
-    emptyDescription: "Escribe una palabra en el cuadro de búsqueda para encontrar coincidencias exactas y palabras similares",
-    noSimilarWords: "No se encontraron palabras similares",
-    results: "resultados",
-  },
-  de: {
-    dictionary: "Wörterbuch",
-    subtitle: "Erkunde Wörter, entdecke ihre Bedeutungen und Variationen",
-    searchWords: "Nach Wörtern suchen...",
-    searching: "Suchen...",
-    resultsFor: "Ergebnisse gefunden für",
-    exactMatches: "Exakte Treffer",
-    noExact: "Keine exakten Treffer",
-    similarWords: "Ähnliche Wörter",
-    emptyTitle: "Bereit zum Erkunden?",
-    emptyDescription: "Geben Sie ein Wort in das Suchfeld ein, um genaue Treffer und ähnliche Wörter zu finden",
-    noSimilarWords: "Keine ähnlichen Wörter gefunden",
-    results: "Ergebnisse",
-  },
-};
+import { Icon } from "../../../components";
 
 type DictResponse = {
   q: string;
   cnt: number;
   cmatch: number;
-  a: {
-    exact: [string, number][];
-    similar: [string, number][];
-  };
+  a: { exact: [string, number][]; similar: [string, number][]; };
 };
+
+const proEase = [0.4, 0, 0.2, 1];
 
 export default function Dict() {
   const [query, setQuery] = useState("");
   const [data, setData] = useState<DictResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-
   const { language } = useLanguage();
-  const t = (key: string) => TRANSLATIONS[language][key] || key;
-
-  // Reset data when language changes
-  useEffect(() => {
-    setData(null);
-  }, [language]);
 
   useEffect(() => {
     if (!query.trim()) {
       setData(null);
+      setHasSearched(false);
       return;
     }
-
     setHasSearched(true);
     const timeout = setTimeout(() => {
       setLoading(true);
-      invoke<DictResponse>("suggest_word", { query: query, lang: language })
-        .then((res) => setData(res))
-        .catch(console.error)
+      invoke<DictResponse>("suggest_word", { query, lang: language })
+        .then(setData)
         .finally(() => setLoading(false));
-    }, 500);
-
+    }, 400);
     return () => clearTimeout(timeout);
   }, [query, language]);
 
   return (
-    <div className="flex flex-col gap-8 max-w-6xl mx-auto">
-      {/* Header with subtitle */}
-      <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
-        <h1 className="font-black text-4xl bg-gradient-to-r from-c-brand to-c-brand/60 bg-clip-text text-transparent">
-          {t("dictionary")}
-        </h1>
-        <p className="text-sm text-c-text/50">{t("subtitle")}</p>
-      </div>
-
-      {/* Enhanced Search Bar */}
-      <div className="relative group animate-in fade-in slide-in-from-top-2 duration-500 delay-100">
-        <div className="absolute inset-0 bg-gradient-to-r from-c-brand/20 to-c-brand/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-
-        <div className="relative flex items-center gap-2">
-          <svg className="absolute left-4 w-5 h-5 text-c-brand/40 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-
+    <div className="flex flex-col h-full bg-c-primary overflow-hidden font-sans">
+      {/* COMPACT SEARCH HEADER */}
+      <header className="py-10 px-8 flex flex-col items-center shrink-0 border-b border-c-divider/30">
+        <div className="w-full max-w-3xl relative group">
+          <Icon src="/search.svg" size="w-5 h-5" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity" />
           <input
             type="text"
-            placeholder={t("searchWords")}
+            placeholder="Søk etter ord eller uttrykk..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-12 pr-5 py-4 bg-c-secondary border-2 border-white/5 rounded-2xl text-c-text placeholder:text-c-text/30 focus:border-c-brand/50 focus:bg-c-secondary/80 outline-none transition-all shadow-lg"
+            className="w-full bg-c-secondary border border-c-divider rounded-2xl py-4 pl-12 pr-12 text-sm font-medium outline-none focus:border-c-brand/50 focus:bg-c-tertiery transition-all shadow-2xl shadow-black/10"
           />
-
           {loading && (
-            <div className="absolute right-5 flex items-center gap-2">
-              <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-c-brand animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="w-1.5 h-1.5 rounded-full bg-c-brand animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="w-1.5 h-1.5 rounded-full bg-c-brand animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-            </div>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 size-4 border-2 border-c-brand border-t-transparent rounded-full animate-spin" />
           )}
         </div>
-      </div>
+      </header>
 
-      {/* Search Stats */}
-      {!loading && data && (
-        <div className="flex items-center gap-2 px-1 text-sm animate-in fade-in duration-300">
-          <span className="text-c-text/60">{t("resultsFor")}</span>
-          <span className="font-bold text-c-brand text-base">{data.q}</span>
-          <span className="text-c-text/40">•</span>
-          <span className="text-c-text/40">{data.a.exact.length + data.a.similar.length} {t("results")}</span>
-        </div>
-      )}
-
-      {/* Two Column Content Area */}
-      {hasSearched && (
-        <div className="grid grid-cols-2 gap-8 items-start animate-in fade-in duration-500">
-
-          {/* LEFT COLUMN: Exact Matches */}
-          <section className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 bg-gradient-to-b from-c-brand to-transparent rounded-full" />
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-c-brand/80">
-                {t("exactMatches")}
-              </h3>
-              {data?.a.exact.length ? (
-                <span className="ml-auto text-xs font-bold bg-c-brand/20 text-c-brand px-2 py-1 rounded-full">
-                  {data.a.exact.length}
-                </span>
-              ) : null}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {data?.a.exact.length ? (
-                data.a.exact.map(([word, score], i) => (
-                  <div
-                    key={`exact-${word}-${i}`}
-                    className="group relative animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden"
-                    style={{ animationDelay: `${i * 50}ms` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-c-brand/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-
-                    <div className="relative flex justify-between items-center bg-c-secondary border border-white/5 rounded-xl px-4 py-3.5 hover:border-c-brand/50 hover:bg-c-secondary/95 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-c-brand/10">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-c-brand opacity-60 group-hover:opacity-100 transition-opacity" />
-                        <span className="font-semibold text-c-text group-hover:text-c-brand transition-colors duration-200">
-                          {word}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 ml-2">
-                        <span className="text-[10px] font-mono opacity-40 group-hover:opacity-100 transition-opacity duration-200">
-                          {(score * 100).toFixed(0)}%
-                        </span>
-                        <svg className="w-4 h-4 text-c-brand/0 group-hover:text-c-brand/60 transition-all duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
+      <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+        <div className="max-w-[1600px] mx-auto">
+          <AnimatePresence mode="wait">
+            {!hasSearched ? (
+              <motion.div
+                key="dashboard"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.99 }}
+                transition={{ duration: 0.3, ease: proEase }}
+                className="grid grid-cols-12 gap-6"
+              >
+                {/* PRIMARY: WORD OF THE DAY */}
+                <div className="col-span-12 lg:col-span-8 bg-c-secondary border border-c-divider rounded-[32px] p-10 flex flex-col justify-between min-h-[340px] relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                    <Icon src="/dict.svg" size="w-40 h-40" />
                   </div>
-                ))
-              ) : (
-                <div className="p-8 border-2 border-dashed border-c-brand/20 rounded-2xl text-center animate-in fade-in duration-300">
-                  <div className="text-3xl mb-2">🔍</div>
-                  <p className="text-sm text-c-text/40">{t("noExact")}</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* RIGHT COLUMN: Similar Matches */}
-          <section className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 bg-gradient-to-b from-c-brand/60 to-transparent rounded-full opacity-60" />
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-c-text/70">
-                {t("similarWords")}
-              </h3>
-              {data?.a.similar.length ? (
-                <span className="ml-auto text-xs font-bold bg-white/5 text-c-text/60 px-2 py-1 rounded-full">
-                  {data.a.similar.length}
-                </span>
-              ) : null}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {data?.a.similar.length ? (
-                data.a.similar.map(([word, score], i) => (
-                  <div
-                    key={`similar-${word}-${i}`}
-                    className="group relative animate-in fade-in slide-in-from-right-4 duration-500 overflow-hidden"
-                    style={{ animationDelay: `${i * 50}ms` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-l from-c-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-
-                    <div className="relative flex justify-between items-center bg-c-secondary/40 border border-white/5 rounded-xl px-4 py-3.5 hover:border-white/20 hover:bg-c-secondary/60 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-white/5">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="w-1 h-1 rounded-full bg-c-text/30 group-hover:bg-c-text/60 transition-all" />
-                        <span className="text-c-text/80 group-hover:text-c-text transition-colors duration-200">
-                          {word}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 ml-2">
-                        <span className="text-[10px] font-mono opacity-30 group-hover:opacity-60 transition-opacity duration-200">
-                          {(score * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                    </div>
+                  <div className="relative z-10">
+                    <span className="text-[10px] font-bold tracking-[0.3em] text-c-brand uppercase mb-6 block">Dagens Ord</span>
+                    <h2 className="text-5xl font-bold text-c-text mb-3">Vemodig</h2>
+                    <p className="text-c-muted_text italic text-base mb-6 opacity-60">/veːmuːdɪ/ • adjektiv</p>
+                    <p className="text-c-text/70 text-lg leading-relaxed max-w-xl">
+                      En mild form for tristhet eller lengsel, ofte knyttet til minner om noe som er forbi eller som man savner.
+                    </p>
                   </div>
-                ))
-              ) : (
-                <div className="p-8 border-2 border-dashed border-white/5 rounded-2xl text-center animate-in fade-in duration-300">
-                  <div className="text-3xl mb-2">✨</div>
-                  <p className="text-sm text-c-text/40">{t("noSimilarWords")}</p>
+                  <button className="relative z-10 w-fit px-6 py-2 bg-c-brand text-white rounded-xl text-xs font-bold tracking-tight hover:brightness-110 transition-all">
+                    Se dypere betydning
+                  </button>
                 </div>
-              )}
-            </div>
-          </section>
 
-        </div>
-      )}
+                {/* SECONDARY: RECENT SEARCHES */}
+                <div className="col-span-12 lg:col-span-4 bg-c-secondary border border-c-divider rounded-[32px] p-8">
+                  <h3 className="text-[10px] font-bold tracking-[0.2em] text-c-text/30 uppercase mb-6">Nylige Søk</h3>
+                  <div className="space-y-2">
+                    {['Implementering', 'Kognitiv', 'Syntese', 'Parameter'].map(word => (
+                      <button key={word} className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-c-primary border border-transparent hover:border-c-divider transition-all group">
+                        <span className="text-sm font-semibold text-c-text/60 group-hover:text-c-text">{word}</span>
+                        <Icon src="/chevron-down.svg" size="w-3 h-3" className="-rotate-90 opacity-20" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-      {/* Empty State */}
-      {!loading && !hasSearched && (
-        <div className="py-16 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="mb-4 text-5xl">📚</div>
-          <h3 className="text-lg font-bold text-c-text mb-2">{t("emptyTitle")}</h3>
-          <p className="text-c-text/50">{t("emptyDescription")}</p>
-        </div>
-      )}
+                {/* TERTIARY: STATS BENTO */}
+                <div className="col-span-12 md:col-span-4 lg:col-span-3 bg-c-tertiery/20 border border-c-divider rounded-3xl p-6 flex flex-col gap-4">
+                  <span className="text-[9px] font-bold tracking-widest text-c-text/30 uppercase">Din Aktivitet</span>
+                  <div className="flex items-end gap-2">
+                    <span className="text-3xl font-bold text-c-brand">124</span>
+                    <span className="text-[10px] font-bold text-c-text/40 pb-1.5 uppercase">Ord lært</span>
+                  </div>
+                  <div className="w-full bg-c-divider h-1 rounded-full overflow-hidden">
+                    <div className="bg-c-brand h-full w-[65%]" />
+                  </div>
+                </div>
 
-      {/* Loading State */}
-      {loading && hasSearched && (
-        <div className="py-16 text-center animate-in fade-in duration-300">
-          <div className="inline-block">
-            <div className="w-12 h-12 border-2 border-c-brand/20 border-t-c-brand rounded-full animate-spin" />
-          </div>
-          <p className="text-c-text/50 mt-4 text-sm">{t("searching")}</p>
+                {/* TERTIARY: GRAMMAR TIP */}
+                <div className="col-span-12 md:col-span-8 lg:col-span-6 bg-c-brand/5 border border-c-brand/20 rounded-3xl p-6 flex items-start gap-6">
+                  <div className="p-3 bg-c-brand/10 rounded-2xl text-c-brand">
+                    <Icon src="/notes.svg" size="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-c-text mb-1">Grammatikk-tips</h4>
+                    <p className="text-xs text-c-text/50 leading-relaxed">
+                      Husk forskjellen på "da" og "når". <span className="text-c-brand font-bold">Da</span> brukes om en hendelse i fortiden, mens <span className="text-c-brand font-bold">når</span> brukes om gjentakende hendelser eller i fremtiden.
+                    </p>
+                  </div>
+                </div>
+
+                {/* TERTIARY: QUICK TRENDS */}
+                <div className="col-span-12 lg:col-span-3 bg-c-secondary border border-c-divider rounded-3xl p-6">
+                  <h3 className="text-[9px] font-bold tracking-widest text-c-text/30 uppercase mb-4">Populært nå</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['Kunstig Intelligens', 'Bærekraft', 'Inovasjon'].map(tag => (
+                      <span key={tag} className="px-3 py-1.5 bg-c-primary border border-c-divider rounded-lg text-[10px] font-bold text-c-text/50">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              /* RESULTS GRID */
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2, ease: proEase }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              >
+                <section className="space-y-4">
+                  <div className="flex items-center gap-3 px-2">
+                    <div className="size-1.5 rounded-full bg-c-brand" />
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-c-brand">Eksakte Treff</h3>
+                  </div>
+                  <div className="grid gap-3">
+                    {data?.a.exact.map(([word, score]) => (
+                      <ResultCard key={word} word={word} score={score} primary />
+                    ))}
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <div className="flex items-center gap-3 px-2">
+                    <div className="size-1.5 rounded-full bg-c-text/20" />
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-c-text/40">Lignende Ord</h3>
+                  </div>
+                  <div className="grid gap-3">
+                    {data?.a.similar.map(([word, score]) => (
+                      <ResultCard key={word} word={word} score={score} />
+                    ))}
+                  </div>
+                </section>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
+      </main>
+    </div>
+  );
+}
+
+function ResultCard({ word, score, primary }: { word: string; score: number; primary?: boolean }) {
+  return (
+    <motion.div
+      layout
+      className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${primary
+        ? 'bg-c-secondary border-c-brand/20 hover:border-c-brand shadow-sm'
+        : 'bg-c-tertiery/20 border-c-divider hover:bg-c-hover'
+        }`}
+    >
+      <span className={`font-semibold ${primary ? 'text-c-text' : 'text-c-muted_text'}`}>{word}</span>
+      <span className="text-[10px] font-mono opacity-30">{(score * 100).toFixed(0)}% Match</span>
+    </motion.div>
+  );
+}
+
+function EmptyResults({ text }: { text: string }) {
+  return (
+    <div className="p-8 border border-dashed border-c-divider rounded-2xl text-center opacity-40">
+      <p className="text-xs font-medium">{text}</p>
     </div>
   );
 }
