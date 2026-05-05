@@ -71,7 +71,7 @@ const FILTERS = [
 export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => void }) {
     const [files, setFiles] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeFilter, setActiveFilter] = useState('time'); // Changed default to 'time'
+    const [activeFilter, setActiveFilter] = useState('time');
     const [selectedFile, setSelectedFile] = useState<any>(null);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
@@ -91,7 +91,7 @@ export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => vo
     }, [favorites]);
 
     const toggleFavorite = (filePath: string, e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent triggering file selection
+        e.stopPropagation();
         setFavorites(prev => {
             const newFavorites = new Set(prev);
             if (newFavorites.has(filePath)) {
@@ -126,7 +126,7 @@ export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => vo
 
     return (
         <div className="flex flex-col gap-6 text-c-text animate-in fade-in slide-in-from-right-10">
-            <header className="sticky top-0 z-50 w-full border-b border-c-divider bg-c-tertiery backdrop-blur-md p-4">
+            <header className="top-0 z-50 w-full border-b border-c-divider bg-c-tertiery rounded-lg backdrop-blur-md p-4">
                 <div className="px-4 py-4 space-y-4">
 
                     <div className="flex justify-between items-center">

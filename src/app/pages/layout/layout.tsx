@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Sidebar, Bottombar } from "../../../components";
+import { Sidebar, Bottombar, Topbar } from "../../../components";
 import "../../global.css";
 import { useEffect, useState } from "react";
 
@@ -45,13 +45,17 @@ export default function Layout() {
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
 
-                <section className="hero flex-1 overflow-y-auto h-full">
-                    {/* The p-8 here ensures the scaled text isn't touching the edges */}
-                    <div className="select-none">
-                        <Outlet />
-                    </div>
-                </section>
+                <div className="flex-1 flex flex-col min-w-0">
+                    <Topbar />
+
+                    <section className="flex-1 overflow-y-auto h-full">
+                        <div className="select-none p-8">
+                            <Outlet />
+                        </div>
+                    </section>
+                </div>
             </div>
+
             <Bottombar />
         </main>
     );
