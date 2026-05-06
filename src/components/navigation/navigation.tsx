@@ -3,84 +3,119 @@ import { Icon } from "..";
 import { useLanguage } from "../../context/LanguageContext";
 import { getTranslations } from "../../utils/translations";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 type Lang = "no" | "en" | "es" | "de";
 
-const links = [
-    { key: "home", svg: "/home.svg", to: "/" },
-    { key: "library", svg: "/folder.svg", to: "/library", isFolder: true },
-    { key: "fileview", svg: "/folder.svg", to: "fileview" },
-    { key: "notes", svg: "/notes.svg", to: "/notes" },
-    { key: "dictionary", svg: "/dict.svg", to: "/dict" },
-    { key: "typing", svg: "/type.svg", to: "/typing" }
+type LinkItem = { key: string; svg: string; to: string; isFolder?: boolean };
+type Category = { labelKey: string; items: LinkItem[] };
+
+const navigation: Category[] = [
+    {
+        labelKey: "",
+        items: [
+            { key: "home", svg: "/home.svg", to: "/" },
+            { key: "stats", svg: "/stats.svg", to: "/stats" }, // New: Analytics
+        ]
+    },
+    {
+        labelKey: "Biblotek",
+        items: [
+            { key: "library", svg: "/folder.svg", to: "/library", isFolder: true },
+            { key: "fileview", svg: "/file-text.svg", to: "/fileview" },
+            { key: "favorites", svg: "/favorite.svg", to: "/favorites" },
+        ]
+    },
+    {
+        labelKey: "Verktøy",
+        items: [
+            { key: "notes", svg: "/notes.svg", to: "/notes" },
+            { key: "dictionary", svg: "/dict.svg", to: "/dict" },
+            { key: "typing", svg: "/type.svg", to: "/typing" },
+            { key: "flashcards", svg: "/star.svg", to: "/cards" },
+        ]
+    }
 ];
 
 export default function Sidebar({ onToggleSettings }: { onToggleSettings: () => void }) {
     const { language } = useLanguage();
     const sidebarTranslations = getTranslations(language as Lang, 'sidebar');
     const t = (key: string) => sidebarTranslations[key] || key;
+
     return (
-        <aside className="bg-c-secondary backdrop-blur-md text-c-text w-56 h-full flex flex-col justify-between sticky top-0 z-50 shadow-2xl border-r border-c-divider">
-            <div className="h-14 border-b border-r border-c-divider">
-                <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-c-text">VIRIDIAN</h2>
+        <aside className="bg-c-secondary backdrop-blur-md text-c-text w-56 h-full flex flex-col justify-between sticky top-0 z-50 shadow-2xl border-r border-c-divider font-sans">
+            <div className="h-14 border-b border-c-divider flex items-center px-6">
+                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-c-brand">VIRIDIAN</h2>
             </div>
 
-            <nav className="flex-1 overflow-y-auto py-4 border-r border-b border-c-divider">
-                <ul className="space-y-1 px-3">
-                    {links.map((link) => (
-                        <li key={link.to}>
-                            <NavLink
-                                to={link.to}
-                                end={link.to === "/"}
-                                className={({ isActive }) => `
-                                    group relative flex items-center px-4 py-2.5 rounded-xl transition-all duration-200 
-                                    active:scale-[0.96] select-none gap-2
-                                    ${isActive
-                                        ? "bg-c-brand/10 text-c-brand font-semibold shadow-[inset_0_0_0_1px_rgba(58,117,97,0.2)]"
-                                        : "text-c-text/70 hover:bg-c-btn_hover hover:text-c-text"}
-                             `}
-                            >
-                                {({ isActive }) => (
-                                    <>
-                                        <div className={`absolute left-0 w-1 h-6 rounded-r-full bg-c-brand transition-all duration-300 ${isActive ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"}`} />
+            <nav className="flex-1 overflow-y-auto py-6 custom-scrollbar">
+                <div className="space-y-8">
+                    {navigation.map((group) => (
+                        <div key={group.labelKey} className="px-3">
+                            <h3 className="font-bold tracking-[0.2em] text-c-text px-3 mb-2">
+                                {t(group.labelKey)}
+                            </h3>
 
-                                        <Icon
-                                            src={link.svg}
-                                            color={isActive ? "bg-c-brand" : "bg-current"}
-                                            size="w-5 h-5"
-                                            className="group-hover:scale-110 transition-transform"
-                                        />
-                                        <span className="text-[14px]">{t(link.key)}</span>
-                                    </>
-                                )}
-                            </NavLink>
-                        </li>
+                            <ul className="space-y-1">
+                                {group.items.map((link) => (
+                                    <li key={link.to}>
+                                        <NavLink
+                                            to={link.to}
+                                            end={link.to === "/"}
+                                            className={({ isActive }) => `
+                                                group relative flex items-center px-4 py-2 rounded-xl transition-all duration-200 
+                                                active:scale-[0.97] select-none gap-3
+                                                ${isActive
+                                                    ? "bg-c-brand/10 text-c-brand font-bold"
+                                                    : "text-c-text/50 hover:bg-c-hover hover:text-c-text"}
+                                            `}
+                                        >
+                                            {({ isActive }) => (
+                                                <>
+                                                    {/* ACTIVE INDICATOR DOT */}
+                                                    {isActive && (
+                                                        <motion.div
+                                                            layoutId="sidebar-active"
+                                                            className="absolute left-0 w-1 h-5 bg-c-brand rounded-r-full"
+                                                        />
+                                                    )}
+
+                                                    <Icon
+                                                        src={link.svg}
+                                                        color={isActive ? "bg-c-brand" : "bg-current"}
+                                                        size="w-4 h-4"
+                                                        className="group-hover:scale-110 transition-transform opacity-80"
+                                                    />
+                                                    <span className="text-[13px] tracking-tight">{t(link.key)}</span>
+                                                </>
+                                            )}
+                                        </NavLink>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     ))}
-                </ul>
+                </div>
             </nav>
 
-            <div className="flex flex-col gap-2 p-3 border-t border-c-divider">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-c-muted_text px-3 mb-1">
-                    System
-                </h3>
-
-                {/* SETTINGS BUTTON (REPLACED NAVLINK) */}
+            {/* SYSTEM SECTION */}
+            <div className="flex flex-col gap-1 p-4 border-t border-c-divider bg-c-primary/20">
                 <button
                     onClick={onToggleSettings}
-                    className="flex items-center gap-3 p-3 rounded-xl transition-all text-c-text/70 hover:bg-c-btn_hover hover:text-c-text group"
+                    className="flex items-center gap-3 p-3 rounded-xl transition-all text-c-text/40 hover:bg-c-hover hover:text-c-text group"
                 >
                     <Icon
                         src="/settings.svg"
                         color="bg-current"
-                        size="w-5 h-5"
-                        className="group-hover:rotate-45 transition-transform duration-500"
+                        size="w-4 h-4"
+                        className="group-hover:rotate-90 transition-transform duration-500"
                     />
-                    <span className="text-[14px] font-medium">Innstillinger</span>
+                    <span className="text-[13px] font-bold uppercase tracking-widest">{t("settings")}</span>
                 </button>
 
-                <button className="flex items-center gap-3 p-3 rounded-xl transition-all text-c-text/70 hover:bg-c-btn_hover">
-                    <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] text-white font-bold">C</div>
-                    <span className="text-[14px] font-medium">Brukerkonto</span>
+                <button className="flex items-center gap-3 p-3 rounded-xl transition-all text-c-text/40 hover:bg-c-hover group">
+                    <div className="size-5 rounded-full bg-red-500 flex items-center justify-center text-[9px] text-white font-black group-hover:scale-110 transition-transform">C</div>
+                    <span className="text-[13px] font-bold uppercase tracking-widest">Konto</span>
                 </button>
             </div>
         </aside>
