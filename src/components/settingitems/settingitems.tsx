@@ -12,74 +12,74 @@ interface SettingItemProps {
 }
 
 const TRANSLATIONS: Record<Lang, Record<string, string>> = {
-  no: {
-    system: "System",
-    light: "Lys",
-    dark: "Mørk",
-    contrast: "Kontrast",
-    chooseFontSize: "Velg tekststørrelse",
-    chooseFontDesc: "Velg den størrelsen som er mest behagelig å lese.",
-    small: "Liten",
-    medium: "Medium",
-    large: "Stor",
-    settings: "Instillinger",
-    speak: "Les opp tekst",
-    chat: "AI Assistent",
-    translate: "Oversett",
-    hide: "Skjul vindu",
-    resize: "Vis/Skjul felt",
-  },
-  en: {
-    system: "System",
-    light: "Light",
-    dark: "Dark",
-    contrast: "Contrast",
-    chooseFontSize: "Choose Font Size",
-    chooseFontDesc: "Select the size that is most comfortable to read.",
-    small: "Small",
-    medium: "Medium",
-    large: "Large",
-    settings: "Settings",
-    speak: "Read Text Aloud",
-    chat: "AI Assistant",
-    translate: "Translate",
-    hide: "Hide Window",
-    resize: "Show/Hide Field",
-  },
-  es: {
-    system: "Sistema",
-    light: "Claro",
-    dark: "Oscuro",
-    contrast: "Contraste",
-    chooseFontSize: "Elegir Tamaño de Fuente",
-    chooseFontDesc: "Selecciona el tamaño que sea más cómodo de leer.",
-    small: "Pequeño",
-    medium: "Mediano",
-    large: "Grande",
-    settings: "Configuración",
-    speak: "Leer en Voz Alta",
-    chat: "Asistente de IA",
-    translate: "Traducir",
-    hide: "Ocultar Ventana",
-    resize: "Mostrar/Ocultar Campo",
-  },
-  de: {
-    system: "System",
-    light: "Hell",
-    dark: "Dunkel",
-    contrast: "Kontrast",
-    chooseFontSize: "Schriftgröße Wählen",
-    chooseFontDesc: "Wählen Sie die Größe, die am angenehmsten zu lesen ist.",
-    small: "Klein",
-    medium: "Mittel",
-    large: "Groß",
-    settings: "Einstellungen",
-    speak: "Text Vorlesen",
-    chat: "KI-Assistent",
-    translate: "Übersetzen",
-    hide: "Fenster Ausblenden",
-    resize: "Feld Anzeigen/Ausblenden",
-  },
+    no: {
+        system: "System",
+        light: "Lys",
+        dark: "Mørk",
+        contrast: "Kontrast",
+        chooseFontSize: "Velg tekststørrelse",
+        chooseFontDesc: "Velg den størrelsen som er mest behagelig å lese.",
+        small: "Liten",
+        medium: "Medium",
+        large: "Stor",
+        settings: "Instillinger",
+        speak: "Les opp tekst",
+        chat: "AI Assistent",
+        translate: "Oversett",
+        hide: "Skjul vindu",
+        resize: "Vis/Skjul felt",
+    },
+    en: {
+        system: "System",
+        light: "Light",
+        dark: "Dark",
+        contrast: "Contrast",
+        chooseFontSize: "Choose Font Size",
+        chooseFontDesc: "Select the size that is most comfortable to read.",
+        small: "Small",
+        medium: "Medium",
+        large: "Large",
+        settings: "Settings",
+        speak: "Read Text Aloud",
+        chat: "AI Assistant",
+        translate: "Translate",
+        hide: "Hide Window",
+        resize: "Show/Hide Field",
+    },
+    es: {
+        system: "Sistema",
+        light: "Claro",
+        dark: "Oscuro",
+        contrast: "Contraste",
+        chooseFontSize: "Elegir Tamaño de Fuente",
+        chooseFontDesc: "Selecciona el tamaño que sea más cómodo de leer.",
+        small: "Pequeño",
+        medium: "Mediano",
+        large: "Grande",
+        settings: "Configuración",
+        speak: "Leer en Voz Alta",
+        chat: "Asistente de IA",
+        translate: "Traducir",
+        hide: "Ocultar Ventana",
+        resize: "Mostrar/Ocultar Campo",
+    },
+    de: {
+        system: "System",
+        light: "Hell",
+        dark: "Dunkel",
+        contrast: "Kontrast",
+        chooseFontSize: "Schriftgröße Wählen",
+        chooseFontDesc: "Wählen Sie die Größe, die am angenehmsten zu lesen ist.",
+        small: "Klein",
+        medium: "Mittel",
+        large: "Groß",
+        settings: "Einstellungen",
+        speak: "Text Vorlesen",
+        chat: "KI-Assistent",
+        translate: "Übersetzen",
+        hide: "Fenster Ausblenden",
+        resize: "Feld Anzeigen/Ausblenden",
+    },
 };
 
 // Inside settingitems.tsx
@@ -308,4 +308,96 @@ export function ToolbarDragDrop() {
             })}
         </div>
     )
+}
+
+import { motion, AnimatePresence } from "framer-motion";
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    description?: string;
+    children: React.ReactNode;
+    maxWidth?: string;
+}
+
+const proEase = [0.4, 0, 0.2, 1];
+
+export function SettingsModal({ isOpen, onClose, title, description, children, maxWidth = "max-w-2xl" }: ModalProps) {
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                    {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    />
+
+                    {/* Modal Surface */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        transition={{ duration: 0.3, ease: proEase }}
+                        className={`relative w-full ${maxWidth} bg-c-secondary border border-white/10 rounded-[32px] shadow-2xl overflow-hidden flex flex-col`}
+                    >
+                        <header className="p-8 pb-4 flex justify-between items-start">
+                            <div>
+                                <h2 className="text-2xl font-black tracking-tight text-c-text uppercase">{title}</h2>
+                                {description && <p className="text-sm text-c-text/40 mt-1">{description}</p>}
+                            </div>
+                            <button
+                                onClick={onClose}
+                                className="p-2 hover:bg-white/5 rounded-full transition-colors opacity-40 hover:opacity-100"
+                            >
+                                <Icon src="/eye.svg" size="w-5 h-5" /> {/* Use a close icon if you have one */}
+                            </button>
+                        </header>
+
+                        <div className="p-8 pt-0 overflow-y-auto custom-scrollbar max-h-[70vh]">
+                            {children}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    );
+}
+
+interface SettingsRowProps {
+    label: string;
+    description?: string;
+    icon?: string;
+    onClick?: () => void;
+    children?: React.ReactNode;
+}
+
+export function SettingsRow({ label, description, icon, onClick, children }: SettingsRowProps) {
+    return (
+        <div
+            onClick={onClick}
+            className={`flex items-center justify-between p-4 rounded-2xl transition-all border border-transparent 
+                ${onClick ? 'cursor-pointer hover:bg-white/5 hover:border-white/5' : ''}`}
+        >
+            <div className="flex items-center gap-4">
+                {icon && (
+                    <div className="size-10 bg-c-primary rounded-xl flex items-center justify-center border border-white/5">
+                        <Icon src={icon} size="w-5 h-5" className="opacity-40" />
+                    </div>
+                )}
+                <div>
+                    <p className="text-[13px] font-bold text-c-text/80">{label}</p>
+                    {description && <p className="text-[10px] text-c-text/30 font-bold uppercase tracking-tight">{description}</p>}
+                </div>
+            </div>
+            <div className="flex items-center gap-3">
+                {children}
+                {onClick && !children && <Icon src="/chevron-down.svg" className="-rotate-90 opacity-20" size="w-4 h-4" />}
+            </div>
+        </div>
+    );
 }

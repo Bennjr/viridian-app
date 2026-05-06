@@ -2,16 +2,18 @@ import { Outlet } from "react-router-dom";
 import { Sidebar, Bottombar, Topbar } from "../../../components";
 import "../../global.css";
 import { useEffect, useState } from "react";
+import Settings from "../settings/settings"
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Layout() {
     const [fontSize, setFontSize] = useState("medium");
+    const [showSettings, setShowSettings] = useState(false)
 
     useEffect(() => {
         const savedSize = localStorage.getItem("fontSize") || "medium";
         setFontSize(savedSize);
     }, []);
 
-    // REDEFINED: Much tighter "Pro" font sizing
     const fontConfig: Record<string, string> = {
         small: `
             [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm
@@ -27,26 +29,44 @@ export default function Layout() {
         `
     };
 
+    const toggleSettings = () => setShowSettings(!showSettings);
+
     return (
-        <main className={`
+        <>
+            <AnimatePresence>
+                {showSettings && (
+                    <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                        className="fixed inset-0 z-[100]"
+                    >
+                        <Settings onClose={toggleSettings} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+
+            <main className={`
             w-screen h-screen flex flex-col overflow-hidden 
             bg-c-primary text-c-text select-none
             ${fontConfig[fontSize] || fontConfig.medium}
         `}>
-            <div className="flex flex-1 overflow-hidden">
-                <Sidebar />
+                <div className="flex flex-1 overflow-hidden">
+                    <Sidebar onToggleSettings={toggleSettings} />
 
-                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    <Topbar />
+                    <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                        <Topbar />
 
-                    {/* FIX: Changed overflow-y-auto to overflow-hidden */}
-                    <section className="flex-1 overflow-hidden relative">
-                        <Outlet />
-                    </section>
+                        <section className="flex-1 overflow-hidden relative">
+                            <Outlet />
+                        </section>
+                    </div>
                 </div>
-            </div>
 
-            <Bottombar />
-        </main>
+                <Bottombar />
+            </main>
+        </>
     );
 }
