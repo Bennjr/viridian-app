@@ -15,15 +15,14 @@ const navigation: Category[] = [
         labelKey: "",
         items: [
             { key: "home", svg: "/home.svg", to: "/" },
-            { key: "stats", svg: "/stats.svg", to: "/stats" }, // New: Analytics
+            { key: "Stats", svg: "/stats.svg", to: "/stats" },
         ]
     },
     {
         labelKey: "Biblotek",
         items: [
             { key: "library", svg: "/folder.svg", to: "/library", isFolder: true },
-            { key: "fileview", svg: "/file-text.svg", to: "/fileview" },
-            { key: "favorites", svg: "/favorite.svg", to: "/favorites" },
+            { key: "Filer", svg: "/file-text.svg", to: "/fileview" },
         ]
     },
     {
@@ -32,7 +31,6 @@ const navigation: Category[] = [
             { key: "notes", svg: "/notes.svg", to: "/notes" },
             { key: "dictionary", svg: "/dict.svg", to: "/dict" },
             { key: "typing", svg: "/type.svg", to: "/typing" },
-            { key: "flashcards", svg: "/star.svg", to: "/cards" },
         ]
     }
 ];
@@ -72,7 +70,6 @@ export default function Sidebar({ onToggleSettings }: { onToggleSettings: () => 
                                         >
                                             {({ isActive }) => (
                                                 <>
-                                                    {/* ACTIVE INDICATOR DOT */}
                                                     {isActive && (
                                                         <motion.div
                                                             layoutId="sidebar-active"

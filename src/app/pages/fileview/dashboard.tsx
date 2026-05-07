@@ -19,10 +19,6 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
     }, []);
 
     return (
-        /* 
-           This container now fills the Layout's section 
-           and provides the ONLY scrollbar.
-        */
         <div className="h-full w-full overflow-y-auto custom-scrollbar bg-c-primary">
             <main className="max-w-6xl mx-auto p-8 flex flex-col gap-8 font-sans">
 

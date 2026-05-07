@@ -37,8 +37,7 @@ export default function Dict() {
   }, [query, language]);
 
   return (
-    <div className="flex flex-col h-full bg-c-primary overflow-hidden font-sans">
-      {/* COMPACT SEARCH HEADER */}
+    <div className="flex flex-col h-full w-full  bg-c-primary overflow-y-auto custom-scrollbar font-sans">
       <header className="py-10 px-8 flex flex-col items-center shrink-0 border-b border-c-divider/30">
         <div className="w-full max-w-3xl relative group">
           <Icon src="/search.svg" size="w-5 h-5" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity" />
@@ -67,7 +66,6 @@ export default function Dict() {
                 transition={{ duration: 0.3, ease: proEase }}
                 className="grid grid-cols-12 gap-6"
               >
-                {/* PRIMARY: WORD OF THE DAY */}
                 <div className="col-span-12 lg:col-span-8 bg-c-secondary border border-c-divider rounded-[32px] p-10 flex flex-col justify-between min-h-[340px] relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                     <Icon src="/dict.svg" size="w-40 h-40" />
@@ -85,7 +83,6 @@ export default function Dict() {
                   </button>
                 </div>
 
-                {/* SECONDARY: RECENT SEARCHES */}
                 <div className="col-span-12 lg:col-span-4 bg-c-secondary border border-c-divider rounded-[32px] p-8">
                   <h3 className="text-[10px] font-bold tracking-[0.2em] text-c-text/30 uppercase mb-6">Nylige Søk</h3>
                   <div className="space-y-2">
@@ -98,7 +95,6 @@ export default function Dict() {
                   </div>
                 </div>
 
-                {/* TERTIARY: STATS BENTO */}
                 <div className="col-span-12 md:col-span-4 lg:col-span-3 bg-c-tertiery/20 border border-c-divider rounded-3xl p-6 flex flex-col gap-4">
                   <span className="text-[9px] font-bold tracking-widest text-c-text/30 uppercase">Din Aktivitet</span>
                   <div className="flex items-end gap-2">
@@ -110,7 +106,6 @@ export default function Dict() {
                   </div>
                 </div>
 
-                {/* TERTIARY: GRAMMAR TIP */}
                 <div className="col-span-12 md:col-span-8 lg:col-span-6 bg-c-brand/5 border border-c-brand/20 rounded-3xl p-6 flex items-start gap-6">
                   <div className="p-3 bg-c-brand/10 rounded-2xl text-c-brand">
                     <Icon src="/notes.svg" size="w-6 h-6" />
@@ -123,7 +118,6 @@ export default function Dict() {
                   </div>
                 </div>
 
-                {/* TERTIARY: QUICK TRENDS */}
                 <div className="col-span-12 lg:col-span-3 bg-c-secondary border border-c-divider rounded-3xl p-6">
                   <h3 className="text-[9px] font-bold tracking-widest text-c-text/30 uppercase mb-4">Populært nå</h3>
                   <div className="flex flex-wrap gap-2">
@@ -136,7 +130,6 @@ export default function Dict() {
                 </div>
               </motion.div>
             ) : (
-              /* RESULTS GRID */
               <motion.div
                 key="results"
                 initial={{ opacity: 0 }}
