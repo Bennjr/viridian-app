@@ -167,9 +167,9 @@ export function Topbar() {
                             />
                         </div>
 
-                        <button className="flex items-center gap-2 bg-c-brand text-white px-4 py-1.5 rounded-lg text-[11px] font-bold tracking-tight hover:brightness-110 active:scale-95 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 bg-c-opposite text-c-text_opposite font-bold px-4 py-1.5 rounded-lg text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-sm">
                             <span>{tLib("addFile") || "UPLOAD"}</span>
-                            <Icon src="/upload.svg" size="w-3 h-3" color="bg-white" />
+                            <Icon src="/upload.svg" size="w-3 h-3" color="bg-c-primary" />
                         </button>
                     </div>
                 )}

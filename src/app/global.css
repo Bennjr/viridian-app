@@ -18,8 +18,11 @@
     --c_primary: #f5f5f5;
     --c_secondary_bg: #ececec;
     --c_tertiery: #b1b1b1;
+    --c-opposite: #000000;
+
     --c_dividers: #dadada;
     --c_text: #1d1d1d;
+    --c-text-opposite: #d8d8d8;
     --c_text_muted: #666666;
     --c_hover: #dbdbdb;
     --c_btn: #f0f0f0;
@@ -40,9 +43,12 @@
       --c_primary: #2a2b2a;
       --c_secondary_bg: #242524;
       --c_tertiery: #1b1b1b;
+      --c-opposite: #ffffff;
       --c_dividers: #343534;
       --c_hover: #3d3e3d;
+
       --c_text: #d8d8d8;
+      --c-text-opposite: #1d1d1d;
       --c_text_muted: #8e8e8e;
       --c_btn: #222524;
       --c_btn_hover: #444444;

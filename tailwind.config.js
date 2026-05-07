@@ -14,9 +14,11 @@ export default {
           primary: "var(--c_primary)",
           secondary: "var(--c_secondary_bg)",
           tertiery: "var(--c_tertiery)",
+          opposite: "var(--c-opposite)",
 
           divider: "var(--c_dividers)",
           text: "var(--c_text)",
+          text_opposite: "var(--c-text-opposite)",
           muted_text: "var(--c_text)",
           hover: "var(--c_hover)",
 

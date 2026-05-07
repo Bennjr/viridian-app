@@ -13,7 +13,7 @@ use windows::{
 
 
 #[tauri::command]
-pub fn w_init(window: tauri::Window) {
+pub fn overlay_init(window: tauri::Window) {
     #[cfg(target_os = "windows")]
 
     // find out window style (with temp data)

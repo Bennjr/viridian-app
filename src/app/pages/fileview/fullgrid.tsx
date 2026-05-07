@@ -34,7 +34,6 @@ export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => vo
 
     return (
         <div className="flex h-full w-full bg-c-primary overflow-hidden">
-            {/* MAIN CONTENT AREA */}
             <motion.main
                 layout
                 transition={{ duration: 0.25, ease: proEase }}
@@ -68,7 +67,6 @@ export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => vo
                 </div>
             </motion.main>
 
-            {/* FILTER SIDEBAR */}
             <AnimatePresence mode="popLayout">
                 {showFilters && (
                     <motion.aside

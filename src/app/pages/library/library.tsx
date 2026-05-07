@@ -100,14 +100,11 @@ function LibraryBook({ title, author, coverUrl, progress = 0 }: LibraryBookProps
         />
 
         <div className="absolute inset-0 pointer-events-none">
-          {/* Spine Crease */}
           <div className="absolute left-0 top-0 bottom-0 w-3 bg-black/20 blur-[1px]" />
           <div className="absolute left-[3px] top-0 bottom-0 w-[1px] bg-white/10" />
 
-          {/* Subtle Paper Edge Reflection */}
           <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-white/5" />
 
-          {/* Hover Overlay Gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 

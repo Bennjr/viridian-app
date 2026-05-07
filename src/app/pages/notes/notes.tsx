@@ -119,7 +119,7 @@ export default function Notes() {
                             </div>
                             <button
                                 onClick={createNote}
-                                className="flex items-center gap-2 bg-c-brand text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-c-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="flex items-center gap-2 bg-c-opposite text-c-text_opposite px-5 py-3 rounded-xl font-bold shadow-lg shadow-c-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                             >
                                 <Icon src="/plus.svg" size="w-4 h-4" />
                                 <span>New Note</span>

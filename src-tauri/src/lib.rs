@@ -41,6 +41,10 @@ pub fn run() {
         .setup(|app| {
             let _handle = app.handle().clone();
 
+            // apply overlay styles
+            helper::overlay_init(app.get_window("overlayWin").unwrap());
+            helper::overlay_init(app.get_window("suggestionWin").unwrap());
+
             #[cfg(desktop)]
             {
                 use tauri_plugin_global_shortcut::{
