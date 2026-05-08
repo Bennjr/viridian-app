@@ -111,7 +111,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     correctedTo: "zu",
     showing: "Zeigt Ergebnisse für",
     translation: "Übersetzung",
-    word: "Wort",
+    word: "Ord",
     noTranslation: "Keine Übersetzung gefunden",
     suggestions: "Vorschläge",
     exactMatches: "Exakte Treffer",
@@ -205,7 +205,6 @@ function createJsonFetcher<T>(timeout = 5000) {
   return async (url: string): Promise<T | null> => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
-
     try {
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) return null;
@@ -225,40 +224,19 @@ async function fetchDictionarySuggestions(word: string, lang: "no" | "en" | "es"
     const data = await invoke<DictResult>("suggest_word", { query: word, lang: lang });
     return data;
   } catch {
-    return {
-      q: word,
-      cnt: 0,
-      cmatch: 0,
-      a: { exact: [[word, 100]], similar: [] },
-    };
+    return { q: word, cnt: 0, cmatch: 0, a: { exact: [[word, 100]], similar: [] } };
   }
 }
 
 async function fetchDatamuseSuggestions(word: string, lang: "en" | "es" | "de"): Promise<DictResult> {
   const exactUrl = `https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&max=5&v=${lang}`;
   const similarUrl = `https://api.datamuse.com/words?ml=${encodeURIComponent(word)}&max=6&v=${lang}`;
-
   const exactData = await fetchJson(exactUrl);
   const similarData = await fetchJson(similarUrl);
-
-  const exactMatches: [string, number][] = Array.isArray(exactData)
-    ? exactData.slice(0, 5).map((item: any, i: number) => [String(item.word), 100 - i])
-    : [];
-
-  const similarMatches: [string, number][] = Array.isArray(similarData)
-    ? similarData.slice(0, 6).map((item: any, i: number) => [String(item.word), 80 - i])
-    : [];
-
-  if (exactMatches.length === 0) {
-    exactMatches.push([word, 100]);
-  }
-
-  return {
-    q: word,
-    cnt: exactMatches.length + similarMatches.length,
-    cmatch: exactMatches.length,
-    a: { exact: exactMatches, similar: similarMatches },
-  };
+  const exactMatches: [string, number][] = Array.isArray(exactData) ? exactData.slice(0, 5).map((item: any, i: number) => [String(item.word), 100 - i]) : [];
+  const similarMatches: [string, number][] = Array.isArray(similarData) ? similarData.slice(0, 6).map((item: any, i: number) => [String(item.word), 80 - i]) : [];
+  if (exactMatches.length === 0) exactMatches.push([word, 100]);
+  return { q: word, cnt: exactMatches.length + similarMatches.length, cmatch: exactMatches.length, a: { exact: exactMatches, similar: similarMatches } };
 }
 
 async function fetchDefinition(word: string, lang: Lang): Promise<string> {
@@ -267,17 +245,13 @@ async function fetchDefinition(word: string, lang: Lang): Promise<string> {
     const data = await fetchJson(url);
     if (Array.isArray(data) && data.length > 0) {
       const entry = data[0];
-      if (entry.definitions && entry.definitions.length > 0) {
-        return entry.definitions[0].text || "Ingen definisjon";
-      }
+      if (entry.definitions && entry.definitions.length > 0) return entry.definitions[0].text || "Ingen definisjon";
     }
     return "Ingen definisjon";
   } else {
     const url = `https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=d&v=${lang}`;
     const data = await fetchJson(url);
-    if (Array.isArray(data) && data.length > 0 && data[0].defs) {
-      return data[0].defs[0].split('\t')[1] || "No definition";
-    }
+    if (Array.isArray(data) && data.length > 0 && data[0].defs) return data[0].defs[0].split('\t')[1] || "No definition";
     return "No definition";
   }
 }
@@ -287,13 +261,10 @@ async function fetchAllDefinitions(word: string): Promise<Record<Lang, string>> 
   const promises = langs.map(lang => fetchDefinition(word, lang).then(def => ({ lang, def })));
   const results = await Promise.all(promises);
   const defs: Record<Lang, string> = {} as any;
-  results.forEach(({ lang, def }) => {
-    defs[lang] = def;
-  });
+  results.forEach(({ lang, def }) => { defs[lang] = def; });
   return defs;
 }
 
-// Stavekontroll
 async function checkSpelling(text: string, lang: Lang): Promise<string> {
   const langMap: Record<Lang, string> = {
     no: "nb-NO",
@@ -308,29 +279,23 @@ async function checkSpelling(text: string, lang: Lang): Promise<string> {
 
   const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=${langMap[lang]}`;
   const data = await fetchJson(url);
-
   if (data?.matches) {
     let corrected = text;
-    data.matches
-      .sort((a: any, b: any) => b.offset - a.offset)
-      .forEach((match: any) => {
-        if (match.replacements && match.replacements.length > 0) {
-          const replacement = match.replacements[0].value;
-          corrected = corrected.substring(0, match.offset) + replacement + corrected.substring(match.offset + match.length);
-        }
-      });
+    data.matches.sort((a: any, b: any) => b.offset - a.offset).forEach((match: any) => {
+      if (match.replacements && match.replacements.length > 0) {
+        const replacement = match.replacements[0].value;
+        corrected = corrected.substring(0, match.offset) + replacement + corrected.substring(match.offset + match.length);
+      }
+    });
     return corrected;
   }
   return text;
 }
 
-// Oversettelse
 async function translateWord(word: string, from: Lang, to: Lang): Promise<string> {
   if (!word || from === to) return word;
-
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${MYMEMORY_LANG[from]}|${MYMEMORY_LANG[to]}`;
   const result = await fetchJson(url);
-
   return result?.responseData?.translatedText?.trim() || word;
 }
 
@@ -344,128 +309,89 @@ export default function Typing() {
   const [definitions, setDefinitions] = useState<Record<string, Record<Lang, string>>>({});
   const [loading, setLoading] = useState(false);
 
-  // 🎯 Bruk context for UI-språk (som Settings gjør)
   const { language: uiLang } = useLanguage();
   const t = (key: string) => TRANSLATIONS[uiLang as Lang][key] || key;
 
   useEffect(() => {
     if (!query.trim()) {
-      setData(null);
-      setTranslation("");
-      setCorrected("");
-      setDefinitions({});
-      return;
+      setData(null); setTranslation(""); setCorrected(""); setDefinitions({}); return;
     }
-
     const timeout = setTimeout(() => {
       setLoading(true);
       const normalized = query.trim().toLowerCase();
-
       const lookup = async () => {
         let correctedText = normalized;
-        if (normalized.includes(' ')) {
-          correctedText = await checkSpelling(normalized, sourceLang);
-        }
-
+        if (normalized.includes(' ')) correctedText = await checkSpelling(normalized, sourceLang);
         const words = correctedText.split(/\s+/).filter(w => w.length > 0);
         const uniqueWords = [...new Set(words)];
-
         const wordPromises = uniqueWords.map(async (word) => {
-          if (sourceLang === "no" || sourceLang === "en" || sourceLang === "es" || sourceLang === "de") {
-            return await fetchDictionarySuggestions(word, sourceLang);
-          } else {
-            return await fetchDatamuseSuggestions(word, sourceLang as "en" | "es" | "de");
-          }
+          return (sourceLang === "no" || sourceLang === "en" || sourceLang === "es" || sourceLang === "de")
+            ? await fetchDictionarySuggestions(word, sourceLang)
+            : await fetchDatamuseSuggestions(word, sourceLang as "en" | "es" | "de");
         });
-
         const wordDicts = await Promise.all(wordPromises);
-
         const allExact: [string, number][] = [];
-        wordDicts.forEach(dict => {
-          allExact.push(...dict.a.exact);
-        });
-        const uniqueExact = allExact.filter((item, index, arr) =>
-          arr.findIndex(([w]) => w === item[0]) === index
-        );
-
-        const combinedDict: DictResult = {
-          q: normalized,
-          cnt: uniqueExact.length,
-          cmatch: uniqueExact.length,
-          a: { exact: uniqueExact, similar: [] }
-        };
-
+        wordDicts.forEach(dict => allExact.push(...dict.a.exact));
+        const uniqueExact = allExact.filter((item, index, arr) => arr.findIndex(([w]) => w === item[0]) === index);
+        const combinedDict: DictResult = { q: normalized, cnt: uniqueExact.length, cmatch: uniqueExact.length, a: { exact: uniqueExact, similar: [] } };
         const translatedWord = await translateWord(correctedText, sourceLang, targetLang);
-
-        setData(combinedDict);
-        setCorrected(correctedText);
-        setTranslation(translatedWord);
-
+        setData(combinedDict); setCorrected(correctedText); setTranslation(translatedWord);
         const defPromises = uniqueExact.map(([word]) => fetchAllDefinitions(word).then(defs => ({ word, defs })));
         const defs = await Promise.all(defPromises);
         const defObj = Object.fromEntries(defs.map(({ word, defs }) => [word, defs]));
         setDefinitions(defObj);
       };
-
       lookup().catch(console.error).finally(() => setLoading(false));
     }, 500);
-
     return () => clearTimeout(timeout);
   }, [query, sourceLang, targetLang]);
 
   return (
-    <div className="h-full w-full custom-scrollbar overflow-y-auto h-full">
+    <div className="h-full w-full custom-scrollbar overflow-y-auto">
       <div className="flex flex-col max-w-6xl gap-6 p-8 mx-auto">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4">
           <div>
             <h2 className="font-bold text-2xl tracking-tight">{t("title")}</h2>
-            <p className="mt-1 text-xs text-c-muted_text max-w-xl">
-              {t("description")}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
-            <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
-              {t("from")}
-              <select
-                value={sourceLang}
-                onChange={(e) => setSourceLang(e.target.value as Lang)}
-                className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
-              >
-                <option value="no">Norsk</option>
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="de">Deutsch</option>
-              </select>
-            </label>
-
-            <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
-              {t("to")}
-              <select
-                value={targetLang}
-                onChange={(e) => setTargetLang(e.target.value as Lang)}
-                className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
-              >
-                <option value="no">Norsk</option>
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="de">Deutsch</option>
-              </select>
-            </label>
+            <p className="mt-1 text-xs text-c-muted_text max-w-xl">{t("description")}</p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-8">
-          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-c-secondary shadow-2xl shadow-black/20">
-            <div className="grid grid-cols-2 divide-x divide-white/10">
+        <div className="flex flex-col gap-4">
+          {/* Moved Language Selectors right above container sides */}
+          <div className="grid grid-cols-2 px-2">
+            <div className="flex">
+              <select
+                value={sourceLang}
+                onChange={(e) => setSourceLang(e.target.value as Lang)}
+                className="bg-transparent text-xs font-bold uppercase tracking-widest text-c-muted_text outline-none cursor-pointer hover:text-c-text transition-colors"
+              >
+                <option value="no">Norsk</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+              </select>
+            </div>
+            <div className="flex pl-6">
+              <select
+                value={targetLang}
+                onChange={(e) => setTargetLang(e.target.value as Lang)}
+                className="bg-transparent text-xs font-bold uppercase tracking-widest text-c-brand outline-none cursor-pointer hover:brightness-110 transition-colors"
+              >
+                <option value="no">Norsk</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+              </select>
+            </div>
+          </div>
 
-              {/* Input Side */}
+          <section className="relative overflow-hidden rounded-xl border border-white/5 bg-c-secondary shadow-2xl shadow-black/20">
+            <div className="grid grid-cols-2 divide-x divide-white/10">
               <div className="flex flex-col p-6 min-h-[450px]">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">Source</span>
                   {loading && <div className="w-4 h-4 border-2 border-c-brand/30 border-t-c-brand rounded-full animate-spin" />}
                 </div>
-
                 <textarea
                   rows={3}
                   placeholder={t("placeholder")}
@@ -475,47 +401,33 @@ export default function Typing() {
                 />
                 <AnimatePresence>
                   {!loading && data && corrected !== query.trim().toLowerCase() && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-auto pt-4 text-sm text-c-muted_text"
-                    >
+                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="mt-auto pt-4 text-sm text-c-muted_text">
                       <span className="opacity-50">{t("didYouMean")}</span>{" "}
-                      <button
-                        onClick={() => setQuery(corrected)}
-                        className="text-c-brand font-bold hover:underline decoration-c-brand/30 underline-offset-4"
-                      >
-                        "{corrected}"
-                      </button>
+                      <button onClick={() => setQuery(corrected)} className="text-c-brand font-bold hover:underline decoration-c-brand/30 underline-offset-4">"{corrected}"</button>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
 
-              {/* Translation Side */}
               <div className="flex flex-col p-6 bg-white/[0.01] min-h-[200px]">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-c-brand">Translation</span>
                   <Icon src="/copy.svg" size="w-4 h-4" className="opacity-20 hover:opacity-100 cursor-pointer transition-opacity" />
                 </div>
-
                 <div className={`text-2xl font-semibold transition-all duration-300 ${translation ? 'text-c-text' : 'text-white/10'}`}>
                   {translation || t("noTranslation")}
                 </div>
-
                 {translation && (
                   <div className="mt-auto pt-4 flex gap-2">
                     <div className="px-2 py-1 rounded bg-c-brand/10 text-c-brand text-[10px] font-bold uppercase">AI Verified</div>
                   </div>
                 )}
               </div>
-
             </div>
           </section>
 
           <section className="flex flex-col gap-4">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">{t("suggestions")}</h3>
-
             <div className="rounded-3xl border border-white/5 bg-c-secondary p-6 space-y-4">
               <div className="text-xs uppercase tracking-[0.2em] opacity-50">{t("exactMatches")}</div>
               <div className="flex flex-col gap-2">
@@ -532,9 +444,7 @@ export default function Typing() {
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-2xl border-2 border-dashed border-white/5 px-4 py-8 text-center opacity-40 text-sm">
-                    {t("noExact")}
-                  </div>
+                  <div className="rounded-2xl border-2 border-dashed border-white/5 px-4 py-8 text-center opacity-40 text-sm">{t("noExact")}</div>
                 )}
               </div>
             </div>
@@ -542,14 +452,11 @@ export default function Typing() {
 
           <section>
             <h1 className="font-bold text-2xl tracking-tight">Last ned Språkpakker lokalt</h1>
-
           </section>
         </div>
 
         {!loading && query && !data && (
-          <div className="py-20 text-center opacity-30 italic">
-            {t("startSearch")}
-          </div>
+          <div className="py-20 text-center opacity-30 italic">{t("startSearch")}</div>
         )}
       </div>
     </div>

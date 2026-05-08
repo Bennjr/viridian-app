@@ -17,12 +17,24 @@ pub struct DictResponse {
     pub a: DictMatches,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SuggestOptions {
+    pub amt: i32,
+    pub include_definitions: bool, 
+}
+
+impl Default for SuggestOptions {
+    fn default() -> Self {
+        Self { amt: 30, include_definitions: false }
+    }
+}
+
 #[tauri::command]
-pub async fn suggest_word(query: String, lang: String) -> Result<DictResponse, String> {
+pub async fn suggest_word(query: String, lang: String, options: Option<SuggestOptions> ) -> Result<DictResponse, String> {
+    let options = options.unwrap_or_default();
     let client = Client::new();
     let encoded = urlencoding::encode(&query);
     
-    // Map language codes to dictionary codes
     let dict = match lang.as_str() {
         "no" => "bm",      // Norwegian Bokmål
         "en" => "en",      // English
@@ -31,8 +43,7 @@ pub async fn suggest_word(query: String, lang: String) -> Result<DictResponse, S
         _ => "bm",         // Default to Norwegian
     };
     
-    // Primary search with inflectional forms and higher result limit
-    let url = format!("https://ord.uib.no/api/suggest?q={}&dict={}&n=30&include=eis&dform=int", encoded, dict);
+    let url = format!("https://ord.uib.no/api/suggest?q={}&dict={}&n={}&include=eis&dform=int", encoded, dict, options.amt);
 
     let response = client
         .get(&url)
@@ -43,14 +54,11 @@ pub async fn suggest_word(query: String, lang: String) -> Result<DictResponse, S
 
     match response.json::<DictResponse>().await {
         Ok(mut data) => {
-            // If we got results, return them
             if !data.a.exact.is_empty() || !data.a.similar.is_empty() {
                 return Ok(data);
             }
 
-            // If no results and query is longer than 3 chars, try fallback searches
             if query.len() > 3 {
-                // Try without dform parameter for broader search
                 let fallback_url = format!("https://ord.uib.no/api/suggest?q={}&dict={}&n=30&include=eis", encoded, dict);
                 
                 if let Ok(fallback_response) = client
@@ -66,7 +74,6 @@ pub async fn suggest_word(query: String, lang: String) -> Result<DictResponse, S
                     }
                 }
 
-                // Try fuzzy search (sp parameter)
                 let fuzzy_url = format!("https://ord.uib.no/api/suggest?sp={}*&dict={}&n=30&include=eis", encoded, dict);
                 
                 if let Ok(fuzzy_response) = client
@@ -83,7 +90,6 @@ pub async fn suggest_word(query: String, lang: String) -> Result<DictResponse, S
                 }
             }
 
-            // Return the original empty result
             Ok(data)
         }
         Err(e) => Err(e.to_string()),

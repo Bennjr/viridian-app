@@ -4,14 +4,12 @@ import { Icon } from "../../../components";
 import { useTranslation, proEase } from "../../../utils/uiHelpers";
 import { useLanguage } from "../../../context/LanguageContext";
 import { useTheme } from "../../../context/ThemeContext";
-import { ModalFrame } from "./components/ModalFrame";
 import { GridAdapter, ListAdapter } from "./components/GridAdapter";
 import Overlay from "./components/Overlay";
 
 export default function Settings({ onClose }: { onClose?: () => void }) {
     const { language, setLanguage } = useLanguage();
     const { theme, setTheme } = useTheme();
-    const [modalConfig, setModalConfig] = useState<any>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("general");
     const [selectedOption, setSelectedOption] = useState("Primary Display");
@@ -52,7 +50,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
             <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 onClick={onClose}
-                className="absolute inset-0 bg-black/40 backdrop-blur-md"
+                className="absolute inset-0 bg-white/10 backdrop-blur-md"
             />
 
             <motion.div
@@ -62,6 +60,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                 transition={{ duration: 0.25, ease: proEase }}
                 className="relative w-full max-w-[1400px] h-[85vh] flex bg-c-primary rounded-[24px] shadow-2xl border border-white/5 overflow-hidden"
             >
+                {/* Sidebar */}
                 <aside className="w-64 bg-c-secondary/40 border-r border-white/5 flex flex-col pt-12 pb-6">
                     <div className="px-6 mb-8">
                         <h2 className="text-[11px] font-black uppercase tracking-[0.2em] opacity-30 mb-4 px-2">App Settings</h2>
@@ -92,6 +91,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                     </div>
                 </aside>
 
+                {/* Main Content Area */}
                 <div className="flex-1 flex flex-col bg-c-primary">
                     <header className="px-10 pt-12 pb-6 flex justify-between items-center">
                         <h1 className="text-2xl font-black tracking-tighter text-c-text">
@@ -117,40 +117,69 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -10 }}
                                 transition={{ duration: 0.2 }}
-                                className="max-w-3xl space-y-8"
+                                className="max-w-3xl space-y-3"
                             >
                                 {activeTab === "general" && (
-                                    <section className="space-y-4">
-                                        <div className="bg-c-secondary/30 border border-white/5 rounded-3xl p-2">
-                                            <SettingsRow label="System-varslinger" description="Administrer hvordan appen varsler deg" icon="/notes.svg">
-                                                <div className="size-2 rounded-full bg-c-brand" />
-                                            </SettingsRow>
-                                            <SettingsRow label="Åpne på oppstart" description="Auto-start appen" icon="/notes.svg" />
-                                        </div>
+                                    <section className="space-y-3">
+                                        <SettingsRow label="System-varslinger" description="Administrer hvordan appen varsler deg" icon="/notes.svg">
+                                            <div className="size-2 rounded-full bg-c-brand shadow-[0_0_8px_rgba(var(--c-brand-rgb),0.6)]" />
+                                        </SettingsRow>
+                                        <SettingsRow label="Åpne på oppstart" description="Auto-start appen" icon="/notes.svg" />
                                     </section>
                                 )}
 
                                 {activeTab === "appearance" && (
-                                    <section className="space-y-4">
-                                        <div className="bg-c-secondary/30 border border-white/5 rounded-3xl p-2">
-                                            <SettingsRow label={t("language")} description={language.toUpperCase()} icon="/translate.svg" onClick={openLanguage} />
-                                            <SettingsRow label={t("theme")} description={theme.toUpperCase()} icon="/star.svg" onClick={openTheme} />
-                                        </div>
+                                    <section className="space-y-3">
+                                        <SettingsRow
+                                            label={t("language")}
+                                            description="Endre applikasjonsspråk"
+                                            icon="/translate.svg"
+                                            expandedContent={
+                                                <ListAdapter
+                                                    activeId={language}
+                                                    onSelect={(id: string) => setLanguage(id as any)}
+                                                    options={[
+                                                        { id: "no", label: "Norsk" }, { id: "en", label: "English" }, { id: "es", label: "Español" }, { id: "de", label: "Deutsch" },
+                                                    ]}
+                                                />
+                                            }
+                                        >
+                                            <span className="text-[10px] font-bold text-c-brand bg-c-brand/10 px-2 py-1 rounded-lg uppercase tracking-wider">
+                                                {language}
+                                            </span>
+                                        </SettingsRow>
+
+                                        <SettingsRow
+                                            label={t("theme")}
+                                            description="Tilpass fargene i grensesnittet"
+                                            icon="/star.svg"
+                                            expandedContent={
+                                                <GridAdapter
+                                                    activeId={theme}
+                                                    onSelect={(id: string) => setTheme(id)}
+                                                    options={[
+                                                        { id: "default", label: "System", icon: "🌓" }, { id: "dark", label: "Mørk", icon: "🌑" }, { id: "light", label: "Lys", icon: "☀️" }, { id: "contrast", label: "Kontrast", icon: "🏁" },
+                                                    ]}
+                                                />
+                                            }
+                                        >
+                                            <span className="text-[10px] font-bold text-c-text/40 bg-white/5 px-2 py-1 rounded-lg uppercase tracking-wider">
+                                                {theme}
+                                            </span>
+                                        </SettingsRow>
                                     </section>
                                 )}
 
                                 {activeTab === "accessibility" && (
-                                    <section className="space-y-4">
-                                        <div className="bg-c-secondary/30 border border-white/5 rounded-3xl p-2">
-                                            <SettingsRow label="Høy Kontrast" description="Forbedrer lesbarhet" icon="/eye.svg" />
-                                            <SettingsRow label="Skriftstørrelse" description="Juster tekststørrelsen i hele appen" icon="/text.svg" />
-                                        </div>
+                                    <section className="space-y-3">
+                                        <SettingsRow label="Høy Kontrast" description="Forbedrer lesbarhet" icon="/eye.svg" />
+                                        <SettingsRow label="Skriftstørrelse" description="Juster tekststørrelsen i hele appen" icon="/text.svg" />
                                     </section>
                                 )}
 
                                 {activeTab === "overlay" && (
-                                    <section className="space-y-4">
-                                        <div className="bg-c-secondary/30 border border-white/5 rounded-3xl p-2">
+                                    <section className="space-y-6">
+                                        <div className="bg-c-secondary/30 border border-white/5 rounded-3xl p-4">
                                             <h3 className="text-[11px] font-black uppercase tracking-widest opacity-30 mb-6 px-2">
                                                 Overlay Preview & Target
                                             </h3>
@@ -164,8 +193,12 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                                                     { id: "3", label: "Drawing Tablet", icon: "✍️" }
                                                 ]}
                                             />
+                                        </div>
+                                        <div className="space-y-3">
                                             <SettingsRow label="Aktiver Overlay" description="Vis verktøy over andre vinduer" icon="/layers.svg" />
-                                            <SettingsRow label="Gjennomsiktighet" description="Juster overlay-synlighet" icon="/eye.svg" />
+                                            <SettingsRow label="Gjennomsiktighet" description="Juster overlay-synlighet" icon="/eye.svg">
+                                                <div className="w-24 h-1 bg-white/10 rounded-full" />
+                                            </SettingsRow>
                                         </div>
                                     </section>
                                 )}
@@ -173,42 +206,78 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                         </AnimatePresence>
                     </div>
                 </div>
-
-                {/* MODAL ADAPTER SYSTEM */}
-                <ModalFrame
-                    isOpen={!!modalConfig}
-                    onClose={() => setModalConfig(null)}
-                    title={modalConfig?.title}
-                    subtitle={modalConfig?.subtitle}
-                >
-                    {modalConfig?.type === "GRID" && <GridAdapter {...modalConfig} />}
-                    {modalConfig?.type === "LIST" && <ListAdapter {...modalConfig} />}
-                </ModalFrame>
             </motion.div>
         </div>
     );
 }
 
-function SettingsRow({ label, description, icon, onClick, children }: any) {
+function SettingsRow({ label, description, icon, children, expandedContent }: any) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const hasExpansion = !!expandedContent;
+
     return (
-        <div
-            onClick={onClick}
-            className={`flex items-center justify-between p-4 rounded-2xl transition-all
-                ${onClick ? 'cursor-pointer hover:bg-white/5 group' : ''}`}
+        <div className={`flex flex-col rounded-2xl border transition-all duration-300
+            ${isExpanded
+                ? 'bg-white/[0.05] border-white/10 shadow-xl shadow-black/20'
+                : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'}`}
         >
-            <div className="flex items-center gap-4">
-                <div className="size-10 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center group-hover:border-c-brand/40 transition-colors">
-                    <Icon src={icon || "/folder.svg"} size="w-4 h-4" className="opacity-40 group-hover:opacity-100" />
+            {/* Header */}
+            <div
+                onClick={() => hasExpansion && setIsExpanded(!isExpanded)}
+                className={`flex items-center justify-between p-4 ${hasExpansion ? 'cursor-pointer group' : ''}`}
+            >
+                <div className="flex items-center gap-4">
+                    <div className={`size-10 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center transition-colors 
+                        ${isExpanded ? 'border-c-brand/50 bg-c-brand/5' : 'group-hover:border-c-brand/40'}`}>
+                        <Icon
+                            src={icon || "/folder.svg"}
+                            size="w-4 h-4"
+                            className={isExpanded ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}
+                        />
+                    </div>
+                    <div>
+                        <p className="text-[13px] font-bold text-c-text leading-tight">{label}</p>
+                        {description && (
+                            <p className="text-[10px] font-medium text-c-text/30 uppercase tracking-tight mt-0.5">
+                                {description}
+                            </p>
+                        )}
+                    </div>
                 </div>
-                <div>
-                    <p className="text-[13px] font-bold text-c-text">{label}</p>
-                    {description && <p className="text-[10px] font-medium text-c-text/30 uppercase tracking-tight">{description}</p>}
+
+                <div className="flex items-center gap-4">
+                    {/* Hide children badges when expanded to keep it clean */}
+                    {!isExpanded && children}
+
+                    {hasExpansion && (
+                        <Icon
+                            src="/chevron-down.svg"
+                            className={`transition-transform duration-300 opacity-20 group-hover:opacity-60 
+                                ${isExpanded ? 'rotate-180 opacity-100' : 'rotate-0'}`}
+                            size="w-3 h-3"
+                        />
+                    )}
                 </div>
             </div>
-            <div className="flex items-center gap-3">
-                {children}
-                {onClick && <Icon src="/chevron-down.svg" className="-rotate-90 opacity-20 group-hover:opacity-60 transition-all" size="w-3 h-3" />}
-            </div>
+
+            {/* Accordion Content */}
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: proEase }}
+                        className="overflow-hidden"
+                    >
+                        <div className="px-4 pb-4 pt-2 border-t border-white/5 mx-4 mt-1">
+                            <div className="py-2">
+                                {expandedContent}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
@@ -216,10 +285,8 @@ function SettingsRow({ label, description, icon, onClick, children }: any) {
 function DisplaySelection({ display, options, activeId, onSelect }: any) {
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* The Preview Window */}
             <div className="relative w-full lg:w-[400px] aspect-video bg-black/40 rounded-3xl border border-white/5 overflow-hidden shadow-inner p-4 flex items-center justify-center">
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-
                 <div className="relative w-[320px] h-[200px] scale-[0.8] origin-center shadow-2xl">
                     {display}
                 </div>
