@@ -208,6 +208,7 @@ export default function NotesApp() {
 
     return (
         <div className="min-h-screen bg-c-primary text-c-text overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.png')]" />
 
             <AnimatePresence mode="wait">
 
@@ -447,6 +448,7 @@ export default function NotesApp() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
         </div>
     );
 }
