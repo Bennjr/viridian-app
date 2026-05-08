@@ -5,7 +5,7 @@ import { Icon } from "../../../components";
 import { useLanguage } from "../../../context/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
 
-type Lang = "no" | "en" | "es" | "de";
+type Lang = "no" | "en" | "es" | "de" | "fr" | "ru" | "lt" | "ar";
 
 const RECENT_BOOKS = [
   { title: "Fokus Samfunnskunnskap", author: "Aschehoug", progress: 65 },
@@ -15,7 +15,7 @@ const RECENT_BOOKS = [
 
 export default function HomePage() {
   const [files, setFiles] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
   const { language } = useLanguage();
   const indexTranslations = getTranslations(language as Lang, 'index');
   const t = (key: string) => indexTranslations[key] || key;
@@ -122,8 +122,11 @@ export default function HomePage() {
 function QuickStatCard({ title, value }: any) {
   return (
     <div className="flex-1 bg-c-secondary/50 border border-white/5 rounded-2xl p-4 transition-all hover:bg-c-secondary">
-      <p className="text-[10px] font-bold uppercase tracking-widest opacity-20 mb-1">{title}</p>
-      <p className="text-2xl font-black text-white leading-none">{value}</p>
+      <Icon src={`/icons/${icon}.svg`} size="w-6 h-6" className="opacity-70" />
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest opacity-20 mb-1">{title}</p>
+        <p className="text-2xl font-black text-white leading-none">{value}</p>
+      </div>
     </div>
   )
 }

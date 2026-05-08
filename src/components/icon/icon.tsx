@@ -1,8 +1,4 @@
 import { motion } from "framer-motion";
-import { useRef, useEffect } from "react";
-
-// Animations
-const x = null
 
 export function Icon({
     src = "",

@@ -1,29 +1,20 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../../components";
+import { useTranslation, proEase } from "../../../utils/uiHelpers";
 import { useLanguage } from "../../../context/LanguageContext";
 import { useTheme } from "../../../context/ThemeContext";
 import { GridAdapter, ListAdapter } from "./components/GridAdapter";
 import Overlay from "./components/Overlay";
 
-type Lang = "no" | "en" | "es" | "de";
-const proEase = [0.4, 0, 0.2, 1];
-
-const TRANSLATIONS: Record<Lang, Record<string, string>> = {
-    no: { title: "Innstillinger", appearance: "Utseende", general: "Generelt", language: "Språk", theme: "Tema", search: "Søk...", accessibility: "Tilgjengelighet", overlay: "Overlay" },
-    en: { title: "Settings", appearance: "Appearance", general: "General", language: "Language", theme: "Theme", search: "Search...", accessibility: "Accessibility", overlay: "Overlay" },
-    es: { title: "Configuración", appearance: "Apariencia", general: "General", language: "Idioma", theme: "Tema", search: "Buscar...", accessibility: "Accesibilidad", overlay: "Superposición" },
-    de: { title: "Einstellungen", appearance: "Aussehen", general: "Allgemein", language: "Sprache", theme: "Thema", search: "Suchen...", accessibility: "Barrierefreiheit", overlay: "Overlay" },
-};
-
-export default function Settings({ onClose }: { onClose: () => void }) {
+export default function Settings({ onClose }: { onClose?: () => void }) {
     const { language, setLanguage } = useLanguage();
     const { theme, setTheme } = useTheme();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("general");
     const [selectedOption, setSelectedOption] = useState("Primary Display");
 
-    const t = (key: string) => TRANSLATIONS[language as Lang][key] || key;
+    const t = useTranslation("settings");
 
     const CATEGORIES = [
         { id: "general", label: t("general"), icon: "/gear.svg" },
@@ -31,6 +22,28 @@ export default function Settings({ onClose }: { onClose: () => void }) {
         { id: "accessibility", label: t("accessibility"), icon: "/user.svg" },
         { id: "overlay", label: t("overlay"), icon: "/layers.svg" },
     ];
+
+    const openLanguage = () => setModalConfig({
+        title: t("language"),
+        subtitle: "Velg ditt foretrukne språk for grensesnittet",
+        type: "LIST",
+        activeId: language,
+        onSelect: (id: string) => { setLanguage(id as any); setModalConfig(null); },
+        options: [
+            { id: "no", label: "Norsk" }, { id: "en", label: "English" }, { id: "es", label: "Español" }, { id: "de", label: "Deutsch" }, { id: "fr", label: "Français" }, { id: "ru", label: "Русский" }, { id: "lt", label: "Lietuvių" }, { id: "ar", label: "العربية" },
+        ]
+    });
+
+    const openTheme = () => setModalConfig({
+        title: t("theme"),
+        subtitle: "Velg fargetema for applikasjonen",
+        type: "GRID",
+        activeId: theme,
+        onSelect: (id: string) => { setTheme(id); setModalConfig(null); },
+        options: [
+            { id: "default", label: "System", icon: "🌓" }, { id: "dark", label: "Mørk", icon: "🌑" }, { id: "light", label: "Lys", icon: "☀️" }, { id: "contrast", label: "Kontrast", icon: "🏁" },
+        ]
+    });
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
@@ -172,7 +185,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                                             </h3>
                                             <DisplaySelection
                                                 activeId={selectedOption}
-                                                onSelect={(label) => setSelectedOption(label)}
+                                                onSelect={(label: string) => setSelectedOption(label)}
                                                 display={<Overlay previewLabel={selectedOption} />}
                                                 options={[
                                                     { id: "1", label: "Primary Display", icon: "🖥️" },
@@ -273,7 +286,7 @@ function DisplaySelection({ display, options, activeId, onSelect }: any) {
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start">
             <div className="relative w-full lg:w-[400px] aspect-video bg-black/40 rounded-3xl border border-white/5 overflow-hidden shadow-inner p-4 flex items-center justify-center">
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', size: '20px 20px', backgroundSize: '20px 20px' }} />
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                 <div className="relative w-[320px] h-[200px] scale-[0.8] origin-center shadow-2xl">
                     {display}
                 </div>

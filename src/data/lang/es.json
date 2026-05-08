@@ -94,12 +94,42 @@
     "resultsFor": "Encontrados resultados para",
     "exactMatches": "Coincidencias exactas",
     "noExact": "No hay coincidencias exactas",
-    "similarWords": "Palabras similares"
+    "similarWords": "Palabras similares",
+    "featured": "Palabra del Día",
+    "deep": "Explorar significado",
+    "recent": "Búsquedas Recientes",
+    "history": "Historial",
+    "activity": "Tu Actividad",
+    "learned": "Palabras Aprendidas",
+    "grammar": "Consejos de Gramática",
+    "popular": "Popular Ahora",
+    "exact": "Coincidencias Exactas",
+    "similar": "Palabras Similares",
+    "adjective": "adjetivo",
+    "match": "Coincidencia",
+    "featuredWord": "Melancólico",
+    "featuredDesc": "Una sensación tranquila de nostalgia o anhelo emocional ligado a recuerdos.",
+    "grammarText": "Recuerda la diferencia entre \"entonces\" y \"cuando\".",
+    "recentWords": [
+      "Implementación",
+      "Cognitivo",
+      "Síntesis",
+      "Parámetro"
+    ],
+    "tags": [
+      "Inteligencia Artificial",
+      "Sostenibilidad",
+      "Innovación"
+    ]
   },
   "languages": {
     "no": "Norsk",
     "en": "English",
     "es": "Español",
-    "de": "Deutsch"
+    "de": "Deutsch",
+    "fr": "Français",
+    "ru": "Русский",
+    "lt": "Lietuvių",
+    "ar": "العربية"
   }
 }

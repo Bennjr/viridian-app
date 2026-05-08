@@ -94,12 +94,42 @@
     "resultsFor": "Ergebnisse gefunden für",
     "exactMatches": "Exakte Treffer",
     "noExact": "Keine exakten Treffer",
-    "similarWords": "Ähnliche Wörter"
+    "similarWords": "Ähnliche Wörter",
+    "featured": "Wort des Tages",
+    "deep": "Tiefere Bedeutung ansehen",
+    "recent": "Letzte Suchen",
+    "history": "Verlauf",
+    "activity": "Deine Aktivität",
+    "learned": "Gelernte Wörter",
+    "grammar": "Grammatik-Tipps",
+    "popular": "Beliebt Jetzt",
+    "exact": "Exakte Treffer",
+    "similar": "Ähnliche Wörter",
+    "adjective": "adjektiv",
+    "match": "Treffer",
+    "featuredWord": "Wehmütig",
+    "featuredDesc": "Ein stilles Gefühl von Sehnsucht oder emotionaler Nostalgie.",
+    "grammarText": "Den Unterschied zwischen \"dann\" und \"wann\" beachten.",
+    "recentWords": [
+      "Implementierung",
+      "Kognitiv",
+      "Synthese",
+      "Parameter"
+    ],
+    "tags": [
+      "Künstliche Intelligenz",
+      "Nachhaltigkeit",
+      "Innovation"
+    ]
   },
   "languages": {
     "no": "Norsk",
     "en": "English",
     "es": "Español",
-    "de": "Deutsch"
+    "de": "Deutsch",
+    "fr": "Français",
+    "ru": "Русский",
+    "lt": "Lietuvių",
+    "ar": "العربية"
   }
 }

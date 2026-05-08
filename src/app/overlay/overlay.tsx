@@ -5,32 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../components";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-type Message = {
-  role: 'user' | 'ai';
-  content: string;
-};
-
-function ChatBubble({ msg }: { msg: Message }) {
-  const isAi = msg.role === 'ai';
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: isAi ? -10 : 10, scale: 0.95 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      className={`flex ${isAi ? 'justify-start' : 'justify-end'} mb-4`}
-    >
-      <div className={`
-        max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm
-        ${isAi
-          ? 'bg-c-secondary text-c-text border border-white/5 rounded-tl-none'
-          : 'bg-c-brand text-white rounded-tr-none'}
-      `}>
-        {isAi && <div className="text-[10px] font-black uppercase opacity-30 mb-1 tracking-widest">Viridian AI</div>}
-        <div className="whitespace-pre-wrap">{msg.content}</div>
-      </div>
-    </motion.div>
-  );
-}
-
 function DragHandle() {
   const [isPressed, setIsPressed] = useState(false);
 
