@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Icon } from "../../../components";
+import { useLanguage } from "../../../context/LanguageContext";
+
+type Lang = "no" | "en" | "es" | "de";
 
 interface Note {
     id: string;
@@ -9,145 +11,372 @@ interface Note {
     updatedAt: string;
 }
 
+const TRANSLATIONS: Record<Lang, Record<string, string>> = {
+    no: {
+        title: "Mine Notater",
+        note: "Notat",
+        notes: "Notater",
+        organize: "Organiser tankene dine",
+        newNote: "Nytt notat",
+        untitled: "Uten tittel",
+        noText: "Ingen tekst enda...",
+        empty: "Ingen notater enda",
+        create: "Lag et notat for å starte",
+        placeholder: "Begynn å skrive...",
+        noteTitle: "Notattittel",
+        done: "Ferdig",
+        words: "ord",
+        delete: "Slett",
+    },
+
+    en: {
+        title: "My Notes",
+        note: "Note",
+        notes: "Notes",
+        organize: "Organize your thoughts",
+        newNote: "New Note",
+        untitled: "Untitled",
+        noText: "No text yet...",
+        empty: "No notes yet",
+        create: "Create a note to get started",
+        placeholder: "Start typing...",
+        noteTitle: "Note title",
+        done: "Done",
+        words: "words",
+        delete: "Delete",
+    },
+
+    es: {
+        title: "Mis Notas",
+        note: "Nota",
+        notes: "Notas",
+        organize: "Organiza tus pensamientos",
+        newNote: "Nueva Nota",
+        untitled: "Sin título",
+        noText: "Sin texto todavía...",
+        empty: "No hay notas",
+        create: "Crea una nota para comenzar",
+        placeholder: "Empieza a escribir...",
+        noteTitle: "Título",
+        done: "Listo",
+        words: "palabras",
+        delete: "Eliminar",
+    },
+
+    de: {
+        title: "Meine Notizen",
+        note: "Notiz",
+        notes: "Notizen",
+        organize: "Organisiere deine Gedanken",
+        newNote: "Neue Notiz",
+        untitled: "Ohne Titel",
+        noText: "Noch kein Text...",
+        empty: "Keine Notizen",
+        create: "Erstelle eine Notiz",
+        placeholder: "Schreibe etwas...",
+        noteTitle: "Titel",
+        done: "Fertig",
+        words: "Wörter",
+        delete: "Löschen",
+    }
+};
+
 const INITIAL_NOTES: Note[] = [
-    { id: "1", title: "Shopping List", content: "Buy milk and bread on the way home.", updatedAt: "Today" },
-    { id: "2", title: "Viridian Plans", content: "Fix overlay window and dictionary integration.", updatedAt: "Yesterday" },
-    { id: "3", title: "Meeting Notes", content: "Remember to discuss accessibility for dyslexics.", updatedAt: "Mar 12" },
+    {
+        id: "1",
+        title: "Shopping List",
+        content: "Buy milk and bread.",
+        updatedAt: "Today"
+    }
 ];
 
-export default function Notes() {
+const proEase = [0.4, 0, 0.2, 1];
+
+export default function NotesApp() {
+    const { language } = useLanguage();
+
+    const t = (key: string) =>
+        TRANSLATIONS[language as Lang][key] || key;
+
     const [notes, setNotes] = useState<Note[]>(INITIAL_NOTES);
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
 
-    // Get the currently selected note object
     const activeNote = useMemo(
         () => notes.find((n) => n.id === activeNoteId),
         [notes, activeNoteId]
     );
 
-    // CRUD Operations
     const createNote = () => {
         const newNote: Note = {
             id: Date.now().toString(),
             title: "",
             content: "",
-            updatedAt: "Just now",
+            updatedAt: "Now"
         };
+
         setNotes([newNote, ...notes]);
         setActiveNoteId(newNote.id);
     };
 
-    const updateNote = (id: string, field: keyof Note, value: string) => {
+    const updateNote = (
+        id: string,
+        field: keyof Note,
+        value: string
+    ) => {
         setNotes((prev) =>
-            prev.map((n) => (n.id === id ? { ...n, [field]: value, updatedAt: "Just now" } : n))
+            prev.map((n) =>
+                n.id === id
+                    ? { ...n, [field]: value, updatedAt: "Now" }
+                    : n
+            )
         );
     };
 
     const deleteNote = (id: string) => {
         setNotes((prev) => prev.filter((n) => n.id !== id));
-        setActiveNoteId(null);
+
+        if (activeNoteId === id) {
+            setActiveNoteId(null);
+        }
     };
 
     return (
-        <div className="h-full max-w-6xl mx-auto p-6 lg:p-10 font-sans text-zinc-100">
+        <div className="min-h-screen bg-c-primary text-c-text overflow-hidden">
+
             <AnimatePresence mode="wait">
+
                 {activeNote ? (
+
                     <motion.div
                         key="editor"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="flex flex-col h-full gap-6"
+                        className="h-screen flex flex-col"
                     >
-                        {/* Editor Header */}
-                        <header className="flex justify-between items-center">
-                            <div className="flex items-center gap-4 flex-1">
-                                <button
-                                    onClick={() => setActiveNoteId(null)}
-                                    className="p-2 hover:bg-white/5 rounded-lg transition-colors group"
-                                >
-                                    <Icon src="/chevron-left.svg" size="w-5 h-5" className="opacity-50 group-hover:opacity-100" />
-                                </button>
-                                <input
-                                    type="text"
-                                    value={activeNote.title}
-                                    placeholder="Note Title"
-                                    onChange={(e) => updateNote(activeNote.id, "title", e.target.value)}
-                                    className="bg-transparent text-3xl font-bold outline-none border-none p-0 m-0 w-full placeholder:opacity-20 text-white"
-                                />
-                            </div>
 
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={() => deleteNote(activeNote.id)}
-                                    className="p-2 hover:bg-red-500/10 rounded-lg transition-colors group"
-                                >
-                                    <Icon src="/trash.svg" size="w-5 h-5" className="opacity-20 group-hover:opacity-100 group-hover:invert-0 transition-opacity" />
-                                </button>
-                                <button
-                                    onClick={() => setActiveNoteId(null)}
-                                    className="bg-zinc-100 text-zinc-950 px-6 py-2 rounded-lg font-semibold hover:bg-white transition-colors"
-                                >
-                                    Done
-                                </button>
+                        {/* HEADER */}
+
+                        <header className="border-b border-white/5 bg-c-secondary/40 backdrop-blur-xl">
+                            <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
+
+                                <div className="flex items-center gap-4 flex-1">
+
+                                    <button
+                                        onClick={() => setActiveNoteId(null)}
+                                        className="p-2 rounded-xl border border-c-divider hover:bg-white/5 transition-all"
+                                    >
+                                        ←
+                                    </button>
+
+                                    <input
+                                        value={activeNote.title}
+                                        onChange={(e) =>
+                                            updateNote(
+                                                activeNote.id,
+                                                "title",
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder={t("noteTitle")}
+                                        className="
+                                            bg-transparent
+                                            text-3xl
+                                            font-black
+                                            outline-none
+                                            w-full
+                                            placeholder:text-c-text/20
+                                        "
+                                    />
+                                </div>
+
+                                <div className="flex items-center gap-3">
+
+                                    <button
+                                        onClick={() => deleteNote(activeNote.id)}
+                                        className="
+                                            px-4 py-2 rounded-xl
+                                            border border-red-500/10
+                                            hover:bg-red-500/10
+                                            text-red-400
+                                            text-sm font-bold
+                                            transition-all
+                                        "
+                                    >
+                                        {t("delete")}
+                                    </button>
+
+                                    <button
+                                        onClick={() => setActiveNoteId(null)}
+                                        className="
+                                            bg-c-brand
+                                            text-white
+                                            px-5 py-2 rounded-xl
+                                            font-bold
+                                        "
+                                    >
+                                        {t("done")}
+                                    </button>
+                                </div>
                             </div>
                         </header>
 
-                        {/* Main Textarea */}
-                        <textarea
-                            autoFocus
-                            value={activeNote.content}
-                            onChange={(e) => updateNote(activeNote.id, "content", e.target.value)}
-                            placeholder="Start typing..."
-                            className="flex-1 bg-white/[0.03] p-8 lg:p-12 rounded-3xl border border-white/10 text-lg leading-relaxed outline-none resize-none placeholder:opacity-10 focus:border-white/20 transition-colors"
-                        />
+                        {/* CONTENT */}
+
+                        <div className="flex-1 p-8">
+                            <textarea
+                                autoFocus
+                                value={activeNote.content}
+                                onChange={(e) =>
+                                    updateNote(
+                                        activeNote.id,
+                                        "content",
+                                        e.target.value
+                                    )
+                                }
+                                placeholder={t("placeholder")}
+                                className="
+                                    w-full h-full
+                                    bg-c-secondary/20
+                                    border border-white/5
+                                    rounded-[28px]
+                                    p-8
+                                    outline-none
+                                    resize-none
+                                    text-lg
+                                    leading-relaxed
+                                    focus:border-c-brand/30
+                                    transition-all
+                                "
+                            />
+                        </div>
                     </motion.div>
+
                 ) : (
+
                     <motion.div
                         key="list"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="space-y-10"
+                        exit={{ opacity: 0 }}
+                        className="p-8"
                     >
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <h1 className="text-4xl font-bold tracking-tight">My Notes</h1>
-                                <p className="text-sm font-medium opacity-30 mt-1 uppercase tracking-widest">
-                                    {notes.length} {notes.length === 1 ? 'Note' : 'Notes'}
-                                </p>
-                            </div>
+
+                        {/* HEADER */}
+
+                        <div className="max-w-7xl mx-auto mb-10">
+
+                            <h1 className="text-5xl font-black tracking-tight">
+                                {t("title")}
+                            </h1>
+
+                            <p className="text-c-text/30 text-[11px] uppercase tracking-[0.25em] mt-3 font-bold">
+                                {notes.length}{" "}
+                                {notes.length === 1
+                                    ? t("note")
+                                    : t("notes")}{" "}
+                                • {t("organize")}
+                            </p>
+
                             <button
                                 onClick={createNote}
-                                className="flex items-center gap-2 bg-c-opposite text-c-text_opposite px-5 py-3 rounded-xl font-bold shadow-lg shadow-c-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="
+                                    mt-8
+                                    bg-c-brand
+                                    text-white
+                                    px-6 py-3
+                                    rounded-xl
+                                    font-bold
+                                    hover:brightness-110
+                                    transition-all
+                                "
                             >
-                                <Icon src="/plus.svg" size="w-4 h-4" />
-                                <span>New Note</span>
+                                + {t("newNote")}
                             </button>
                         </div>
 
-                        {/* Notes Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {notes.map((note) => (
-                                <div
-                                    key={note.id}
-                                    onClick={() => setActiveNoteId(note.id)}
-                                    className="group relative cursor-pointer flex flex-col bg-white/[0.02] border border-white/5 p-6 rounded-2xl transition-all hover:bg-white/[0.05] hover:border-white/20"
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h2 className="font-bold text-lg text-white/90 group-hover:text-c-brand transition-colors truncate">
-                                            {note.title || "Untitled Note"}
-                                        </h2>
-                                        <span className="text-[10px] font-bold opacity-30 uppercase tracking-tighter whitespace-nowrap ml-2">
-                                            {note.updatedAt}
-                                        </span>
-                                    </div>
+                        {/* GRID */}
 
-                                    <p className="text-sm opacity-40 line-clamp-3 leading-relaxed group-hover:opacity-70 transition-opacity">
-                                        {note.content || "No text yet..."}
+                        <div className="max-w-7xl mx-auto">
+
+                            {notes.length === 0 ? (
+
+                                <div className="text-center py-20">
+                                    <p className="text-c-text/30">
+                                        {t("empty")}
+                                    </p>
+
+                                    <p className="text-c-text/15 text-sm mt-2">
+                                        {t("create")}
                                     </p>
                                 </div>
-                            ))}
+
+                            ) : (
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                                    {notes.map((note) => (
+
+                                        <motion.div
+                                            key={note.id}
+                                            whileHover={{ y: -2 }}
+                                            transition={{ duration: 0.15 }}
+                                            className="
+                                                group
+                                                relative
+                                                bg-c-secondary/20
+                                                border border-white/5
+                                                hover:border-white/10
+                                                rounded-[24px]
+                                                p-6
+                                                cursor-pointer
+                                                transition-all
+                                            "
+                                            onClick={() => setActiveNoteId(note.id)}
+                                        >
+
+                                            {/* DELETE */}
+
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteNote(note.id);
+                                                }}
+                                                className="
+                                                    absolute top-4 right-4
+                                                    opacity-0 group-hover:opacity-100
+                                                    transition-all
+                                                    p-1.5
+                                                    rounded-lg
+                                                    hover:bg-red-500/10
+                                                "
+                                            >
+                                                ✕
+                                            </button>
+
+                                            <div className="mb-4">
+                                                <h2 className="font-bold text-lg text-c-text/90 line-clamp-2">
+                                                    {note.title || t("untitled")}
+                                                </h2>
+
+                                                <span className="text-[10px] uppercase tracking-widest text-c-text/20">
+                                                    {note.updatedAt}
+                                                </span>
+                                            </div>
+
+                                            <p className="text-sm text-c-text/40 line-clamp-4 leading-relaxed">
+                                                {note.content || t("noText")}
+                                            </p>
+
+                                            <div className="mt-5 pt-4 border-t border-white/5 text-[10px] uppercase tracking-wider text-c-text/20">
+                                                {note.content.split(" ").length} {t("words")}
+                                            </div>
+
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 )}
