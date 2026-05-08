@@ -28,14 +28,12 @@ export default function Library() {
   return (
     <div className="h-full w-full overflow-y-auto custom-scrollbar p-8 space-y-12">
       {Object.entries(categories).map(([category, categoryBooks]) => (
-        <section key={category} className="space-y-4">
-          {/* Category Title */}
+        <section key={category}>
           <h2 className="text-xl font-bold text-zinc-100 px-1 tracking-tight">
             {category}
           </h2>
 
-          {/* Netflix-style Horizontal Row */}
-          <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x">
+          <div className="flex gap-6 overflow-x-auto scrollbar-hide snap-x">
             {categoryBooks.map((book, index) => (
               <div key={index} className="snap-start shrink-0">
                 <LibraryBook title={book.title} author={book.author} />
