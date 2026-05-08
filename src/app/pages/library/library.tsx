@@ -1,76 +1,49 @@
 import { motion } from "framer-motion"
 
 const books = [
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
-  {
-    title: "Book Title 1",
-    author: "Author 1",
-  },
+  { title: "Book Title 1", author: "Author 1", category: "Fiction" },
+  { title: "Book Title 1", author: "Author 1", category: "Fiction" },
+  { title: "Book Title 1", author: "Author 1", category: "Fiction" },
+  { title: "Book Title 1", author: "Author 1", category: "History" },
+  { title: "Book Title 1", author: "Author 1", category: "History" },
+  { title: "Book Title 1", author: "Author 1", category: "History" },
+  { title: "Book Title 1", author: "Author 1", category: "Factual" },
+  { title: "Book Title 1", author: "Author 1", category: "Factual" },
+  { title: "Book Title 1", author: "Author 1", category: "Factual" },
+  { title: "Book Title 1", author: "Author 1", category: "Factual" },
+  { title: "Book Title 1", author: "Author 1", category: "Poetry" },
+  { title: "Book Title 1", author: "Author 1", category: "Poetry" },
+  { title: "Book Title 1", author: "Author 1", category: "Poetry" },
+  { title: "Book Title 1", author: "Author 1", category: "Poetry" },
 ]
 
 export default function Library() {
+  // Group books by category
+  const categories = books.reduce((acc, book) => {
+    if (!acc[book.category]) acc[book.category] = [];
+    acc[book.category].push(book);
+    return acc;
+  }, {} as Record<string, typeof books>);
+
   return (
-    <div className="h-full w-full overflow-y-auto custom-scrollbar p-8">
-      <motion.div
-        layout
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4"
-      >
-        {books.map((book, index) => (
-          <LibraryBook key={index} title={book.title} author={book.author} />
-        ))}
-      </motion.div>
+    <div className="h-full w-full overflow-y-auto custom-scrollbar p-8 space-y-12">
+      {Object.entries(categories).map(([category, categoryBooks]) => (
+        <section key={category} className="space-y-4">
+          {/* Category Title */}
+          <h2 className="text-xl font-bold text-zinc-100 px-1 tracking-tight">
+            {category}
+          </h2>
+
+          {/* Netflix-style Horizontal Row */}
+          <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x">
+            {categoryBooks.map((book, index) => (
+              <div key={index} className="snap-start shrink-0">
+                <LibraryBook title={book.title} author={book.author} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }
@@ -92,7 +65,6 @@ function LibraryBook({ title, author, coverUrl, progress = 0 }: LibraryBookProps
       className="group cursor-pointer flex flex-col w-44"
     >
       <div className="relative aspect-[2/3] w-full rounded-r-lg rounded-l-sm overflow-hidden shadow-md group-hover:shadow-2xl group-hover:shadow-c-brand/20 transition-all duration-300 bg-zinc-800">
-
         <img
           src={imageSrc}
           alt={title}
@@ -102,9 +74,7 @@ function LibraryBook({ title, author, coverUrl, progress = 0 }: LibraryBookProps
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute left-0 top-0 bottom-0 w-3 bg-black/20 blur-[1px]" />
           <div className="absolute left-[3px] top-0 bottom-0 w-[1px] bg-white/10" />
-
           <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-white/5" />
-
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
@@ -118,7 +88,7 @@ function LibraryBook({ title, author, coverUrl, progress = 0 }: LibraryBookProps
         )}
       </div>
 
-      <div className="flex flex-col gap-0.5 px-1 bg-c-tertiery">
+      <div className="flex flex-col gap-0.5 px-1 pt-3">
         <h2 className="font-bold text-sm text-zinc-100 leading-tight line-clamp-2 group-hover:text-c-brand transition-colors">
           {title}
         </h2>

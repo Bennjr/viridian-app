@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useLanguage } from "../../../context/LanguageContext";
+import { AnimatePresence, motion } from "framer-motion";
+import { Icon } from "../../../components";
 
 type Lang = "no" | "en" | "es" | "de";
 
@@ -214,7 +216,7 @@ async function checkSpelling(text: string, lang: Lang): Promise<string> {
 
   const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=${langMap[lang]}`;
   const data = await fetchJson(url);
-  
+
   if (data?.matches) {
     let corrected = text;
     data.matches
@@ -233,10 +235,10 @@ async function checkSpelling(text: string, lang: Lang): Promise<string> {
 // Oversettelse
 async function translateWord(word: string, from: Lang, to: Lang): Promise<string> {
   if (!word || from === to) return word;
-  
+
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${MYMEMORY_LANG[from]}|${MYMEMORY_LANG[to]}`;
   const result = await fetchJson(url);
-  
+
   return result?.responseData?.translatedText?.trim() || word;
 }
 
@@ -268,7 +270,6 @@ export default function Typing() {
       const normalized = query.trim().toLowerCase();
 
       const lookup = async () => {
-        // 🎯 Bruk checkSpelling for stavekontroll
         let correctedText = normalized;
         if (normalized.includes(' ')) {
           correctedText = await checkSpelling(normalized, sourceLang);
@@ -321,116 +322,144 @@ export default function Typing() {
   }, [query, sourceLang, targetLang]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-6xl mx-auto p-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="font-bold text-2xl tracking-tight">{t("title")}</h2>
-          <p className="mt-1 text-xs text-c-muted_text max-w-xl">
-            {t("description")}
-          </p>
+    <div className="h-full w-full custom-scrollbar overflow-y-auto h-full">
+      <div className="flex flex-col max-w-6xl gap-6 p-8 mx-auto">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-bold text-2xl tracking-tight">{t("title")}</h2>
+            <p className="mt-1 text-xs text-c-muted_text max-w-xl">
+              {t("description")}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
+            <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
+              {t("from")}
+              <select
+                value={sourceLang}
+                onChange={(e) => setSourceLang(e.target.value as Lang)}
+                className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
+              >
+                <option value="no">Norsk</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
+              {t("to")}
+              <select
+                value={targetLang}
+                onChange={(e) => setTargetLang(e.target.value as Lang)}
+                className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
+              >
+                <option value="no">Norsk</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+              </select>
+            </label>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
-          <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
-            {t("from")}
-            <select
-              value={sourceLang}
-              onChange={(e) => setSourceLang(e.target.value as Lang)}
-              className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
-            >
-              <option value="no">Norsk</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </label>
+        <div className="flex flex-col gap-8">
+          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-c-secondary shadow-2xl shadow-black/20">
+            <div className="grid grid-cols-2 divide-x divide-white/10">
 
-          <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] opacity-60 text-c-muted_text">
-            {t("to")}
-            <select
-              value={targetLang}
-              onChange={(e) => setTargetLang(e.target.value as Lang)}
-              className="bg-c-secondary border border-white/5 rounded-2xl px-4 py-3 text-c-text outline-none"
-            >
-              <option value="no">Norsk</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </label>
+              {/* Input Side */}
+              <div className="flex flex-col p-6 min-h-[450px]">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">Source</span>
+                  {loading && <div className="w-4 h-4 border-2 border-c-brand/30 border-t-c-brand rounded-full animate-spin" />}
+                </div>
+
+                <textarea
+                  rows={3}
+                  placeholder={t("placeholder")}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="w-full bg-transparent text-2xl font-semibold text-c-text placeholder:text-white/10 outline-none resize-none"
+                />
+                <AnimatePresence>
+                  {!loading && data && corrected !== query.trim().toLowerCase() && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-auto pt-4 text-sm text-c-muted_text"
+                    >
+                      <span className="opacity-50">{t("didYouMean")}</span>{" "}
+                      <button
+                        onClick={() => setQuery(corrected)}
+                        className="text-c-brand font-bold hover:underline decoration-c-brand/30 underline-offset-4"
+                      >
+                        "{corrected}"
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Translation Side */}
+              <div className="flex flex-col p-6 bg-white/[0.01] min-h-[200px]">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-c-brand">Translation</span>
+                  <Icon src="/copy.svg" size="w-4 h-4" className="opacity-20 hover:opacity-100 cursor-pointer transition-opacity" />
+                </div>
+
+                <div className={`text-2xl font-semibold transition-all duration-300 ${translation ? 'text-c-text' : 'text-white/10'}`}>
+                  {translation || t("noTranslation")}
+                </div>
+
+                {translation && (
+                  <div className="mt-auto pt-4 flex gap-2">
+                    <div className="px-2 py-1 rounded bg-c-brand/10 text-c-brand text-[10px] font-bold uppercase">AI Verified</div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-4">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">{t("suggestions")}</h3>
+
+            <div className="rounded-3xl border border-white/5 bg-c-secondary p-6 space-y-4">
+              <div className="text-xs uppercase tracking-[0.2em] opacity-50">{t("exactMatches")}</div>
+              <div className="flex flex-col gap-2">
+                {data?.a.exact.length ? (
+                  data.a.exact.map(([word, score], index) => (
+                    <div key={`exact-${word}-${index}`} className="rounded-xl border border-white/5 bg-c-secondary/80 px-4 py-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-c-text">{word}</span>
+                        <span className="text-[10px] font-mono opacity-20">{score}</span>
+                      </div>
+                      <div className="space-y-1 text-xs text-c-muted_text">
+                        <div><strong>{LANG_LABELS[sourceLang].toUpperCase()}:</strong> {definitions[word]?.[sourceLang] || "Laster..."}</div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-2xl border-2 border-dashed border-white/5 px-4 py-8 text-center opacity-40 text-sm">
+                    {t("noExact")}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h1 className="font-bold text-2xl tracking-tight">Last ned Språkpakker lokalt</h1>
+
+          </section>
         </div>
-      </div>
 
-      <div className="relative group">
-        <input
-          type="text"
-          placeholder={t("placeholder")}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-c-secondary border border-white/5 rounded-2xl px-5 py-5 text-c-text placeholder:text-c-text/20 focus:border-c-brand/50 outline-none transition-all shadow-sm text-lg"
-        />
-        {loading && (
-          <div className="absolute right-5 top-1/2 -translate-y-1/2 animate-pulse text-c-brand text-xs font-bold uppercase tracking-widest">
-            {t("loading")}
+        {!loading && query && !data && (
+          <div className="py-20 text-center opacity-30 italic">
+            {t("startSearch")}
           </div>
         )}
       </div>
-
-      {!loading && data && corrected !== query.trim().toLowerCase() && (
-        <div className="text-sm text-c-muted_text px-1">
-          {t("didYouMean")} <span className="text-c-brand font-bold">"{corrected}"</span>?
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <section className="flex flex-col gap-4">
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">{t("translation")}</h3>
-          <div className="rounded-3xl border border-white/5 bg-c-secondary p-6 space-y-4">
-            <div className="text-sm text-c-muted_text">{t("from")} {LANG_LABELS[sourceLang]} {t("to")} {LANG_LABELS[targetLang]}</div>
-            <div className="rounded-3xl border border-white/5 bg-c-secondary/80 px-4 py-5">
-              <div className="text-xs uppercase tracking-[0.2em] text-c-muted_text">{t("word")}</div>
-              <div className="mt-2 text-2xl font-bold text-c-text">{corrected || "—"}</div>
-            </div>
-            <div className="rounded-3xl border border-white/5 bg-c-secondary/80 px-4 py-5">
-              <div className="text-xs uppercase tracking-[0.2em] text-c-muted_text">{t("translation")}</div>
-              <div className="mt-2 text-xl font-semibold text-c-brand">{translation || t("noTranslation")}</div>
-            </div>
-          </div>
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-30 px-1">{t("suggestions")}</h3>
-
-          <div className="rounded-3xl border border-white/5 bg-c-secondary p-6 space-y-4">
-            <div className="text-xs uppercase tracking-[0.2em] opacity-50">{t("exactMatches")}</div>
-            <div className="flex flex-col gap-2">
-              {data?.a.exact.length ? (
-                data.a.exact.map(([word, score], index) => (
-                  <div key={`exact-${word}-${index}`} className="rounded-xl border border-white/5 bg-c-secondary/80 px-4 py-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold text-c-text">{word}</span>
-                      <span className="text-[10px] font-mono opacity-20">{score}</span>
-                    </div>
-                    <div className="space-y-1 text-xs text-c-muted_text">
-                      <div><strong>{LANG_LABELS[sourceLang].toUpperCase()}:</strong> {definitions[word]?.[sourceLang] || "Laster..."}</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-2xl border-2 border-dashed border-white/5 px-4 py-8 text-center opacity-40 text-sm">
-                  {t("noExact")}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {!loading && query && !data && (
-        <div className="py-20 text-center opacity-30 italic">
-          {t("startSearch")}
-        </div>
-      )}
     </div>
   );
 }

@@ -44,6 +44,7 @@ pub fn run() {
             // apply overlay styles
             helper::overlay_init(app.get_window("overlayWin").unwrap());
             helper::overlay_init(app.get_window("suggestionWin").unwrap());
+            helper::w_hide(app.get_window("suggestionWin").unwrap());
 
             #[cfg(desktop)]
             {
