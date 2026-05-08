@@ -4,7 +4,7 @@ import { Icon } from "../../../components";
 import { useLanguage } from "../../../context/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
 
-type Lang = "no" | "en" | "es" | "de";
+type Lang = "no" | "en" | "es" | "de" | "fr" | "ru" | "lt" | "ar";
 
 type DictResponse = {
   q: string;
@@ -18,7 +18,7 @@ type DictResponse = {
 
 export default function HomePage() {
   const [files, setFiles] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
   const { language } = useLanguage();
   const indexTranslations = getTranslations(language as Lang, 'index');
   const t = (key: string) => indexTranslations[key] || key;
@@ -144,8 +144,11 @@ export default function HomePage() {
 function QuickStatCard({ title, value, icon }: any) {
   return (
     <div className="w-full h-full aspect-square max-w-48 bg-c-secondary border border-c-divider rounded-xl p-4 flex items-center gap-4">
-      <h1>{title}</h1>
-      <p>{value}</p>
+      <Icon src={`/icons/${icon}.svg`} size="w-6 h-6" className="opacity-70" />
+      <div>
+        <h1>{title}</h1>
+        <p>{value}</p>
+      </div>
     </div>
   )
 }

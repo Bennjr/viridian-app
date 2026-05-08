@@ -106,6 +106,32 @@
     "emptyTitle": "Klar til å utforske?",
     "emptyDescription": "Skriv et ord i søkefeltet for å finne eksakte treff og lignende ord",
     "noSimilarWords": "Ingen lignende ord funnet",
+    "featured": "Dagens Ord",
+    "deep": "Se dypere betydning",
+    "recent": "Nylige Søk",
+    "history": "Historikk",
+    "activity": "Din Aktivitet",
+    "learned": "Ord lært",
+    "grammar": "Grammatikk-tips",
+    "popular": "Populært Nå",
+    "exact": "Eksakte Treff",
+    "similar": "Lignende Ord",
+    "adjective": "adjektiv",
+    "match": "Treff",
+    "featuredWord": "Vemodig",
+    "featuredDesc": "En stille følelse av lengsel eller nostalgi knyttet til minner og savn.",
+    "grammarText": "Husk forskjellen på \"da\" og \"når\". \"Da\" brukes om en hendelse i fortiden, mens \"når\" brukes om gjentakende hendelser eller fremtid.",
+    "recentWords": [
+      "Implementering",
+      "Kognitiv",
+      "Syntese",
+      "Parameter"
+    ],
+    "tags": [
+      "Kunstig Intelligens",
+      "Bærekraft",
+      "Innovasjon"
+    ],
     "results": "resultater"
   },
   "notes": {
@@ -161,6 +187,10 @@
     "no": "Norsk",
     "en": "English",
     "es": "Español",
-    "de": "Deutsch"
+    "de": "Deutsch",
+    "fr": "Français",
+    "ru": "Русский",
+    "lt": "Lietuvių",
+    "ar": "العربية"
   }
 }

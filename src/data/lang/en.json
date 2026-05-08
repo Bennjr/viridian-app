@@ -106,6 +106,32 @@
     "emptyTitle": "Ready to explore?",
     "emptyDescription": "Type a word in the search box to find exact matches and similar words",
     "noSimilarWords": "No similar words found",
+    "featured": "Word of the Day",
+    "deep": "Explore deeper meaning",
+    "recent": "Recent Searches",
+    "history": "History",
+    "activity": "Your Activity",
+    "learned": "Words Learned",
+    "grammar": "Grammar Tips",
+    "popular": "Trending Now",
+    "exact": "Exact Matches",
+    "similar": "Similar Words",
+    "adjective": "adjective",
+    "match": "Match",
+    "featuredWord": "Melancholic",
+    "featuredDesc": "A quiet emotional longing tied to memory, nostalgia, or something deeply missed.",
+    "grammarText": "Remember the difference between \"then\" and \"when\". \"Then\" refers to the past while \"when\" is used for repeated events or the future.",
+    "recentWords": [
+      "Implementation",
+      "Cognitive",
+      "Synthesis",
+      "Parameter"
+    ],
+    "tags": [
+      "Artificial Intelligence",
+      "Sustainability",
+      "Innovation"
+    ],
     "results": "results"
   },
   "notes": {
@@ -161,6 +187,10 @@
     "no": "Norsk",
     "en": "English",
     "es": "Español",
-    "de": "Deutsch"
+    "de": "Deutsch",
+    "fr": "Français",
+    "ru": "Русский",
+    "lt": "Lietuvių",
+    "ar": "العربية"
   }
 }

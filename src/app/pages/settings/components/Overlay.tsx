@@ -3,11 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../../../components";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-type Message = {
-    role: 'user' | 'ai';
-    content: string;
-};
-
 function DragHandle() {
     const [isPressed, setIsPressed] = useState(false);
 

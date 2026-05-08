@@ -5,7 +5,7 @@ import { getTranslations } from "../../utils/translations";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-type Lang = "no" | "en" | "es" | "de";
+type Lang = "no" | "en" | "es" | "de" | "fr" | "ru" | "lt" | "ar";
 
 type LinkItem = { key: string; svg: string; to: string; isFolder?: boolean };
 type Category = { labelKey: string; items: LinkItem[] };

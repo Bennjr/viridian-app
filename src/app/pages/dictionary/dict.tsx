@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../../context/LanguageContext";
 import { useTheme } from "../../../context/ThemeContext";
 import { Icon } from "../../../components";
+import { useTranslation, getThemeStyles, proEase } from "../../../utils/uiHelpers";
 
 type DictResponse = {
   q: string;
@@ -15,182 +16,6 @@ type DictResponse = {
   };
 };
 
-type Lang = "no" | "en" | "es" | "de";
-
-const proEase = [0.4, 0, 0.2, 1];
-
-const TRANSLATIONS: Record<Lang, any> = {
-  no: {
-    search: "Søk etter ord eller uttrykk...",
-    featured: "Dagens Ord",
-    deep: "Se dypere betydning",
-    recent: "Nylige Søk",
-    history: "Historikk",
-    activity: "Din Aktivitet",
-    learned: "Ord lært",
-    grammar: "Grammatikk-tips",
-    popular: "Populært Nå",
-    exact: "Eksakte Treff",
-    similar: "Lignende Ord",
-    adjective: "adjektiv",
-    match: "Treff",
-
-    featuredWord: "Vemodig",
-    featuredDesc:
-      "En stille følelse av lengsel eller nostalgi knyttet til minner og savn.",
-
-    grammarText:
-      'Husk forskjellen på "da" og "når". "Da" brukes om en hendelse i fortiden, mens "når" brukes om gjentakende hendelser eller fremtid.',
-
-    recentWords: [
-      "Implementering",
-      "Kognitiv",
-      "Syntese",
-      "Parameter",
-    ],
-
-    tags: [
-      "Kunstig Intelligens",
-      "Bærekraft",
-      "Innovasjon",
-    ],
-  },
-
-  en: {
-    search: "Search for words or expressions...",
-    featured: "Word of the Day",
-    deep: "Explore deeper meaning",
-    recent: "Recent Searches",
-    history: "History",
-    activity: "Your Activity",
-    learned: "Words Learned",
-    grammar: "Grammar Tips",
-    popular: "Trending Now",
-    exact: "Exact Matches",
-    similar: "Similar Words",
-    adjective: "adjective",
-    match: "Match",
-
-    featuredWord: "Melancholic",
-    featuredDesc:
-      "A quiet emotional longing tied to memory, nostalgia, or something deeply missed.",
-
-    grammarText:
-      'Remember the difference between "then" and "when". "Then" refers to the past while "when" is used for repeated events or the future.',
-
-    recentWords: [
-      "Implementation",
-      "Cognitive",
-      "Synthesis",
-      "Parameter",
-    ],
-
-    tags: [
-      "Artificial Intelligence",
-      "Sustainability",
-      "Innovation",
-    ],
-  },
-
-  es: {
-    search: "Buscar palabras o expresiones...",
-    featured: "Palabra del Día",
-    deep: "Explorar significado",
-    recent: "Búsquedas Recientes",
-    history: "Historial",
-    activity: "Tu Actividad",
-    learned: "Palabras Aprendidas",
-    grammar: "Consejos de Gramática",
-    popular: "Popular Ahora",
-    exact: "Coincidencias Exactas",
-    similar: "Palabras Similares",
-    adjective: "adjetivo",
-    match: "Coincidencia",
-
-    featuredWord: "Melancólico",
-    featuredDesc:
-      "Una sensación tranquila de nostalgia o anhelo emocional ligado a recuerdos.",
-
-    grammarText:
-      'Recuerda la diferencia entre "entonces" y "cuando".',
-
-    recentWords: [
-      "Implementación",
-      "Cognitivo",
-      "Síntesis",
-      "Parámetro",
-    ],
-
-    tags: [
-      "Inteligencia Artificial",
-      "Sostenibilidad",
-      "Innovación",
-    ],
-  },
-
-  de: {
-    search: "Nach Wörtern oder Ausdrücken suchen...",
-    featured: "Wort des Tages",
-    deep: "Tiefere Bedeutung ansehen",
-    recent: "Letzte Suchen",
-    history: "Verlauf",
-    activity: "Deine Aktivität",
-    learned: "Gelernte Wörter",
-    grammar: "Grammatik-Tipps",
-    popular: "Beliebt Jetzt",
-    exact: "Exakte Treffer",
-    similar: "Ähnliche Wörter",
-    adjective: "adjektiv",
-    match: "Treffer",
-
-    featuredWord: "Wehmütig",
-    featuredDesc:
-      "Ein stilles Gefühl von Sehnsucht oder emotionaler Nostalgie.",
-
-    grammarText:
-      'Den Unterschied zwischen "dann" und "wann" beachten.',
-
-    recentWords: [
-      "Implementierung",
-      "Kognitiv",
-      "Synthese",
-      "Parameter",
-    ],
-
-    tags: [
-      "Künstliche Intelligenz",
-      "Nachhaltigkeit",
-      "Innovation",
-    ],
-  },
-};
-
-const THEMES = {
-  default: {
-    root: "bg-c-primary text-c-text",
-    panel: "bg-c-secondary/60 border-white/[0.04]",
-    card: "bg-c-secondary/50 border-white/[0.04]",
-  },
-
-  dark: {
-    root: "bg-[#111315] text-white",
-    panel: "bg-[#181b1f]/70 border-white/[0.04]",
-    card: "bg-[#181b1f]/50 border-white/[0.04]",
-  },
-
-  light: {
-    root: "bg-[#f6f7fb] text-[#111]",
-    panel: "bg-white/80 border-black/[0.04]",
-    card: "bg-white/70 border-black/[0.04]",
-  },
-
-  contrast: {
-    root: "bg-black text-white",
-    panel: "bg-black border-white/20",
-    card: "bg-black border-white/20",
-  },
-};
-
 export default function Dict() {
   const [query, setQuery] = useState("");
   const [data, setData] = useState<DictResponse | null>(null);
@@ -200,11 +25,8 @@ export default function Dict() {
   const { language } = useLanguage();
   const { theme } = useTheme();
 
-  const currentTheme =
-    THEMES[theme as keyof typeof THEMES] || THEMES.default;
-
-  const t = (key: string) =>
-    TRANSLATIONS[language as Lang]?.[key] || key;
+  const currentTheme = getThemeStyles(theme);
+  const t = useTranslation("dictionary");
 
   useEffect(() => {
     if (!query.trim()) {
@@ -552,7 +374,7 @@ export default function Dict() {
                         score={score}
                         primary
                         currentTheme={currentTheme}
-                        language={language}
+                        t={t}
                       />
                     ))}
                   </div>
@@ -576,7 +398,7 @@ export default function Dict() {
                         word={word}
                         score={score}
                         currentTheme={currentTheme}
-                        language={language}
+                        t={t}
                       />
                     ))}
                   </div>
@@ -595,21 +417,14 @@ function ResultCard({
   score,
   primary,
   currentTheme,
-  language,
+  t,
 }: {
   word: string;
   score: number;
   primary?: boolean;
   currentTheme: any;
-  language: Lang;
+  t: (key: string) => string;
 }) {
-  const matchText = {
-    no: "Treff",
-    en: "Match",
-    es: "Coincidencia",
-    de: "Treffer",
-  };
-
   return (
     <motion.div
       layout
@@ -636,7 +451,7 @@ function ResultCard({
         </span>
 
         <span className="text-[10px] font-mono opacity-30">
-          {(score * 100).toFixed(0)}% {matchText[language]}
+          {(score * 100).toFixed(0)}% {t("match")}
         </span>
       </div>
     </motion.div>

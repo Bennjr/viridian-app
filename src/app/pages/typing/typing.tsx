@@ -4,7 +4,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "../../../components";
 
-type Lang = "no" | "en" | "es" | "de";
+type Lang = "no" | "en" | "es" | "de" | "fr" | "ru" | "lt" | "ar";
 
 type DictResult = {
   q: string;
@@ -21,6 +21,10 @@ const LANG_LABELS: Record<Lang, string> = {
   en: "English",
   es: "Español",
   de: "Deutsch",
+  fr: "Français",
+  ru: "Русский",
+  lt: "Lietuvių",
+  ar: "العربية",
 };
 
 const MYMEMORY_LANG: Record<Lang, string> = {
@@ -28,6 +32,10 @@ const MYMEMORY_LANG: Record<Lang, string> = {
   en: "en",
   es: "es",
   de: "de",
+  fr: "fr",
+  ru: "ru",
+  lt: "lt",
+  ar: "ar",
 };
 
 const TRANSLATIONS: Record<Lang, Record<string, string>> = {
@@ -110,6 +118,86 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     noExact: "Keine exakten Treffer",
     startSearch: "Schreibe etwas, um zu suchen...",
     didYouMean: "Meintest du",
+  },
+  fr: {
+    title: "Dictionnaire et Traducteur",
+    description: "Tapez un mot, choisissez des langues et obtenez des corrections, des mots similaires et une traduction.",
+    from: "De",
+    to: "À",
+    language: "Choisir la langue",
+    placeholder: "Tapez un mot...",
+    loading: "Chargement...",
+    corrected: "Corrigé",
+    correctedTo: "à",
+    showing: "Affichage des résultats pour",
+    translation: "Traduction",
+    word: "Mot",
+    noTranslation: "Aucune traduction trouvée",
+    suggestions: "Suggestions",
+    exactMatches: "Correspondances exactes",
+    noExact: "Aucune correspondance exacte",
+    startSearch: "Tapez quelque chose pour commencer la recherche...",
+    didYouMean: "Vouliez-vous dire",
+  },
+  ru: {
+    title: "Словарь и Переводчик",
+    description: "Введите слово, выберите языки и получите исправления, похожие слова и перевод.",
+    from: "С",
+    to: "На",
+    language: "Выбрать язык",
+    placeholder: "Введите слово...",
+    loading: "Загрузка...",
+    corrected: "Исправлено",
+    correctedTo: "на",
+    showing: "Показ результатов для",
+    translation: "Перевод",
+    word: "Слово",
+    noTranslation: "Перевод не найден",
+    suggestions: "Предложения",
+    exactMatches: "Точные совпадения",
+    noExact: "Нет точных совпадений",
+    startSearch: "Введите что-нибудь, чтобы начать поиск...",
+    didYouMean: "Вы имели в виду",
+  },
+  lt: {
+    title: "Žodynas ir Vertėjas",
+    description: "Įveskite žodį, pasirinkite kalbas ir gaukite pataisas, panašius žodžius ir vertimą.",
+    from: "Nuo",
+    to: "Į",
+    language: "Pasirinkti kalbą",
+    placeholder: "Įveskite žodį...",
+    loading: "Kraunama...",
+    corrected: "Pataisyta",
+    correctedTo: "į",
+    showing: "Rodyti rezultatus už",
+    translation: "Vertimas",
+    word: "Žodis",
+    noTranslation: "Vertimas nerastas",
+    suggestions: "Pasiūlymai",
+    exactMatches: "Tikslios atitikties",
+    noExact: "Nėra tikslių atitikimų",
+    startSearch: "Įveskite kažką, kad pradėtumėte paiešką...",
+    didYouMean: "Turėjote omenyje",
+  },
+  ar: {
+    title: "القاموس والمترجم",
+    description: "اكتب كلمة، اختر لغات وحصل على تصحيحات وكلمات مشابهة وترجمة.",
+    from: "من",
+    to: "إلى",
+    language: "اختر اللغة",
+    placeholder: "اكتب كلمة...",
+    loading: "جارٍ التحميل...",
+    corrected: "تم التصحيح",
+    correctedTo: "إلى",
+    showing: "عرض النتائج لـ",
+    translation: "الترجمة",
+    word: "كلمة",
+    noTranslation: "لم يتم العثور على ترجمة",
+    suggestions: "اقتراحات",
+    exactMatches: "مطابقات دقيقة",
+    noExact: "لا توجد مطابقات دقيقة",
+    startSearch: "اكتب شيئًا لبدء البحث...",
+    didYouMean: "هل كنت تقصد",
   },
 };
 
@@ -212,6 +300,10 @@ async function checkSpelling(text: string, lang: Lang): Promise<string> {
     en: "en-US",
     es: "es",
     de: "de",
+    fr: "fr-FR",
+    ru: "ru-RU",
+    lt: "lt",
+    ar: "ar",
   };
 
   const url = `https://api.languagetool.org/v2/check?text=${encodeURIComponent(text)}&language=${langMap[lang]}`;

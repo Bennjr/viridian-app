@@ -13,11 +13,11 @@ type FileItem = {
 };
 
 // This is the standard "Productivity" curve: Fast start, smooth stop.
-const proEase = [0.4, 0, 0.2, 1];
+const proEase: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
 export default function LibraryFullGrid({ goDashboard }: { goDashboard: () => void }) {
     const [files, setFiles] = useState<FileItem[]>([]);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery] = useState("");
     const [showFilters, setShowFilters] = useState(true);
 
     useEffect(() => {

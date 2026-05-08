@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../../context/LanguageContext";
 
-type Lang = "no" | "en" | "es" | "de";
+type Lang = "no" | "en" | "es" | "de" | "fr" | "ru" | "lt" | "ar";
 
 interface Note {
     id: string;
@@ -78,6 +78,74 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
         done: "Fertig",
         words: "Wörter",
         delete: "Löschen",
+    },
+
+    fr: {
+        title: "Mes notes",
+        note: "Note",
+        notes: "Notes",
+        organize: "Organisez vos pensées",
+        newNote: "Nouvelle note",
+        untitled: "Sans titre",
+        noText: "Pas encore de texte...",
+        empty: "Pas de notes",
+        create: "Créez une note pour commencer",
+        placeholder: "Commencez à écrire...",
+        noteTitle: "Titre de la note",
+        done: "Terminé",
+        words: "mots",
+        delete: "Supprimer",
+    },
+
+    ru: {
+        title: "Мои заметки",
+        note: "Заметка",
+        notes: "Заметки",
+        organize: "Организуйте свои мысли",
+        newNote: "Новая заметка",
+        untitled: "Без названия",
+        noText: "Пока нет текста...",
+        empty: "Нет заметок",
+        create: "Создайте заметку, чтобы начать",
+        placeholder: "Начните писать...",
+        noteTitle: "Название заметки",
+        done: "Готово",
+        words: "слов",
+        delete: "Удалить",
+    },
+
+    lt: {
+        title: "Mano užrašai",
+        note: "Užrašas",
+        notes: "Užrašai",
+        organize: "Organizuokite savo mintis",
+        newNote: "Naujas užrašas",
+        untitled: "Be pavadinimo",
+        noText: "Dar nėra teksto...",
+        empty: "Nėra užrašų",
+        create: "Sukurkite užrašą, kad pradėtumėte",
+        placeholder: "Pradėkite rašyti...",
+        noteTitle: "Užrašo pavadinimas",
+        done: "Atlikta",
+        words: "žodžių",
+        delete: "Ištrinti",
+    },
+
+    ar: {
+        title: "ملاحظاتي",
+        note: "ملاحظة",
+        notes: "ملاحظات",
+        organize: "نظم أفكارك",
+        newNote: "ملاحظة جديدة",
+        untitled: "بدون عنوان",
+        noText: "لا يوجد نص بعد...",
+        empty: "لا توجد ملاحظات",
+        create: "أنشئ ملاحظة للبدء",
+        placeholder: "ابدأ الكتابة...",
+        noteTitle: "عنوان الملاحظة",
+        done: "تم",
+        words: "كلمات",
+        delete: "حذف",
     }
 };
 
@@ -89,8 +157,6 @@ const INITIAL_NOTES: Note[] = [
         updatedAt: "Today"
     }
 ];
-
-const proEase = [0.4, 0, 0.2, 1];
 
 export default function NotesApp() {
     const { language } = useLanguage();

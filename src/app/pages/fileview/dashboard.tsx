@@ -3,11 +3,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { motion } from "framer-motion";
 import "../../global.css";
 import { Icon } from "../../../components";
-import { useLanguage } from "../../../context/LanguageContext";
 
 type FileItem = { name: string; path: string; type: string; modified: number; size: number };
-
-const standardBezier = [0.4, 0, 0.2, 1];
 
 export default function LibraryDashboard({ goView }: { goView: () => void }) {
     const [files, setFiles] = useState<FileItem[]>([]);

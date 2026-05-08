@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 
-const proEase = [0.4, 0, 0.2, 1];
+const proEase: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
 export function ModalFrame({ isOpen, onClose, title, subtitle, children }: any) {
     return (
