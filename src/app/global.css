@@ -40,25 +40,44 @@
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --c_primary: #2a2b2a;
-      --c_secondary_bg: #242524;
-      --c_tertiery: #1b1b1b;
+      /* Brand - Slightly more luminous for dark mode */
+      --c_brand: #459077;
+      --c-secondary-brand: #5ba3a3;
+      --c-lighter-brand: #a2e7d0;
+
+      /* Base Elevation (The furthest back) */
+      --c_primary: #09090b;
+
+      /* Secondary Elevation (Cards, Sidebar, Sections) */
+      --c_secondary_bg: #18181b;
+
+      /* Tertiary Elevation (In-set elements, search bars) */
+      --c_tertiery: #27272a;
+
+      /* Interactive */
+      --c_hover: #2d2d30;
+      --c_btn: #27272a;
+      --c_btn_hover: #3f3f46;
+
+      /* Borders & Dividers - Keep these very subtle */
+      --c_dividers: rgba(255, 255, 255, 0.06);
       --c-opposite: #ffffff;
-      --c_dividers: #343534;
-      --c_hover: #3d3e3d;
 
-      --c_text: #d8d8d8;
-      --c-text-opposite: #1d1d1d;
-      --c_text_muted: #8e8e8e;
-      --c_btn: #222524;
-      --c_btn_hover: #444444;
+      /* Typography */
+      --c_text: #fafafa;
+      /* High contrast white-ish */
+      --c_text_muted: #a1a1aa;
+      /* Soft zinc gray */
+      --c-text-opposite: #18181b;
 
-      --o_bg: #000000;
+      /* Overlay specific */
+      --o_bg: #09090b;
       --o_icon_bg: #ffffff;
 
-      --c_scrollbar_track: #1a1a1a;
-      --c_scrollbar_thumb: #333333;
-      --c_scrollbar_hover: #444444;
+      /* Scrollbar */
+      --c_scrollbar_track: #09090b;
+      --c_scrollbar_thumb: #3f3f46;
+      --c_scrollbar_hover: #52525b;
     }
   }
 

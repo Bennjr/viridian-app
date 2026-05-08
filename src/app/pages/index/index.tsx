@@ -42,7 +42,7 @@ export default function HomePage() {
   }, [searchQuery]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-c-main text-c-text">
+    <div className="flex-1 flex flex-col h-full w-full bg-c-main text-c-text custom-scrollbar overflow-y-auto">
 
       <main className="flex flex-col max-w-6xl mx-auto w-full p-8 gap-8">
 
@@ -93,11 +93,11 @@ export default function HomePage() {
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2>{t("trending")}</h2>
-          <div>
-            <div className="w-full h-[300px] bg-c-brand border border-c-divider rounded-xl p-4 flex items-center justify-center hover:bg-c-light_brand transition-colors cursor-pointer">
-              <p>{t("hello")}</p>
-            </div>
+          <h2>Innsikt</h2>
+          <div className="flex flex-row gap-4">
+            <QuickStatCard title="Total Filer" value="256" icon="files" />
+            <QuickStatCard title="Total Filer" value="256" icon="files" />
+            <QuickStatCard title="Total Filer" value="256" icon="files" />
           </div>
         </section>
 
@@ -139,6 +139,15 @@ export default function HomePage() {
       </main>
     </div>
   );
+}
+
+function QuickStatCard({ title, value, icon }: any) {
+  return (
+    <div className="w-full h-full aspect-square max-w-48 bg-c-secondary border border-c-divider rounded-xl p-4 flex items-center gap-4">
+      <h1>{title}</h1>
+      <p>{value}</p>
+    </div>
+  )
 }
 
 function QuickActionCard({ title, desc, icon }: any) {
