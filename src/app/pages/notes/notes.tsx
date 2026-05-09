@@ -149,6 +149,8 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     }
 };
 
+const proEase: any[] = []
+
 const INITIAL_NOTES: Note[] = [
     {
         id: "1",
@@ -198,16 +200,22 @@ export default function NotesApp() {
     };
 
     return (
-        <div className="h-screen bg-c-primary text-c-text overflow-hidden">
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.png')]" />
+        <div className="h-screen w-full bg-c-primary text-c-text overflow-hidden">
             <div className="flex flex-row gap-8 p-8 h-full">
                 <section className="flex-1 flex flex-col gap-2 overflow-y-auto custom-scrollbar pb-20 pr-2">
-                    <button
-                        onClick={createNote}
-                        className="w-full h-24 shrink-0 bg-c-secondary border border-c-divider text-left p-8 hover:bg-c-hover transition-colors"
-                    >
-                        + {t("newNote")}
-                    </button>
+                    <div className="flex flex-row gap-4">
+                        <textarea
+                            className="h-24 flex-1 shrink-0 bg-c-secondary resize-none border border-c-divider text-left p-8 hover:bg-c-hover transition-colors"
+                            placeholder="Søk i notater"
+                        >
+                        </textarea>
+                        <button
+                            onClick={createNote}
+                            className="h-24 flex-2 shrink-0 bg-c-secondary border border-c-divider text-left p-8 hover:bg-c-hover transition-colors"
+                        >
+                            + {t("newNote")}
+                        </button>
+                    </div>
                     <AnimatePresence initial={false}>
                         {notes.map((note) => (
                             <motion.div

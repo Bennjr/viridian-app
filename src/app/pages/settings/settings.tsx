@@ -23,28 +23,6 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
         { id: "overlay", label: t("overlay"), icon: "/layers.svg" },
     ];
 
-    const openLanguage = () => setModalConfig({
-        title: t("language"),
-        subtitle: "Velg ditt foretrukne språk for grensesnittet",
-        type: "LIST",
-        activeId: language,
-        onSelect: (id: string) => { setLanguage(id as any); setModalConfig(null); },
-        options: [
-            { id: "no", label: "Norsk" }, { id: "en", label: "English" }, { id: "es", label: "Español" }, { id: "de", label: "Deutsch" }, { id: "fr", label: "Français" }, { id: "ru", label: "Русский" }, { id: "lt", label: "Lietuvių" }, { id: "ar", label: "العربية" },
-        ]
-    });
-
-    const openTheme = () => setModalConfig({
-        title: t("theme"),
-        subtitle: "Velg fargetema for applikasjonen",
-        type: "GRID",
-        activeId: theme,
-        onSelect: (id: string) => { setTheme(id); setModalConfig(null); },
-        options: [
-            { id: "default", label: "System", icon: "🌓" }, { id: "dark", label: "Mørk", icon: "🌑" }, { id: "light", label: "Lys", icon: "☀️" }, { id: "contrast", label: "Kontrast", icon: "🏁" },
-        ]
-    });
-
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
             <motion.div
@@ -60,7 +38,6 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                 transition={{ duration: 0.25, ease: proEase }}
                 className="relative w-full max-w-[1400px] h-[85vh] flex bg-c-primary rounded-[24px] shadow-2xl border border-white/5 overflow-hidden"
             >
-                {/* Sidebar */}
                 <aside className="w-64 bg-c-secondary/40 border-r border-white/5 flex flex-col pt-12 pb-6">
                     <div className="px-6 mb-8">
                         <h2 className="text-[11px] font-black uppercase tracking-[0.2em] opacity-30 mb-4 px-2">App Settings</h2>
@@ -173,6 +150,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                                 {activeTab === "accessibility" && (
                                     <section className="space-y-3">
                                         <SettingsRow label="Høy Kontrast" description="Forbedrer lesbarhet" icon="/eye.svg" />
+                                        <SettingsRow label="Fargemetning" description="Juster metning på farger" icon="/text.svg" />
                                         <SettingsRow label="Skriftstørrelse" description="Juster tekststørrelsen i hele appen" icon="/text.svg" />
                                     </section>
                                 )}
@@ -221,7 +199,6 @@ function SettingsRow({ label, description, icon, children, expandedContent }: an
                 ? 'bg-white/[0.05] border-white/10 shadow-xl shadow-black/20'
                 : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'}`}
         >
-            {/* Header */}
             <div
                 onClick={() => hasExpansion && setIsExpanded(!isExpanded)}
                 className={`flex items-center justify-between p-4 ${hasExpansion ? 'cursor-pointer group' : ''}`}
@@ -246,7 +223,6 @@ function SettingsRow({ label, description, icon, children, expandedContent }: an
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {/* Hide children badges when expanded to keep it clean */}
                     {!isExpanded && children}
 
                     {hasExpansion && (
@@ -260,7 +236,6 @@ function SettingsRow({ label, description, icon, children, expandedContent }: an
                 </div>
             </div>
 
-            {/* Accordion Content */}
             <AnimatePresence>
                 {isExpanded && (
                     <motion.div
