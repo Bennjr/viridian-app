@@ -35,7 +35,7 @@ pub fn run() {
             helper::get_content,
             helper::translate,
             helper::search_files,
-            helper::save_file,
+            helper::save_files,
             helper::show_in_folder,
         ])
         .setup(|app| {

@@ -5,8 +5,16 @@ use tauri_plugin_opener::OpenerExt;
 use std::process::Command;
 
 #[tauri::command]
-pub fn save_file(path: String) -> Result<(), String> {
-    fs::copy(path, "test.txt").map_err(|e| e.to_string())?;
+pub fn save_files(paths: Vec<String>, into: String) -> Result<(), String> {
+    #[cfg(windows)]
+    let appdata = std::env::var("APP_DATA").expect("No APP_DATA directory");
+    let target_dir = format!("{}/Viridian/{}", appdata, into);
+    
+    fs::create_dir_all(&target_dir).map_err(|e| e.to_string())?;
+
+    for path in paths {
+        fs::copy(&path, &target_dir).map_err(|e| e.to_string())?;
+    };
     Ok(())
 }
 

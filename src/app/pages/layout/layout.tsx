@@ -4,10 +4,18 @@ import "../../global.css";
 import { useEffect, useState } from "react";
 import Settings from "../settings/settings"
 import { AnimatePresence, motion } from "framer-motion";
+import { AddOverlay } from "../../../components";
+import { useLanguage } from "../../../context/LanguageContext";
+import { getTranslations } from "../../../utils/translations";
+import { show } from "@tauri-apps/api/app";
 
 export default function Layout() {
     const [fontSize, setFontSize] = useState("medium");
     const [showSettings, setShowSettings] = useState(false)
+    const [showAddOverlay, setShowAddOverlay] = useState(false)
+
+    const { language } = useLanguage();
+    const t = (key: string) => getTranslations(language as any, 'library')[key] || key;
 
     useEffect(() => {
         const savedSize = localStorage.getItem("fontSize") || "medium";
@@ -30,6 +38,7 @@ export default function Layout() {
     };
 
     const toggleSettings = () => setShowSettings(!showSettings);
+    const toggleAddOverlay = () => setShowAddOverlay(!showAddOverlay);
 
     return (
         <>
@@ -47,6 +56,17 @@ export default function Layout() {
                 )}
             </AnimatePresence>
 
+            <AnimatePresence>
+                {showAddOverlay && (
+                    <AddOverlay
+                        isOpen={showAddOverlay}
+                        onClose={toggleAddOverlay}
+                        // 3. Pass the 't' prop here
+                        t={t}
+                        type={window.location.pathname.includes('library') ? 'book' : 'file'}
+                    />
+                )}
+            </AnimatePresence>
 
             <main className={`
             w-screen h-screen flex flex-col overflow-hidden 
@@ -57,7 +77,7 @@ export default function Layout() {
                     <Sidebar onToggleSettings={toggleSettings} />
 
                     <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                        <Topbar />
+                        <Topbar toggleAddOverlay={toggleAddOverlay} />
 
                         <section className="flex-1 overflow-hidden relative">
                             <Outlet />

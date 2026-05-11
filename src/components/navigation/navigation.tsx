@@ -119,7 +119,7 @@ export default function Sidebar({ onToggleSettings }: { onToggleSettings: () => 
     );
 }
 
-export function Topbar() {
+export function Topbar({ toggleAddOverlay }: { toggleAddOverlay: () => void }) {
     const { language } = useLanguage();
     const location = useLocation();
 
@@ -132,7 +132,7 @@ export function Topbar() {
         const path = location.pathname;
         if (path === "/") return tSidebar("home");
         if (path === "/library") return tSidebar("library");
-        if (path === "/fileview") return tSidebar("fileview")
+        if (path === "/fileview") return tSidebar("Filer")
         if (path === "/notes") return tSidebar("notes");
         if (path === "/dict") return tSidebar("dictionary");
         if (path === "/typing") return tSidebar("typing");
@@ -141,6 +141,7 @@ export function Topbar() {
     };
 
     const isLibrary = location.pathname === "/library";
+    const isFiles = location.pathname === "/fileview";
 
     return (
         <header className="h-14 flex items-center px-8 bg-c-secondary border-b border-c-divider shrink-0 z-40 select-none">
@@ -167,16 +168,40 @@ export function Topbar() {
                             />
                         </div>
 
-                        <button className="flex items-center gap-2 bg-c-opposite text-c-text_opposite font-bold px-4 py-1.5 rounded-lg text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-sm">
-                            <span>{tLib("addFile") || "UPLOAD"}</span>
+                        <button
+                            onClick={toggleAddOverlay}
+                            className="flex items-center gap-2 bg-c-opposite text-c-text_opposite font-bold px-4 py-1.5 rounded-lg text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                        >
+                            <span>Legg til</span>
                             <Icon src="/upload.svg" size="w-3 h-3" color="bg-c-primary" />
                         </button>
                     </div>
                 )}
 
-                {!isLibrary && (
-                    <div className="text-[10px] font-bold text-c-text/20 tracking-[0.2em] uppercase">
-                        Viridian System v1.0
+                {isFiles && (
+                    <div className="flex items-center gap-4 animate-in fade-in duration-300">
+                        <div className="flex relative group">
+                            <Icon
+                                src="/search.svg"
+                                size="w-3.5 h-3.5"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity pointer-events-none"
+                            />
+                            <input
+                                type="text"
+                                placeholder={tLib("quickSearch") || "SØK..."}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-64 bg-c-primary border border-c-divider rounded-lg px-9 py-1.5 text-[11px] font-bold tracking-wider outline-none focus:border-c-brand/50 transition-all placeholder:text-c-text/10"
+                            />
+                        </div>
+
+                        <button
+                            onClick={toggleAddOverlay}
+                            className="flex items-center gap-2 bg-c-opposite text-c-text_opposite font-bold px-4 py-1.5 rounded-lg text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                        >
+                            <span>{tLib("addFile") || "UPLOAD"}</span>
+                            <Icon src="/upload.svg" size="w-3 h-3" color="bg-c-primary" />
+                        </button>
                     </div>
                 )}
             </div>
