@@ -177,7 +177,7 @@ function QuickActionCard({ title, icon, color }: any) {
     <motion.button
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.97 }}
-      className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-c-secondary/30 border border-white/5 hover:border-c-brand/40 transition-all group"
+      className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-c-secondary/30 border border-white/5 hover:border-c-brand/40 transition-all duration-200 group"
     >
       <div className={`size-12 rounded-xl ${color} bg-opacity-10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
         <Icon src={`/icons/${icon}.svg`} size="w-5 h-5" color={color.replace('bg-', 'bg-')} />
