@@ -112,6 +112,7 @@ pub fn run() {
             }
         })
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .run(tauri::generate_context!() )
         .expect("Viridian application failed to launch");
 }

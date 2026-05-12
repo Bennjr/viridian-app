@@ -17,7 +17,7 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
 
     return (
         <div className="h-full w-full overflow-y-auto custom-scrollbar bg-c-primary">
-            <main className="max-w-6xl mx-auto p-8 flex flex-col gap-8 font-sans">
+            <main className="max-w-6xl mx-auto p-8 lg:p-12 flex flex-col gap-8 font-sans">
 
                 {/* 1. HERO SECTION */}
                 <section className="grid grid-cols-12 gap-4">

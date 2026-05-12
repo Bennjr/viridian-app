@@ -3,25 +3,36 @@ use serde_json::{json, Value};
 use std::time::UNIX_EPOCH;
 use tauri_plugin_opener::OpenerExt;
 use std::process::Command;
+use tauri::Manager;
 
 #[tauri::command]
-pub fn save_files(paths: Vec<String>, into: String) -> Result<(), String> {
-    #[cfg(windows)]
-    let appdata = std::env::var("APP_DATA").expect("No APP_DATA directory");
-    let target_dir = format!("{}/Viridian/{}", appdata, into);
+pub fn save_files(paths: Vec<String>, into: String, handle: tauri::AppHandle) -> Result<(), String> {
+    let app_dir = handle.path().app_data_dir().map_err(|e| e.to_string())?;
+    let target_dir = app_dir.join("Viridian").join(into);
     
     fs::create_dir_all(&target_dir).map_err(|e| e.to_string())?;
 
-    for path in paths {
-        fs::copy(&path, &target_dir).map_err(|e| e.to_string())?;
-    };
+    for path_str in paths {
+        let src_path = Path::new(&path_str);
+        
+        let file_name = src_path
+            .file_name()
+            .ok_or_else(|| format!("Could not get filename from: {}", path_str))?;
+            
+        let dest_path = target_dir.join(file_name);
+
+        fs::copy(&src_path, &dest_path).map_err(|e| e.to_string())?;
+    }
+    
     Ok(())
 }
 
 #[tauri::command]
-pub fn search_files(query: String) -> Result<Vec<Value>, String> {
-    let dir_path = "../user/save/lib"; 
-    let paths = fs::read_dir(dir_path).map_err(|e| e.to_string())?;
+pub fn search_files(query: String, handle: tauri::AppHandle) -> Result<Vec<Value>, String> {
+    let app_dir = handle.path().app_data_dir().map_err(|e| e.to_string())?;
+    let target_dir = app_dir.join("Viridian").join("Files");
+
+    let paths = fs::read_dir(target_dir).map_err(|e| e.to_string())?;
     
     let mut vec = Vec::new();
 

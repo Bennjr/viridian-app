@@ -348,7 +348,7 @@ export default function Typing() {
 
   return (
     <div className="h-full w-full custom-scrollbar overflow-y-auto">
-      <div className="flex flex-col max-w-6xl gap-6 p-8 mx-auto">
+      <div className="flex flex-col max-w-6xl gap-6 p-8 lg:p-12 mx-auto">
         <div className="flex flex-col gap-4">
           <div>
             <h2 className="font-bold text-2xl tracking-tight">{t("title")}</h2>

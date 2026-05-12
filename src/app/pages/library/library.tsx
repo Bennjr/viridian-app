@@ -18,7 +18,6 @@ const books = [
 ]
 
 export default function Library() {
-  // Group books by category
   const categories = books.reduce((acc, book) => {
     if (!acc[book.category]) acc[book.category] = [];
     acc[book.category].push(book);
@@ -26,7 +25,7 @@ export default function Library() {
   }, {} as Record<string, typeof books>);
 
   return (
-    <div className="h-full w-full overflow-y-auto custom-scrollbar p-8 space-y-12">
+    <div className="h-full w-full overflow-y-auto custom-scrollbar p-8 lg:p-12 space-y-12">
       {Object.entries(categories).map(([category, categoryBooks]) => (
         <section key={category}>
           <h2 className="text-xl font-bold text-zinc-100 px-1 tracking-tight">

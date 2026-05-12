@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../../../components";
 import { useTranslation, proEase } from "../../../utils/uiHelpers";
@@ -6,13 +6,25 @@ import { useLanguage } from "../../../context/LanguageContext";
 import { useTheme } from "../../../context/ThemeContext";
 import { GridAdapter, ListAdapter } from "./components/GridAdapter";
 import Overlay from "./components/Overlay";
+import { ColorPicker } from 'primereact/colorpicker';
+
+const OVERLAY_FUNCS = [
+    { id: 'settings', icon: "/settings.svg", title: "Instillinger", action: "settings" },
+    { id: 'speak', icon: '/audio.svg', title: 'Les opp tekst', action: 'speak' },
+    { id: 'chat', icon: '/star.svg', title: 'AI Assistent', action: 'toggleChat' },
+    { id: 'translate', icon: '/translate.svg', title: 'Oversett', action: 'translate' },
+    { id: 'hide', icon: '/eye.svg', title: 'Skjul vindu', action: 'toggleEye' },
+    { id: 'resize', icon: '/chevron-down.svg', title: 'Vis/Skjul felt', action: 'windowSizeToggle', isChevron: true },
+];
 
 export default function Settings({ onClose }: { onClose?: () => void }) {
     const { language, setLanguage } = useLanguage();
     const { theme, setTheme } = useTheme();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("general");
-    const [selectedOption, setSelectedOption] = useState("Primary Display");
+
+    const [selectedOverlayOptions, setOverlaySelectedOptions] = useState<string[]>([]);
+    const [overlayColor, setOverlayColor] = useState("#4ade80");
 
     const t = useTranslation("settings");
 
@@ -22,6 +34,14 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
         { id: "accessibility", label: t("accessibility"), icon: "/user.svg" },
         { id: "overlay", label: t("overlay"), icon: "/layers.svg" },
     ];
+
+    const handleOverlayToggle = (label: string) => {
+        setOverlaySelectedOptions(prev =>
+            prev.includes(label)
+                ? prev.filter(item => item !== label)
+                : [...prev, label]
+        );
+    };
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
@@ -68,7 +88,6 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                     </div>
                 </aside>
 
-                {/* Main Content Area */}
                 <div className="flex-1 flex flex-col bg-c-primary">
                     <header className="px-10 pt-12 pb-6 flex justify-between items-center">
                         <h1 className="text-2xl font-black tracking-tighter text-c-text">
@@ -111,7 +130,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                                             label={t("language")}
                                             description="Endre applikasjonsspråk"
                                             icon="/translate.svg"
-                                            expandedContent={
+                                            content={
                                                 <ListAdapter
                                                     activeId={language}
                                                     onSelect={(id: string) => setLanguage(id as any)}
@@ -130,7 +149,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                                             label={t("theme")}
                                             description="Tilpass fargene i grensesnittet"
                                             icon="/star.svg"
-                                            expandedContent={
+                                            content={
                                                 <GridAdapter
                                                     activeId={theme}
                                                     onSelect={(id: string) => setTheme(id)}
@@ -162,21 +181,35 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                                                 Overlay Preview & Target
                                             </h3>
                                             <DisplaySelection
-                                                activeId={selectedOption}
-                                                onSelect={(label: string) => setSelectedOption(label)}
-                                                display={<Overlay previewLabel={selectedOption} />}
-                                                options={[
-                                                    { id: "1", label: "Primary Display", icon: "🖥️" },
-                                                    { id: "2", label: "Secondary Display", icon: "📺" },
-                                                    { id: "3", label: "Drawing Tablet", icon: "✍️" }
-                                                ]}
+                                                activeIds={selectedOverlayOptions}
+                                                onSelect={handleOverlayToggle}
+                                                display={<Overlay previewLabel={selectedOverlayOptions[0]} activeIds={selectedOverlayOptions} />}
+                                                options={OVERLAY_FUNCS.map(func => ({
+                                                    id: func.id,
+                                                    label: func.title,
+                                                    icon: <Icon src={func.icon} size="w-4 h-4" color="bg-c-text/30" />,
+                                                }))}
                                             />
                                         </div>
                                         <div className="space-y-3">
+                                            <SettingsRow
+                                                label="Overlay Farge"
+                                                description="Velg primærfarge for overlay-vinduet"
+                                                icon="/star.svg"
+                                                content={
+                                                    <OverlayCustomization setColor={setOverlayColor} color={overlayColor} />
+                                                }
+                                            />
                                             <SettingsRow label="Aktiver Overlay" description="Vis verktøy over andre vinduer" icon="/layers.svg" />
                                             <SettingsRow label="Gjennomsiktighet" description="Juster overlay-synlighet" icon="/eye.svg">
                                                 <div className="w-24 h-1 bg-white/10 rounded-full" />
                                             </SettingsRow>
+                                            <SettingsRow
+                                                label="Tastatursnarveier"
+                                                description="Tilpass hurtigtaster for raskere tilgang"
+                                                icon="/keyboard.svg"
+                                                content={<KeybindManager />}
+                                            />
                                         </div>
                                     </section>
                                 )}
@@ -189,27 +222,16 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
     );
 }
 
-function SettingsRow({ label, description, icon, children, expandedContent }: any) {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const hasExpansion = !!expandedContent;
-
+function SettingsRow({ label, description, icon, children, content }: any) {
     return (
-        <div className={`flex flex-col rounded-2xl border transition-all duration-300
-            ${isExpanded
-                ? 'bg-white/[0.05] border-white/10 shadow-xl shadow-black/20'
-                : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'}`}
-        >
-            <div
-                onClick={() => hasExpansion && setIsExpanded(!isExpanded)}
-                className={`flex items-center justify-between p-4 ${hasExpansion ? 'cursor-pointer group' : ''}`}
-            >
+        <div className="flex flex-col rounded-2xl border bg-white/[0.02] border-white/5 overflow-hidden transition-all">
+            <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-4">
-                    <div className={`size-10 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center transition-colors 
-                        ${isExpanded ? 'border-c-brand/50 bg-c-brand/5' : 'group-hover:border-c-brand/40'}`}>
+                    <div className="size-10 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center">
                         <Icon
                             src={icon || "/folder.svg"}
                             size="w-4 h-4"
-                            className={isExpanded ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}
+                            className="opacity-40"
                         />
                     </div>
                     <div>
@@ -223,71 +245,215 @@ function SettingsRow({ label, description, icon, children, expandedContent }: an
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {!isExpanded && children}
-
-                    {hasExpansion && (
-                        <Icon
-                            src="/chevron-down.svg"
-                            className={`transition-transform duration-300 opacity-20 group-hover:opacity-60 
-                                ${isExpanded ? 'rotate-180 opacity-100' : 'rotate-0'}`}
-                            size="w-3 h-3"
-                        />
-                    )}
+                    {children}
                 </div>
             </div>
 
-            <AnimatePresence>
-                {isExpanded && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: proEase }}
-                        className="overflow-hidden"
-                    >
-                        <div className="px-4 pb-4 pt-2 border-t border-white/5 mx-4 mt-1">
-                            <div className="py-2">
-                                {expandedContent}
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {content && (
+                <div className="px-4 pb-5 pt-2 border-t border-white/5 mx-4 mt-1">
+                    <div className="py-2">
+                        {content}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-function DisplaySelection({ display, options, activeId, onSelect }: any) {
+function DisplaySelection({ display, options, activeIds, onSelect }: any) {
     return (
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-            <div className="relative w-full lg:w-[400px] aspect-video bg-black/40 rounded-3xl border border-white/5 overflow-hidden shadow-inner p-4 flex items-center justify-center">
+        <div className="flex flex-col gap-8">
+            <div className="relative w-full aspect-video bg-black/40 rounded-3xl border border-white/5 overflow-hidden p-4 flex items-center justify-center">
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                <div className="relative w-[320px] h-[200px] scale-[0.8] origin-center shadow-2xl">
+                <div className="relative w-[320px] h-[200px] scale-[0.8] origin-center">
                     {display}
                 </div>
             </div>
 
-            <div className="flex-1 w-full space-y-2">
-                <p className="text-[10px] font-bold text-c-text/20 uppercase tracking-widest mb-3 ml-2">Select Target Window</p>
-                {options.map((opt: any) => (
-                    <button
-                        key={opt.id}
-                        onClick={() => onSelect(opt.label)}
-                        className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border
-                            ${activeId === opt.label
-                                ? 'bg-c-brand/10 border-c-brand/50 text-white'
-                                : 'bg-white/5 border-transparent text-c-text/40 hover:bg-white/10'}`}
-                    >
-                        <div className="flex items-center gap-3">
-                            <span className="text-lg">{opt.icon}</span>
-                            <span className="text-sm font-bold">{opt.label}</span>
-                        </div>
-                        {activeId === opt.label && (
-                            <div className="size-2 rounded-full bg-c-brand shadow-[0_0_8px_var(--c-brand)]" />
-                        )}
-                    </button>
-                ))}
+            <div className="flex flex-col gap-4">
+                <p className="text-[10px] font-bold text-c-text/20 uppercase tracking-widest ml-2">
+                    Select Quick Functions (Multiple)
+                </p>
+
+                <div className="flex flex-row flex-wrap gap-3">
+                    {options.map((opt: any) => {
+                        const isActive = Array.isArray(activeIds)
+                            ? activeIds.includes(opt.label)
+                            : activeIds === opt.label;
+
+                        return (
+                            <button
+                                key={opt.id}
+                                onClick={() => onSelect(opt.label)}
+                                className={`
+                                    relative flex flex-col items-center justify-center gap-3 
+                                    w-28 aspect-square rounded-2xl transition-all border
+                                    ${isActive
+                                        ? 'bg-c-brand/10 border-c-brand text-white'
+                                        : 'bg-white/5 border-white/5 text-c-text/40 hover:bg-white/10 hover:border-white/10'
+                                    }
+                                `}
+                            >
+                                {isActive && (
+                                    <div className="absolute top-2 right-2 size-1.5 rounded-full bg-c-brand shadow-[0_0_8px_var(--c-brand)]" />
+                                )}
+
+                                <div className={`transition-transform duration-200 ${isActive ? 'scale-110' : 'opacity-50'}`}>
+                                    {opt.icon}
+                                </div>
+
+                                <span className={`text-[10px] font-bold text-center px-2 leading-tight ${isActive ? 'opacity-100' : 'opacity-50'}`}>
+                                    {opt.label}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
+        </div>
+    );
+}
+
+function OverlayCustomization({ setColor, color }: { setColor: any; color: string }) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFileName(file.name);
+            // Handle your upload logic here (e.g., invoke tauri command)
+            console.log("Selected file:", file);
+        }
+    };
+
+    return (
+        <div className="w-full flex flex-row justify-between items-start gap-8">
+            <div className="flex flex-col items-start flex-1">
+                <p className="text-[10px] font-bold text-c-text/20 uppercase tracking-widest mb-2 ml-1">
+                    Custom Background
+                </p>
+                <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-[100px] bg-white/[0.03] border border-white/5 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-white/5 hover:border-c-brand/40 transition-all group"
+                >
+                    <Icon
+                        src={selectedFileName ? "/file.svg" : "/upload.svg"}
+                        size="w-5 h-5"
+                        className={selectedFileName ? "text-c-brand opacity-100" : "opacity-20"}
+                    />
+                    <span className="text-[10px] font-bold text-c-text/40 truncate max-w-[150px] px-2">
+                        {selectedFileName || "Upload Image"}
+                    </span>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                    />
+                </button>
+                {selectedFileName && (
+                    <button
+                        onClick={() => setSelectedFileName(null)}
+                        className="mt-2 text-[9px] font-bold text-red-500/40 hover:text-red-500 uppercase tracking-tighter"
+                    >
+                        Remove file
+                    </button>
+                )}
+            </div>
+
+            {/* Right Side: Color Picker */}
+            <div className="flex flex-col items-end">
+                <p className="text-[10px] font-bold text-c-text/20 uppercase tracking-widest mb-2 mr-2">
+                    Primary Color
+                </p>
+                <div className="bg-white/[0.02] p-2 rounded-xl border border-white/5">
+                    <ColorPicker value={color} onChange={(e) => setColor(e.value)} inline />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+interface Keybind {
+    id: string;
+    label: string;
+    bind: string;
+}
+
+const MOCK_KEYBINDS: Keybind[] = [
+    { id: "1", label: "Åpne Overlay", bind: "Alt + Space" },
+    { id: "2", label: "Start Diktering", bind: "Ctrl + Shift + D" },
+    { id: "3", label: "Ta Skjermbilde", bind: "Cmd + P" },
+    { id: "4", label: "Skjul alle vinduer", bind: "Shift + Esc" },
+];
+
+
+function KeybindManager() {
+    const [keybinds, setKeybinds] = useState(MOCK_KEYBINDS);
+    const [recordingId, setRecordingId] = useState<string | null>(null);
+
+    // Listen for key presses when in recording mode
+    useEffect(() => {
+        if (!recordingId) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            e.preventDefault();
+
+            const keys = [];
+            if (e.ctrlKey) keys.push("Ctrl");
+            if (e.shiftKey) keys.push("Shift");
+            if (e.altKey) keys.push("Alt");
+            if (e.metaKey) keys.push("Cmd");
+
+            // Add the actual key (avoid adding just the modifiers)
+            if (!["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
+                keys.push(e.key.toUpperCase());
+            }
+
+            if (keys.length > 0) {
+                const newBind = keys.join(" + ");
+                setKeybinds(prev => prev.map(kb =>
+                    kb.id === recordingId ? { ...kb, bind: newBind } : kb
+                ));
+                setRecordingId(null);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [recordingId]);
+
+    return (
+        <div className="flex flex-col gap-2 w-full">
+            <div className="flex justify-between items-center px-2 mb-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-20">Funksjon</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-20">Snarvei</p>
+            </div>
+
+            {keybinds.map((kb) => (
+                <div
+                    key={kb.id}
+                    className="flex items-center justify-between p-3 bg-white/[0.02] rounded-xl border border-white/5 hover:bg-white/[0.04] transition-all group"
+                >
+                    <span className="text-[12px] font-bold text-c-text/80 group-hover:text-c-text transition-colors">
+                        {kb.label}
+                    </span>
+
+                    <button
+                        onClick={() => setRecordingId(kb.id)}
+                        className={`
+                            relative min-w-[100px] px-3 py-1.5 rounded-lg border text-[11px] font-black transition-all
+                            ${recordingId === kb.id
+                                ? 'bg-c-brand border-c-brand text-white animate-pulse shadow-[0_0_15px_rgba(var(--c-brand-rgb),0.4)]'
+                                : 'bg-white/5 border-white/10 text-c-text/40 hover:border-white/20 hover:text-c-text'}
+                        `}
+                    >
+                        {recordingId === kb.id ? "Trykk en tast..." : kb.bind}
+                    </button>
+                </div>
+            ))}
         </div>
     );
 }

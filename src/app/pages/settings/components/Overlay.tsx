@@ -98,19 +98,20 @@ const TOOLBAR_ACTIONS = [
     { id: 'resize', icon: '/chevron-down.svg', title: 'Vis/Skjul felt', action: 'windowSizeToggle', isChevron: true },
 ];
 
-export default function Overlay({ previewLabel }: { previewLabel?: string }) {
+export default function Overlay({ previewLabel, activeIds }: { previewLabel?: string; activeIds: string[] }) {
     const [isWindowOpen,] = useState(false);
-
     const [activeMode,] = useState<string | null>(null);
     const [settings, setSettings] = useState({ aiTask: 'Forklar' });
 
+    // Filter actions to only show those whose title is in the activeIds array
+    const visibleActions = TOOLBAR_ACTIONS.filter(item => activeIds.includes(item.title));
+
     return (
-        // Changed h-screen to h-full for the preview to work
         <section className="draggable h-full flex flex-col bg-c-primary border border-white/10 shadow-2xl overflow-hidden select-none rounded-2xl">
-            {/* Toolbar area */}
             <div className="z-10 flex items-center justify-around h-[75px] pr-2 bg-c-secondary/80 backdrop-blur-lg border-b border-white/5">
                 <DragHandle />
-                {TOOLBAR_ACTIONS.map((item) => {
+                {/* Map only the visibleActions filtered above */}
+                {visibleActions.map((item) => {
                     const isResize = item.id === 'resize';
                     return (
                         <button
@@ -146,7 +147,6 @@ export default function Overlay({ previewLabel }: { previewLabel?: string }) {
                         <ActionBar mode={activeMode || ""} settings={settings} setSettings={setSettings} />
 
                         <div className="relative flex-1 bg-c-secondary/30 rounded-2xl border border-white/5 p-1">
-                            {/* Visual indicator of the selected item inside the overlay */}
                             {previewLabel && (
                                 <div className="absolute top-2 right-4 z-20 px-2 py-0.5 rounded bg-c-brand/20 border border-c-brand/30 text-[9px] font-bold text-c-brand uppercase tracking-widest animate-pulse">
                                     Target: {previewLabel}
@@ -154,10 +154,10 @@ export default function Overlay({ previewLabel }: { previewLabel?: string }) {
                             )}
 
                             <textarea
-                                // ... existing textarea props
+                                readOnly
                                 placeholder={previewLabel ? `Ready to work on ${previewLabel}...` : "Start typing..."}
+                                className="resize-none w-full h-full bg-transparent p-4 text-c-text text-[15px] leading-relaxed outline-none placeholder:opacity-20 scrollbar-none non-draggable"
                             />
-                            {/* ... rest of your textarea logic */}
                         </div>
                     </motion.div>
                 )}
