@@ -19,10 +19,9 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
         <div className="h-full w-full overflow-y-auto custom-scrollbar bg-c-primary">
             <main className="max-w-6xl mx-auto p-8 lg:p-12 flex flex-col gap-8 font-sans">
 
-                {/* 1. HERO SECTION */}
                 <section className="grid grid-cols-12 gap-4">
                     <div className="col-span-12 flex justify-between items-end">
-                        <h3 className="text-[10px] font-bold tracking-[0.3em] text-c-text/20 uppercase">Pinned</h3>
+                        <h3 className="text-[10px] font-bold text-c-text/20">Pinned</h3>
                         <button onClick={goView} className="text-[10px] font-bold text-c-brand hover:underline uppercase tracking-widest">
                             Full Library →
                         </button>
@@ -57,7 +56,6 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
                     </div>
                 </section>
 
-                {/* 2. STATS BENTO */}
                 <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="bg-c-secondary border border-c-divider rounded-2xl p-5 flex flex-col justify-between h-36">
                         <span className="text-[9px] font-bold tracking-widest text-c-text/20 uppercase">Storage</span>
@@ -78,10 +76,17 @@ export default function LibraryDashboard({ goView }: { goView: () => void }) {
                     </div>
                 </section>
 
+                <section className="flex flex-col gap-4">
+                    <h3 className="text-[10px] font-bold text-c-text/20">Most recent file</h3>
+                    <div className="bg-c-secondary w-full h-[400px]">
+
+                    </div>
+                </section>
+
                 {/* 3. RECENT ACTIVITY */}
                 <section className="flex flex-col gap-3 pb-8">
                     <div className="flex justify-between items-center px-1">
-                        <h3 className="text-[10px] font-bold tracking-[0.3em] text-c-text/20 uppercase">Recent Activity</h3>
+                        <h3 className="text-[10px] font-bold text-c-text/20">Recent Activity</h3>
                     </div>
 
                     <div className="flex flex-col gap-1">
